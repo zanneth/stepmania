@@ -53,8 +53,6 @@ typedef int int32_t;
 #define LUA_DL_DYLD		/* does not need extra library */
 #endif
 
-
-
 /*
 @@ LUA_USE_POSIX includes all functionallity listed as X/Open System
 @* Interfaces Extension (XSI).
