@@ -5,6 +5,8 @@
 
 #include <map>
 #include <vector>
+#include "global.h"
+
 class RageFileDriver;
 
 /** @brief Safely delete pointers. */

@@ -21,11 +21,26 @@
 #define DEFAULT_MOVIE_DRIVER_LIST "FFMpeg,Null"
 #define DEFAULT_SOUND_DRIVER_LIST "AudioUnit,Null"
 
+#elif defined(ANDROID)
+#include "ArchHooks/ArchHooks_Android.h"
+#include "LoadingWindow/LoadingWindow_Android.h"
+#include "LowLevelWindow/LowLevelWindow_Android.h"
+#include "MemoryCard/MemoryCardDriver_Android.h"
+// In the future, Android Inputs may support USB Host.
+#define DEFAULT_INPUT_DRIVER_LIST "Android_Gamepad"
+#define DEFAULT_MOVIE_DRIVER_LIST "FFMpeg,Null"
+#define DEFAULT_SOUND_DRIVER_LIST "Android"
+// Movie sink.
+
 
 #elif defined(UNIX)
 #include "ArchHooks/ArchHooks_Unix.h"
-#include "LowLevelWindow/LowLevelWindow_X11.h"
 
+#if defined(HAVE_X11)
+#include "LowLevelWindow/LowLevelWindow_X11.h"
+#endif
+
+// Memory Card and Storage-related
 #if defined(LINUX)
 #include "MemoryCard/MemoryCardDriverThreaded_Linux.h"
 #endif
@@ -58,7 +73,7 @@
 #endif
 
 /*
- * (c) 2002-2006 Glenn Maynard, Ben Anderson, Steve Checkoway
+ * (c) 2002-2014 Glenn Maynard, Ben Anderson, Steve Checkoway, Renaud Lepage
  * All rights reserved.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a

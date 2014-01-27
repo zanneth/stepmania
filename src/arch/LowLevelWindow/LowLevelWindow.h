@@ -2,6 +2,8 @@
 #define LOW_LEVEL_WINDOW_H
 
 #include <set>
+#include "global.h"
+using namespace std;
 
 class DisplayResolution;
 typedef set<DisplayResolution> DisplayResolutions;

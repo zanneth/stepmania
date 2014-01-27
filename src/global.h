@@ -21,6 +21,9 @@
 #include "archutils/Darwin/arch_setup.h"
 #elif defined(UNIX)
 #include "archutils/Unix/arch_setup.h"
+#elif defined(ANDROID)
+#include "archutils/Android/config.h"
+#include "archutils/Android/arch_setup.h"
 #endif
 
 /* Set one of these in arch_setup.h.  (Don't bother trying to fall back on BYTE_ORDER
@@ -39,6 +42,7 @@
 #define LITTLE_ENDIAN 1234
 /** @brief The macro for big endian order. */
 #define BIG_ENDIAN 4321
+
 #if defined(ENDIAN_LITTLE)
 #define BYTE_ORDER LITTLE_ENDIAN
 #elif defined(ENDIAN_BIG)
@@ -248,7 +252,7 @@ inline float strtof( const char *s, char **se ) { return (float) strtod( s, se )
 
 /**
  * @file
- * @author Chris Danford, Glenn Maynard (c) 2001-2004
+ * @author Chris Danford, Glenn Maynard, Renaud Lepage (c) 2001-2014
  * @section LICENSE
  * All rights reserved.
  * 

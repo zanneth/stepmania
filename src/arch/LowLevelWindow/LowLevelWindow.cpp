@@ -1,4 +1,3 @@
-#include "global.h"
 #include "LowLevelWindow.h"
 #include "arch/arch_default.h"
 

@@ -116,6 +116,7 @@ static bool AttemptJapaneseConversion( RString &sText ) { return ConvertFromCP( 
 #else
 
 /* No converters are available, so all fail--we only accept UTF-8. */
+// TODO: Android should have something that does this, with its existing support for non-english
 static bool AttemptEnglishConversion( RString &sText ) { return false; }
 static bool AttemptKoreanConversion( RString &sText ) { return false; }
 static bool AttemptJapaneseConversion( RString &sText ) { return false; }

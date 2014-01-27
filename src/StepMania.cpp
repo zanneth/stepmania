@@ -937,8 +937,27 @@ static void ApplyLogPreferences()
 
 static LocalizedString COULDNT_OPEN_LOADING_WINDOW( "LoadingWindow", "Couldn't open any loading windows." );
 
-int main(int argc, char* argv[])
+#if !defined(ANDROID)
+int main( int argc, char* argv[] ) {
+    Launch(argc, argv);
+}
+#elif defined(ANDROID)
+
+// Android Globals inside of Stepmania
+#include "archutils/Android/Globals.h"
+
+void android_main(android_app* state) {
+    app_dummy(); // always.
+    AndroidGlobals::ANDROID_APP_INSTANCE = state;
+
+    // Just call the method upstream and exit. This is a skeleton, not an app.
+    Launch(0, NULL);
+}
+#endif
+
+int Launch(int argc, char* argv[])
 {
+
 	RageThreadRegister thread( "Main thread" );
 	RageException::SetCleanupHandler( HandleException );
 
@@ -953,11 +972,11 @@ int main(int argc, char* argv[])
 	// Almost everything uses this to read and write files.  Load this early.
 	FILEMAN = new RageFileManager( argv[0] );
 	FILEMAN->MountInitialFilesystems();
-	
+
 	bool bPortable = DoesFileExist("Portable.ini");
 	if( !bPortable )
 		FILEMAN->MountUserFilesystems();
-	
+
 	// Set this up next. Do this early, since it's needed for RageException::Throw.
 	LOG		= new RageLog;
 
