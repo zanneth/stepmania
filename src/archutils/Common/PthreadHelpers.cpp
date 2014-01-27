@@ -5,8 +5,12 @@
 #include "RageUtil.h"
 #include "RageThreads.h"
 #include "archutils/Unix/Backtrace.h" // HACK: This should be platform-agnosticized
-#if defined(UNIX)
+#if defined(UNIX) && !defined(ANDROID)
 #include "archutils/Unix/RunningUnderValgrind.h"
+#else
+bool RunningUnderValgrind() {
+    return false;
+}
 #endif
 
 #if defined(LINUX)
@@ -20,8 +24,12 @@
 #include <sys/stat.h>
 #include <sys/syscall.h>
 #define _LINUX_PTRACE_H // hack to prevent broken linux/ptrace.h from conflicting with sys/ptrace.h
-#include <sys/user.h>
 
+#if defined(ANDROID)
+#include <linux/user.h>
+#else
+#include <sys/user.h>
+#endif
 /* In Linux, we might be using PID-based or TID-based threads.  With PID-based
  * threads, getpid() returns a unique value for each thread; each thread is a
  * separate process.  Newer kernels using NPTL return the same PID for all
@@ -41,23 +49,31 @@ static bool g_bUsingNPTL = false;
 
 RString ThreadsVersion()
 {
+#if defined(ANDROID)
+    return "(unknown)";
+#else
 	char buf[1024] = "(error)";
 	int ret = confstr( _CS_GNU_LIBPTHREAD_VERSION, buf, sizeof(buf) );
 	if( ret == -1 )
 		return "(unknown)";
 
 	return buf;
+#endif
 }
 
 /* Crash-conditions-safe: */
 bool UsingNPTL()
 {
+#if defined(ANDROID)
+    return false;
+#else
 	char buf[1024] = "";
 	int ret = confstr( _CS_GNU_LIBPTHREAD_VERSION, buf, sizeof(buf) );
 	if( ret == -1 )
 		return false;
 
 	return !strncmp( buf, "NPTL", 4 );
+#endif
 }
 /* Crash-conditions-safe: */
 void InitializePidThreadHelpers()
@@ -132,6 +148,7 @@ static uint64_t GetCurrentThreadIdInternal()
 	
 	InitializePidThreadHelpers(); // for g_bUsingNPTL
 
+#if !defined(ANDROID)
 	/* Don't keep calling gettid() if it's not supported; it'll make valgrind spam us. */
 	static bool GetTidUnsupported = 0;
 	if( !GetTidUnsupported )
@@ -147,6 +164,7 @@ static uint64_t GetCurrentThreadIdInternal()
 		ASSERT( !g_bUsingNPTL );
 		GetTidUnsupported = true;
 	}
+#endif
 
 	return getpid();
 }

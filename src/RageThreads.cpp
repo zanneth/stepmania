@@ -26,7 +26,11 @@
 #if defined(_WINDOWS)
 #include "archutils/Win32/crash.h"
 #elif defined(LINUX) || defined(MACOSX)
+#if defined(ANDROID)
+#include "archutils/Android/CrashHandler.h"
+#else
 #include "archutils/Unix/CrashHandler.h"
+#endif
 #endif
 #endif
 
@@ -776,7 +780,7 @@ bool RageSemaphore::TryWait()
 
 
 /*
- * Copyright (c) 2001-2004 Glenn Maynard
+ * Copyright (c) 2001-2014 Glenn Maynard, Renaud Lepage
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a

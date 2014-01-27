@@ -12,7 +12,7 @@ LoadingWindow *LoadingWindow::Create()
 	return new LoadingWindow_Null;
 #endif
 	// Don't load NULL by default.
-	const RString drivers = "win32,macosx,gtk";
+	const RString drivers = "win32,macosx,gtk,android";
 	vector<RString> DriversToTry;
 	split( drivers, ",", DriversToTry, true );
 
@@ -33,6 +33,9 @@ LoadingWindow *LoadingWindow::Create()
 #endif
 #ifdef USE_LOADING_WINDOW_WIN32
 		if( !DriversToTry[i].CompareNoCase("Win32") )	ret = new LoadingWindow_Win32;
+#endif
+#ifdef USE_LOADING_WINDOW_ANDROID
+		if( !DriversToTry[i].CompareNoCase("Android") )	ret = new LoadingWindow_Android;
 #endif
 		if( !DriversToTry[i].CompareNoCase("Null") )	ret = new LoadingWindow_Null;
 

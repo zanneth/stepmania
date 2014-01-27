@@ -5,7 +5,7 @@
 #include <sys/time.h>
 #include <errno.h>
 
-#if defined(UNIX)
+#if defined(UNIX) && !defined(ANDROID)
 #include "archutils/Unix/RunningUnderValgrind.h"
 #endif
 
@@ -107,7 +107,7 @@ MutexImpl_Pthreads::~MutexImpl_Pthreads()
 #if defined(HAVE_PTHREAD_MUTEX_TIMEDLOCK) || defined(HAVE_PTHREAD_COND_TIMEDWAIT)
 static bool UseTimedlock()
 {
-#if defined(LINUX)
+#if defined(LINUX) && !defined(ANDROID)
 	// Valgrind crashes and burns on pthread_mutex_timedlock.
 	if( RunningUnderValgrind() )
 		return false;
@@ -207,7 +207,11 @@ MutexImpl *MakeMutex( RageMutex *pParent )
  * RageTimer selected. */
 #if defined(UNIX)
 #include <dlfcn.h>
+#if defined(ANDROID)
+#include "arch/ArchHooks/ArchHooks_Android.h"
+#else
 #include "arch/ArchHooks/ArchHooks_Unix.h"
+#endif
 #elif defined(MACOSX)
 typedef int clockid_t;
 static const clockid_t CLOCK_REALTIME = 0;
@@ -219,7 +223,7 @@ namespace
 	CONDATTR_SET_CLOCK g_CondattrSetclock = NULL;
 	bool bInitialized = false;
 
-#if defined(UNIX)
+#if defined(UNIX) && !defined(ANDROID)
 	clockid_t GetClock()
 	{
 		return ArchHooks_Unix::GetClock();
@@ -539,7 +543,7 @@ SemaImpl *MakeSemaphore( int iInitialValue )
 
 
 /*
- * (c) 2001-2004 Glenn Maynard
+ * (c) 2001-2014 Glenn Maynard, Renaud Lepage
  * All rights reserved.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a

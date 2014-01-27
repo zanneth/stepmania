@@ -5,11 +5,35 @@ struct Game;
 class RageTimer;
 class VideoModeParams;
 
+// True entry point
+int Launch( int argc, char* argv[] );
+
+// Just forward it on.
+#if !defined(ANDROID)
 int main( int argc, char* argv[] );
+#elif defined(ANDROID)
+// Bring in all the Android bootstrapping material
+
+// JNI inclusions
+#include <jni.h>
+#include <errno.h>
+#include <vector>
+
+// NDK stuff
+#include <android/log.h>
+#include <android_native_app_glue.h>
+#include <android/native_window_jni.h>
+
+// Direct helper inclusion because the make import seems to be doing that.
+#include "NDKHelper.h"
+#define CLASS_NAME "com/stepmania/android/StepMania"
+
+#endif
 
 /** @brief Utility functions for controlling the whole game. */
 namespace StepMania
 {
+
 	void ApplyGraphicOptions();
 	void ResetPreferences();
 	void ResetGame();
