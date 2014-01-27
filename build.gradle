@@ -1,0 +1,125 @@
+import java.util.regex.Pattern
+apply plugin: 'android'
+
+project.ext {
+    nativearch = "none";
+}
+project.ext {
+    ndkDir = "/opt/android-ndk";
+}
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "18.0.1"
+
+    // Deactivate the automated JNI step altogether.
+    // as of Android-Gradle 0.7.3, it's not optimal for this task.
+    sourceSets.main.jni.srcDirs = []
+
+    sourceSets {
+        main {
+            manifest.srcFile 'src/archutils/Android/Framework/AndroidManifest.xml'
+            res.srcDirs = ['src/archutils/Android/Framework/res']
+            java.srcDirs = ['src/archutils/Android/Framework/java']
+            resources.srcDirs = ['src/archutils/Android/Framework/resources']
+            aidl.srcDirs = ['src/archutils/Android/Framework/aidl']
+            renderscript.srcDirs = ['src/archutils/Android/Framework/renderscript']
+            assets.srcDirs = ['src/archutils/Android/Framework/assets']
+            jniLibs.srcDirs = ['extern/android/jniLibs']
+        }
+    }
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 19
+        versionCode getVersionCodeFromManifest()
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+        debug {
+            // jniDebugBuild true
+            runProguard false
+            debuggable true
+        }
+    }
+
+    // From http://ph0b.com/android-studio-gradle-and-ndk-integration/
+    productFlavors {
+        x86 {
+            versionCode Integer.parseInt("6" + defaultConfig.versionCode)
+            ndk {
+                abiFilter "x86"
+                project.ext.nativearch = "x86"
+            }
+        }
+        mips {
+            versionCode Integer.parseInt("4" + defaultConfig.versionCode)
+            ndk {
+                abiFilter "mips"
+            }
+        }
+        armv7 {
+            versionCode Integer.parseInt("2" + defaultConfig.versionCode)
+            ndk {
+                abiFilter "armeabi-v7a"
+                project.ext.nativearch = "armv7-a"
+            }
+        }
+        // No love for mips for now.
+        /*
+        mips {
+            versionCode Integer.parseInt("4" + defaultConfig.versionCode)
+                abiFilter "mips"
+                project.ext.nativearch = "mips"
+            }
+        }
+        */
+        fat
+    }
+}
+dependencies {
+    compile 'com.android.support:appcompat-v7:+'
+    compile 'com.google.android.gms:play-services:+'
+}
+project.afterEvaluate{
+    preBuild.dependsOn("redirLibs")
+}
+task compileFFMPEG(type:Exec){
+    // Compile FFMPEG using a specific script
+    workingDir 'extern/android'
+    commandLine './build_ffmpeg.sh',project.ext.nativearch,project.android.defaultConfig.minSdkVersion
+}
+
+task compileStepmania(type:Exec){
+    // Build the Skeleton[s?]
+    workingDir '.'
+    commandLine project.ext.ndkDir+'/ndk-build','-j16','APP_PLATFORM=android-'+project.android.defaultConfig.minSdkVersion,'NDK_PROJECT_PATH=src/','APP_BUILD_SCRIPT=src/Android.mk','NDK_APPLICATION_MK=src/Application.mk'
+}
+task cleanStepmania(type:Exec){
+    // Build the Skeleton[s?]
+    workingDir '.'
+    commandLine project.ext.ndkDir+'/ndk-build','-j16','APP_PLATFORM=android-'+project.android.defaultConfig.minSdkVersion,'NDK_PROJECT_PATH=src/','APP_BUILD_SCRIPT=src/Android.mk','NDK_APPLICATION_MK=src/Application.mk','clean'
+}
+task redirLibs(type:Exec){
+    // Rename/move some libraries to more NDK-proper paths
+    workingDir 'extern/android'
+    commandLine './redir_libs.sh'
+}
+
+// Task Dependancy tree
+cleanStepmania.dependsOn compileFFMPEG
+compileStepmania.dependsOn cleanStepmania
+
+redirLibs.dependsOn compileStepmania
+
+def getVersionCodeFromManifest() {
+    def manifestFile = file(android.sourceSets.main.manifest.srcFile)
+    def pattern = Pattern.compile("versionCode=\"(\\d+)\"")
+    def matcher = pattern.matcher(manifestFile.getText())
+    matcher.find()
+    return Integer.parseInt(matcher.group(1))
+}
