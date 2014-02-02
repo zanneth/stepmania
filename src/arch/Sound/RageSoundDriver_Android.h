@@ -5,15 +5,65 @@
 #include "RageThreads.h"
 
 // Include Android NDK stuff
+#include <SLES/OpenSLES.h>
+#include <SLES/OpenSLES_Android.h>
 
 // Go with OpenSL ES. Seems to be the dominant, better choice for lower-latency stuff.
 
 class RageSoundDriver_Android : public RageSoundDriver
 {
+public:
+	RageSoundDriver_Android();
+	~RageSoundDriver_Android();
+	RString Init();
+
+	/* virtuals: */
+	int64_t GetPosition() const;
+	float GetPlayLatency() const;
+	int GetSampleRate() const { return M_SAMPLERATE; }
+protected:
+    //put decode above normal
+	void SetupDecodingThread();
+
+private:
+    // Initializers
+    RString CreateSLESInterfaces();
+    bool InitAudioPlayback();
+
+    // SLES Buffer Callback
+    static void BufferIsEmptyCB(SLAndroidBufferQueueItf iface, void* context);
+
+    // SLES management interfaces
+    SLObjectItf slesCoreItf;
+    SLEngineItf slesEngineItf;
+    SLPlayItf slesPlayerItf;
+
+    // SLES+Android management interfaces
+    SLAndroidConfigurationItf slesAndroidConfItf;
+    SLAndroidBufferQueueItf slesAndroidBufQueueItf;
+
+    // Container Objects
+    SLObjectItf slesOutputMixObj; // Can't be a SLOutputMixItf directly? Wat
+    SLObjectItf slesPlayerObj;
+
+    // SLES Data Locators, Formats and general sources.
+    SLDataSink audioSnk;
+
+
+    static const int M_CHANNELS_DEFAULT = 2;
+    static const int M_SPEAKERS = (M_CHANNELS_DEFAULT >1
+        ? (SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT)
+        : SL_SPEAKER_FRONT_CENTER
+    );
+	static const int M_SAMPLERATE = 44100;
+	static const int M_OUTBUFFER_SAMPLES = 16;
+	static const int preferred_writeahead = 8192;
+	static const int preferred_chunksize = 1024;
+
 };
 #endif //RAGE_SOUND_DRIVER_ANDROID_H
 /*
- * (c) 2014-x Renaud Lepage
+ * (c) 2014 Renaud Lepage
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
