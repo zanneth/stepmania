@@ -18,7 +18,7 @@ $(TOP_PATH)/ver.cpp: ; \
 
 LOCAL_MODULE:= stepmania
 LOCAL_SRC_FILES:= ver.cpp \
-		  ActiveAttackList.cpp \
+		          ActiveAttackList.cpp \
                   Actor.cpp \
                   ActorFrame.cpp \
                   ActorFrameTexture.cpp \
@@ -398,7 +398,8 @@ LOCAL_SRC_FILES:= ver.cpp \
                   archutils/Unix/EmergencyShutdown.cpp \
                   arch/ArchHooks/ArchHooks_Android.cpp \
                   NotesLoaderDWI.cpp \
-                  NotesWriterDWI.cpp
+                  NotesWriterDWI.cpp \
+                  arch/Sound/RageSoundDriver_Android.cpp
 
 #$(TOP_PATH)/
 #ver.cpp:
@@ -406,7 +407,6 @@ LOCAL_SRC_FILES:= ver.cpp \
 
 #need to implement these:
                   #archutils/Android/CrashHandler.cpp
-                  #arch/Sound/RageSoundDriver_Android.cpp \
                   #arch/MemoryCard/MemoryCardDriver_Android.cpp \
                   #arch/LoadingWindow/LoadingWindow_Android.cpp \
                   #arch/LowLevelWindow/LowLevelWindow_Android.cpp \
