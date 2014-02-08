@@ -7,6 +7,9 @@
 namespace AndroidGlobals {
     // Android App Instance -- GLOBAL.
     extern android_app* ANDROID_APP_INSTANCE;
+
+    extern int GetNativeFramesPerBuffer();
+    extern int GetNativeSampleRate();
 };
 
 #endif //ANDROID_GLOBALS_H

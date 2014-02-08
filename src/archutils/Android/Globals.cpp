@@ -2,8 +2,39 @@
 
 android_app* AndroidGlobals::ANDROID_APP_INSTANCE = NULL;
 
+int AndroidGlobals::GetNativeSampleRate() {
+    // In this use case, input is basically a
+
+    JNIEnv *jni;
+    ANDROID_APP_INSTANCE->activity->vm->AttachCurrentThread(&jni, NULL);
+
+    // Classret and calling
+    jclass clazz = jni->GetObjectClass(ANDROID_APP_INSTANCE->activity->clazz);
+    jmethodID methodID = jni->GetMethodID(clazz, "getNativeSampleRate", "()I");
+    int retval =
+        jni->CallIntMethod(ANDROID_APP_INSTANCE->activity->clazz, methodID, NULL);
+
+    ANDROID_APP_INSTANCE->activity->vm->DetachCurrentThread();
+    return retval;
+}
+int AndroidGlobals::GetNativeFramesPerBuffer() {
+
+    JNIEnv *jni;
+    ANDROID_APP_INSTANCE->activity->vm->AttachCurrentThread(&jni, NULL);
+
+    // Classret and calling
+    jclass clazz = jni->GetObjectClass(ANDROID_APP_INSTANCE->activity->clazz);
+    jmethodID methodID = jni->GetMethodID(clazz, "getNativeFramesPerBuffer", "()I");
+    int retval =
+        jni->CallIntMethod(ANDROID_APP_INSTANCE->activity->clazz, methodID, NULL);
+
+    ANDROID_APP_INSTANCE->activity->vm->DetachCurrentThread();
+    return retval;
+}
+
+
 /*
- * (c) 2014-x Renaud Lepage
+ * (c) 2014 Renaud Lepage
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a

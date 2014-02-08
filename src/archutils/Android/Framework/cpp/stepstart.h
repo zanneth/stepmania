@@ -33,13 +33,15 @@ class StepStart {
 
 public:
     StepStart(android_app* initState);
-    //void CallAppMethod(const char* input);
+
     void launch(); // launch the game!
 
 protected:
 
 private:
 };
+
+extern StepStart* ANDROID_ENTRY;
 
 #endif // STEPMANIA_NATIVE_ACTIVITY_H
 /*

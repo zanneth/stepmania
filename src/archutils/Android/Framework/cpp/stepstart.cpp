@@ -1,5 +1,5 @@
 #include "stepstart.h"
-
+StepStart* ANDROID_ENTRY = NULL;
 // http://docs.oracle.com/javase/1.5.0/docs/guide/jni/spec/types.html#wp276
 
 /*void SkelNative::CallAppMethod(const char* input) {
@@ -16,7 +16,6 @@
     app->activity->vm->DetachCurrentThread();
     return;
 }*/
-
 void StepStart::launch() {
     // Initialize everything. Go. Go. We are GO.
 }
