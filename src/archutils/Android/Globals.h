@@ -4,12 +4,21 @@
 // Proper app glue.
 #include <android_native_app_glue.h>
 
+// Typedefs
+#include "global.h"
+
 namespace AndroidGlobals {
     // Android App Instance -- GLOBAL.
     extern android_app* ANDROID_APP_INSTANCE;
 
-    extern int GetNativeFramesPerBuffer();
-    extern int GetNativeSampleRate();
+    namespace Audio {
+        extern int GetNativeFramesPerBuffer();
+        extern int GetNativeSampleRate();
+    };
+
+    // Hardcoding SHIELD; it's a direct testbench and I don't want to code some
+    //  weird conditionals and the like.
+    extern RString GetVideoDriverName();
 };
 
 #endif //ANDROID_GLOBALS_H

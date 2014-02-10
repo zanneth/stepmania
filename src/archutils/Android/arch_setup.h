@@ -4,6 +4,8 @@
 /* For RageLog */
 #define HAVE_VERSION_INFO
 
+#include "config.h"
+
 #endif //ARCH_SETUP_ANDROID_H
 /*
  * (c) 2014-x Renaud Lepage

@@ -25,7 +25,7 @@ StepStart::StepStart(android_app* initState) {
     app = initState;
 }
 
-void android_main(android_app* state) {
+/*void android_main(android_app* state) {
     app_dummy(); // always.
 
     // Get halp. Will need fixing...
@@ -36,4 +36,4 @@ void android_main(android_app* state) {
     // Just call the method upstream and exit. This is a skeleton, not an app.
     //stepmania->CallAppMethod("derp");
     //stepmania->launch();
-}
+}*/

@@ -1,8 +1,10 @@
 #include "Globals.h"
 
+#include <global.h>
+
 android_app* AndroidGlobals::ANDROID_APP_INSTANCE = NULL;
 
-int AndroidGlobals::GetNativeSampleRate() {
+int AndroidGlobals::Audio::GetNativeSampleRate() {
     // In this use case, input is basically a
 
     JNIEnv *jni;
@@ -17,7 +19,7 @@ int AndroidGlobals::GetNativeSampleRate() {
     ANDROID_APP_INSTANCE->activity->vm->DetachCurrentThread();
     return retval;
 }
-int AndroidGlobals::GetNativeFramesPerBuffer() {
+int AndroidGlobals::Audio::GetNativeFramesPerBuffer() {
 
     JNIEnv *jni;
     ANDROID_APP_INSTANCE->activity->vm->AttachCurrentThread(&jni, NULL);
@@ -30,6 +32,10 @@ int AndroidGlobals::GetNativeFramesPerBuffer() {
 
     ANDROID_APP_INSTANCE->activity->vm->DetachCurrentThread();
     return retval;
+}
+
+RString AndroidGlobals::GetVideoDriverName() {
+    return "SHIELD";
 }
 
 

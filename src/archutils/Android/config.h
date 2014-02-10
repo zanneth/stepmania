@@ -40,6 +40,8 @@
 #define _GNU_SOURCE 1
 #define __STDC_FORMAT_MACROS 1
 #define thread_local __thread
+#define SUPPORT_GLES2_REGAL
+#define SUPPORT_GLES2
 
 
 // Stepmania Bug Reporting
