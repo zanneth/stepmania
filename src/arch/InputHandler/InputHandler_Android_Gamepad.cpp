@@ -1,7 +1,7 @@
 #include "InputHandler_Android_Gamepad.h"
 
 // Bring in an Android global variable / accessor
-#include <archutils/Android/Globals.h>
+//#include <archutils/Android/Globals.h>
 #include <Foreach.h>
 #include <InputFilter.h>
 

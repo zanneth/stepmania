@@ -12,13 +12,19 @@ public:
 	LowLevelWindow_Android();
 	~LowLevelWindow_Android();
 
-	void *GetProcAddress(RString s);
+    // Apparently not absolutely needed for this platform
+	void *GetProcAddress(RString s); // damn.
 
     // Return NOPE if the video mode doesn't correspond to the current one.
     RString TryVideoMode(const VideoModeParams &p, bool &bNewDeviceOut);
-	void LogDebugInformation() const;
-	bool IsSoftwareRenderer( RString &sError );
+
+    // Defined as =false upstream
+	//bool IsSoftwareRenderer( RString &sError );
+
+	//
 	void SwapBuffers();
+
+	void LogDebugInformation() const;
 
 	const VideoModeParams &GetActualVideoModeParams() const { return CurrentParams; }
 
@@ -46,7 +52,7 @@ private:
 
 #endif
 /*
- * (c) 2014-x Renaud Lepage
+ * (c) 2014 Renaud Lepage
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a

@@ -33,7 +33,7 @@
 // Movie sink.
 
 
-#elif defined(UNIX)
+#elif !defined(ANDROID) && defined(UNIX)
 #include "ArchHooks/ArchHooks_Unix.h"
 
 #if defined(HAVE_X11)

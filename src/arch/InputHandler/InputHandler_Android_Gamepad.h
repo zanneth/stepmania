@@ -8,6 +8,9 @@
 #include <android/input.h>
 #include <android_native_app_glue.h>
 
+// Bring in all the Android bootstrapping material
+#include <archutils/Android/Globals.h>
+
 // STD
 #include <vector>
 
