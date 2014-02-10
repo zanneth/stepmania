@@ -7,7 +7,6 @@ LOCAL_MODULE:= libjpeg
 LOCAL_SRC_FILES := cdjpeg.c \
 		  cjpeg.c \
 		  ckconfig.c \
-		  djpeg.c \
 		  example.c \
 		  jaricom.c \
 		  jcapimin.c \
