@@ -82,6 +82,9 @@ protected:
 	RageMatrix GetOrthoMatrix( float l, float r, float b, float t, float zn, float zf ); 
 	bool SupportsSurfaceFormat( RagePixelFormat pixfmt );
 	bool SupportsRenderToTexture() const { return true; }
+#if defined(ANDROID)
+#define glDepthRange(near, far) glDepthRangex(near, far)
+#endif
 };
 
 #endif

@@ -651,6 +651,7 @@ RageDisplay_GLES2::SetTextureFiltering( TextureUnit tu, bool b )
 	{
 		GLint iWidth1 = -1;
 		GLint iWidth2 = -1;
+		// TODO: OpenGL ES on Android does *not* have glGetTexLevelParameteriv. Fix.
 		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &iWidth1);
 		glGetTexLevelParameteriv(GL_TEXTURE_2D, 1, GL_TEXTURE_WIDTH, &iWidth2);
 		if (iWidth1 > 1 && iWidth2 != 0)

@@ -13,6 +13,7 @@ int Launch( int argc, char* argv[] );
 int main( int argc, char* argv[] );
 #elif defined(ANDROID)
 // Bring in all the Android bootstrapping material
+#include <archutils/Android/Globals.h>
 
 // JNI inclusions
 #include <jni.h>
