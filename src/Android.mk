@@ -18,7 +18,7 @@ $(TOP_PATH)/ver.cpp: ; \
 
 LOCAL_MODULE:= stepmania
 LOCAL_SRC_FILES:= ver.cpp \
-		          ActiveAttackList.cpp \
+                  ActiveAttackList.cpp \
                   Actor.cpp \
                   ActorFrame.cpp \
                   ActorFrameTexture.cpp \
@@ -139,11 +139,13 @@ LOCAL_SRC_FILES:= ver.cpp \
                   NoteTypes.cpp \
                   NotesLoader.cpp \
                   NotesLoaderBMS.cpp \
+                  NotesLoaderDWI.cpp \
                   NotesLoaderJson.cpp \
                   NotesLoaderKSF.cpp \
                   NotesLoaderSM.cpp \
                   NotesLoaderSMA.cpp \
                   NotesLoaderSSC.cpp \
+                  NotesWriterDWI.cpp \
                   NotesWriterJson.cpp \
                   NotesWriterSM.cpp \
                   NotesWriterSSC.cpp \
@@ -374,32 +376,34 @@ LOCAL_SRC_FILES:= ver.cpp \
                   arch/InputHandler/InputHandler.cpp \
                   arch/InputHandler/InputHandler_MonkeyKeyboard.cpp \
                   arch/InputHandler/InputHandler_Android_Gamepad.cpp \
+                  arch/LowLevelWindow/LowLevelWindow_Android.cpp \
                   arch/LowLevelWindow/LowLevelWindow.cpp \
                   arch/Dialog/Dialog.cpp \
                   arch/Dialog/DialogDriver.cpp \
                   arch/ArchHooks/ArchHooks.cpp \
                   arch/ArchHooks/ArchHooksUtil.cpp \
-                  arch/MemoryCard/MemoryCardDriver.cpp \
+                  arch/ArchHooks/ArchHooks_Android.cpp \
                   arch/LoadingWindow/LoadingWindow.cpp \
                   arch/Lights/LightsDriver.cpp \
                   arch/Lights/LightsDriver_Export.cpp \
-                  arch/Threads/Threads_Pthreads.cpp \
+                  arch/MemoryCard/MemoryCardDriver.cpp \
                   arch/MovieTexture/MovieTexture_Null.cpp \
                   arch/MovieTexture/MovieTexture.cpp \
                   arch/MovieTexture/MovieTexture_Generic.cpp \
                   arch/MovieTexture/MovieTexture_FFMpeg.cpp \
-                  arch/Sound/RageSoundDriver.cpp \
+                  arch/Threads/Threads_Pthreads.cpp \
+                  archutils/Android/Globals.cpp \
+                  archutils/Android/SpecialDirs.cpp \
+                  archutils/Android/Framework/cpp/stepstart.cpp \
                   archutils/Common/PthreadHelpers.cpp \
                   archutils/Unix/GetSysInfo.cpp \
                   archutils/Unix/StackCheck.cpp \
-                  archutils/Android/SpecialDirs.cpp \
-                  archutils/Android/Globals.cpp \
                   archutils/Unix/BacktraceNames.cpp \
                   archutils/Unix/EmergencyShutdown.cpp \
-                  arch/ArchHooks/ArchHooks_Android.cpp \
-                  NotesLoaderDWI.cpp \
-                  NotesWriterDWI.cpp \
-                  arch/Sound/RageSoundDriver_Android.cpp
+                  arch/Sound/RageSoundDriver.cpp \
+                  arch/Sound/RageSoundDriver_Android.cpp \
+                  arch/Sound/RageSoundDriver_Generic_Software.cpp
+
 
 #$(TOP_PATH)/
 #ver.cpp:
@@ -409,7 +413,6 @@ LOCAL_SRC_FILES:= ver.cpp \
                   #archutils/Android/CrashHandler.cpp
                   #arch/MemoryCard/MemoryCardDriver_Android.cpp \
                   #arch/LoadingWindow/LoadingWindow_Android.cpp \
-                  #arch/LowLevelWindow/LowLevelWindow_Android.cpp \
 
 # will need to get these fixed
 # can't because networking
@@ -422,7 +425,6 @@ LOCAL_SRC_FILES:= ver.cpp \
 #                  archutils/Unix/SignalHandler.cpp \
 # Deprecated?
 #                  ScreenOptionsReviewWorkout.cpp \
-#                  arch/arch.cpp \ #unused
 
 #everything
 
@@ -432,7 +434,7 @@ LOCAL_C_INCLUDES := $(TOP_PATH) \
 # Currently, we're locking it to ARM
 LOCAL_CFLAGS := -DANDROID -DCPU_ARM -DENDIAN_LITTLE -DENDIAN_32BITWORD -DGLEW_NO_GLU
 
-LOCAL_LDLIBS    := -llog -landroid -lz -lGLESv2 -lEGL
+LOCAL_LDLIBS    := -llog -landroid -lz -lGLESv2 -lEGL -lOpenSLES
 LOCAL_STATIC_LIBRARIES := jsoncpp libtomcrypt libtommath glew android_native_app_glue pcre \
                           ndk_helper png libmad libvorbis libjpeg lua stlport_static
 LOCAL_SHARED_LIBRARIES := avcodec avfilter avformat swresample swscale avutil
@@ -449,6 +451,7 @@ include $(EXTERN_PATH)/pcre/Android.mk
 # Vorbis brings in libogg by itself
 include $(EXTERN_PATH)/android/vorbis/Android.mk
 include $(EXTERN_PATH)/glew-1.10/Android.mk
+#include $(EXTERN_PATH)/regal/build/android/Regal/jni/Android.mk
 include $(EXTERN_PATH)/mad-0.15.1b/Android.mk
 include $(ANDEXTERN_PATH)/Android.mk
 $(call import-module,android/ndk_helper)
