@@ -9,14 +9,27 @@
 REGISTER_SOUND_DRIVER_CLASS2( Android, Android );
 
 /**
- * Audio stuff
+ * Android Audio Layer
  *
  * .To realize an interface is to actually create it in memory, with all bells and whistles.
  *
  **/
 
+RageSoundDriver_Android::RageSoundDriver_Android() {
+    M_SAMPLERATE = AndroidGlobals::Audio::GetNativeSampleRate();
+    M_PREF_CHKSIZE_FRAMES = AndroidGlobals::Audio::GetNativeFramesPerBuffer();
+}
+RageSoundDriver_Android::~RageSoundDriver_Android() {
+    (*slesAndroidSimpleBufQueueItf)->Clear(slesAndroidSimpleBufQueueItf);
+    (*slesOutputMixObj)->Destroy(slesOutputMixObj);
+    (*slesPlayerObj)->Destroy(slesPlayerObj);
+    (*slesCoreItf)->Destroy(slesCoreItf);
+}
+
 RString RageSoundDriver_Android::Init() {
-    // Need to init the SLES stack.
+    // Initialize audio cursor position.
+    mCursorPosition = 0;
+
     /* Here, the slCreateEngine method, which is internal to SLES, is used to
      *  generate a core interface object required to access most of everything
      *  programmers will need to use OpenSLES
@@ -88,11 +101,11 @@ RString RageSoundDriver_Android::CreateSLESInterfaces() {
             if(rslt != SL_RESULT_SUCCESS) break;
 
             rslt = (*slesCoreItf)->GetInterface
-                (slesCoreItf, SL_IID_ANDROIDBUFFERQUEUESOURCE, &slesAndroidBufQueueItf);
+                (slesCoreItf, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, &slesAndroidSimpleBufQueueItf);
             if(rslt != SL_RESULT_SUCCESS) break;
 
-            rslt = (*slesAndroidBufQueueItf)->RegisterCallback
-                (slesAndroidBufQueueItf, BufferIsEmptyCB, );
+            rslt = (*slesAndroidSimpleBufQueueItf)->RegisterCallback
+                (slesAndroidSimpleBufQueueItf, BufferIsEmptyCB, this);
             if(rslt != SL_RESULT_SUCCESS) break;
 
             rslt = (*slesCoreItf)->GetInterface
@@ -111,10 +124,14 @@ RString RageSoundDriver_Android::CreateSLESInterfaces() {
 
 bool RageSoundDriver_Android::InitAudioPlayback() {
 
+    const SLInterfaceID ids_buffer_queue_slitfid[] = {SL_IID_ANDROIDBUFFERQUEUESOURCE};
     const SLInterfaceID ids_volume_only_slitfid[] = {SL_IID_VOLUME};
     const SLboolean required_false_slbool[] = {SL_BOOLEAN_FALSE};
+    const SLboolean required_true_slbool[] = {SL_BOOLEAN_TRUE};
 
+    // Result Container
     SLresult rslt;
+
     rslt = (*slesEngineItf)->CreateOutputMix(
         slesEngineItf,
         &slesOutputMixObj,
@@ -128,7 +145,7 @@ bool RageSoundDriver_Android::InitAudioPlayback() {
     if(rslt != SL_RESULT_SUCCESS) return false;
 
     SLDataLocator_AndroidBufferQueue localBufferQueue = {
-        SL_DATALOCATOR_ANDROIDBUFFERQUEUE,
+        SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE,
         2
     };
 
@@ -141,11 +158,9 @@ bool RageSoundDriver_Android::InitAudioPlayback() {
         M_SPEAKERS,
         SL_BYTEORDER_LITTLEENDIAN
     };
-    SLDataSource audioSrc = {&localBufferQueue, &format_pcm};
     SLDataLocator_OutputMix outMixer = {SL_DATALOCATOR_OUTPUTMIX, slesOutputMixObj};
+    SLDataSource audioSrc = {&localBufferQueue, &format_pcm};
     SLDataSink soundSink = {&outMixer, NULL};
-    const SLInterfaceID ids_bufqueue[] = {SL_IID_ANDROIDBUFFERQUEUESOURCE};
-    const SLboolean reqtrue[] = {SL_BOOLEAN_TRUE};
 
     rslt =(*slesEngineItf)->CreateAudioPlayer(
         slesEngineItf,
@@ -153,8 +168,8 @@ bool RageSoundDriver_Android::InitAudioPlayback() {
         &audioSrc,
         &soundSink,
         1, // interface count
-        ids_bufqueue,
-        reqtrue
+        ids_buffer_queue_slitfid,
+        required_true_slbool
     );
     if(rslt != SL_RESULT_SUCCESS) return false;
 
@@ -164,32 +179,37 @@ bool RageSoundDriver_Android::InitAudioPlayback() {
     return true;
 }
 
-bool RageSoundDriver_Android::GetPosition() {
+int64_t RageSoundDriver_Android::GetPosition() const {
     // When we at?
-}
-bool RageSoundDriver_Android::GetPlayLatency() {
-    // Where we at?
+    SLmillisecond retVal;
+    if((*slesPlayerItf)->GetPosition(slesPlayerItf, &retVal) != SL_RESULT_SUCCESS) return -1;
+
+    return retVal;
 }
 
-/* Returns the number of frames processed */
-bool RageSoundDriver_Android::GetData()
-{
-    // getting the data to be played.
-	//this->Mix( buf, frames_to_fill, play_pos, cur_play_pos );
-
-	// Two options to play buffer: enqueue standard, and the androidy variant.
-
-	return true;
-}
-void RageSoundDriver_Android::BufferIsEmptyCB(SLAndroidBufferQueueItf iface, void* context) {
+//void RageSoundDriver_Android::BufferIsEmptyCB(SLAndroidBufferQueueItf iface, void *context) {
+void RageSoundDriver_Android::BufferIsEmptyCB(SLAndroidSimpleBufferQueueItf iface, void *context) {
     RageSoundDriver_Android *con = (RageSoundDriver_Android *)context;
-    int bytes = (con->M_OUTBUFFER_SAMPLES)*sizeof(short);
     // READ BYTES INTO WHATEVER THE /redacted/; use bytes to know how many bytes to fetch.
-    (*con->slesAndroidBufQueueItf)->Enqueue(
-        con->slesAndroidBufQueueItf,
-        /* DATA BUFFER */,
-        bytes // number of bytes to read
+	static int16_t *target = NULL;
+	if(!target)
+		target = new int16_t[con->M_PREF_CHKSIZE_FRAMES / sizeof(int16_t)];
+
+    // Read into target
+    con->Mix( target, con->M_PREF_CHKSIZE_FRAMES, con->mCursorPosition, con->GetPosition() );
+
+    // Enqueue sound
+    (*(con->slesAndroidSimpleBufQueueItf))->Enqueue(
+        con->slesAndroidSimpleBufQueueItf,
+        target,
+        sizeof(target) // number of bytes to read
     );
+
+    // ITERATE MCURSOR, DERPFACE.
+}
+
+int RageSoundDriver_Android::GetSampleRate() const {
+    return M_SAMPLERATE;
 }
 
 /*
