@@ -22,7 +22,6 @@
 #elif defined(UNIX)
 #include "archutils/Unix/arch_setup.h"
 #elif defined(ANDROID)
-#include "archutils/Android/config.h"
 #include "archutils/Android/arch_setup.h"
 #endif
 
