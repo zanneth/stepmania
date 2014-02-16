@@ -1,27 +1,48 @@
-#ifndef ANDROID_GLOBALS_H
-#define ANDROID_GLOBALS_H
+#include "EGLHelper.h"
 
-// Proper app glue.
-#include <android_native_app_glue.h>
+// Default init.
+EGLHelper::EGLDisplayContext = NULL;
+EGLHelper::EGLSurface = None;
+EGLHelper::EGLWindowContext = NULL;
+EGLHelper::EGLSelectedConf = NULL;
 
-// Typedefs
-#include "global.h"
+bool EGLHelper::ObtainContext() {
 
-namespace AndroidGlobals {
-    // Android App Instance -- GLOBAL.
-    extern android_app* ANDROID_APP_INSTANCE;
+    DEBUG_ASSERT( EGLDisplayContext == null && EGLSurface == None );
 
-    namespace Audio {
-        extern int GetNativeFramesPerBuffer();
-        extern int GetNativeSampleRate();
-    };
+    /**
+     * Technically, EGL_DEFAULT_DISPLAY is ((EGLNativeDisplayType)0).
+     * Nonetheless, use the pre-defined variable.
+     *
+     * In the future, if we're inside this very context,
+     * we can use eglGetCurrentDisplay
+     **/
+    EGLint major, minor;
+    EGLDisplayContext = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 
-    // Hardcoding SHIELD; it's a direct testbench and I don't want to code some
-    //  weird conditionals and the like.
-    extern RString GetVideoDriverName();
-};
+    if(EGLDisplayContext == NULL)
+        return false;
 
-#endif //ANDROID_GLOBALS_H
+    // Yep. Init after getting the display
+    eglInitialize(display, &major, &minor);
+
+    // Set UI Error handlers up here. If at all.
+
+    return true;
+}
+
+void EGLHelper::TerminateContext() {
+
+	// The surface should have been liberated
+	DEBUG_ASSERT( EGLDisplayContext != NULL );
+	DEBUG_ASSERT( EGLSurface == None );
+
+    // Liberate.
+    eglTerminate(EGLDisplayContext);
+    EGLDisplayContext = NULL;
+    EGLWindowContext = NULL;
+    free(EGLSelectedConf);
+}
 
 /*
  * (c) 2014 Renaud Lepage

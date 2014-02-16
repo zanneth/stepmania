@@ -1,60 +1,67 @@
-/* LowLevelWindow_Android - OpenGL GLES window driver. */
+/* LowLevelWindow_EGL - OpenGL GLES window driver. */
 
-#ifndef LOW_LEVEL_WINDOW_ANDROID_H
-#define LOW_LEVEL_WINDOW_ANDROID_H
+#ifndef LOW_LEVEL_WINDOW_EGL_H
+#define LOW_LEVEL_WINDOW_EGL_H
 
 #include "RageDisplay.h" // VideoModeParams
-#include "LowLevelWindow_EGL.h"
+#include "LowLevelWindow.h"
 
-#include "archutils/Android/Globals.cpp"
-
-/**
- * \class LowLevelWindow_Android
- * \brief Low-Level window that builds on the EGL LLW core.
- **/
-class LowLevelWindow_Android : public LowLevelWindow_EGL
+class LowLevelWindow_EGL : public LowLevelWindow
 {
 public:
-	LowLevelWindow_Android();
-	~LowLevelWindow_Android();
+	LowLevelWindow_EGL();
+	~LowLevelWindow_EGL();
+
+    // Apparently not absolutely needed for this platform
+	void *GetProcAddress(RString s); // damn.
 
     // Return NOPE if the video mode doesn't correspond to the current one.
-    RString TryVideoMode(const VideoModeParams &p, bool &bNewDeviceOut) {}; // nop
+    RString TryVideoMode(const VideoModeParams &p, bool &bNewDeviceOut);
 
     // Defined as =false upstream
 	//bool IsSoftwareRenderer( RString &sError );
 
-	// Return the current Android display resolution. Nothing more, nothing less.
+	//
+	void SwapBuffers();
+
+	void LogDebugInformation() const;
+
+	const VideoModeParams &GetActualVideoModeParams() const { return CurrentParams; }
+
 	void GetDisplayResolutions( DisplayResolutions &out ) const;
 
-    // Nope all the way.
-    bool SupportsThreadedRendering(){return false;};
-    void BeginConcurrentRenderingMainThread(){return false;};
-    void EndConcurrentRenderingMainThread(){return false;};
-    void BeginConcurrentRendering(){return false;};
-    void EndConcurrentRendering(){return false;};
+	bool SupportsRenderToTexture() const { return true; };
+	RenderTarget *CreateRenderTarget();
+
+	virtual bool SupportsThreadedRendering();
+	virtual void BeginConcurrentRenderingMainThread();
+	virtual void EndConcurrentRenderingMainThread();
+	virtual void BeginConcurrentRendering();
+	virtual void EndConcurrentRendering();
 
 private:
-	//bool m_bWasWindowed;
+    void Initialize();
 
-    EGLint GetAttibutesInitConfig();
-    void PreContextSetup();
+    virtual EGLInt GetAttibutesInitConfig();
+    virtual void PreContextSetup();
 
-    EGLConfig* GetEGLConfig();
-    EGLSurface GetEGLSurface();
-    EGLDisplay* GetEGLDisplayContext();
-    EGLNativeWindowType* GetEGLWindowContext();
+    virtual EGLConfig* GetEGLConfig();
+    virtual EGLSurface GetEGLSurface();
+    virtual EGLDisplay* GetEGLDisplayContext();
+    virtual EGLNativeWindowType* GetEGLWindowContext();
 
-	void InitializeConfig();
+
+
+	bool m_bWasWindowed;
 	VideoModeParams CurrentParams;
 };
 
 #ifdef ARCH_LOW_LEVEL_WINDOW
 #error "More than one LowLevelWindow selected!"
 #endif
-#define ARCH_LOW_LEVEL_WINDOW LowLevelWindow_Android
+#define ARCH_LOW_LEVEL_WINDOW LowLevelWindow_EGL
 
-#endif
+#endif // LOW_LEVEL_WINDOW_EGL_H
 /*
  * (c) 2014 Renaud Lepage
  * All rights reserved.

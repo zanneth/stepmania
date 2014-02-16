@@ -4,6 +4,10 @@
 
 android_app* AndroidGlobals::ANDROID_APP_INSTANCE = NULL;
 
+ANativeWindow* AndroidGlobals::Graphics::GetNativeWindow() {
+
+}
+
 int AndroidGlobals::Audio::GetNativeSampleRate() {
     // In this use case, input is basically a
 

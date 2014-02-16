@@ -12,6 +12,8 @@
 #include "archutils/Darwin/Crash.h"
 using CrashHandler::IsDebuggerPresent;
 using CrashHandler::DebugBreak;
+#elif defined(ANDROID)
+#include "archutils/Android/CrashHandler.h"
 #endif
 
 static uint64_t g_HandlerThreadID = RageThread::GetInvalidThreadID();
@@ -26,6 +28,11 @@ void RageException::SetCleanupHandler( void (*pHandler)(const RString &sError) )
  * the same way to code in practice. */
 void RageException::Throw( const char *sFmt, ... )
 {
+#if defined(ANDROID)
+    // \todo Make the app crash through Android's AppForceClose
+	RString error = vssprintf( sFmt, va );
+    CrashHandler::ForceCrash(error.c_str());
+#else
 	va_list	va;
 	va_start( va, sFmt );
 	RString error = vssprintf( sFmt, va );
@@ -59,6 +66,7 @@ void RageException::Throw( const char *sFmt, ... )
 		g_CleanupHandler( error );
 
 	exit(1);
+#endif
 }
 
 /*

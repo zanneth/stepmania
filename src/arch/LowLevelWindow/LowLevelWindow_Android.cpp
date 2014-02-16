@@ -1,5 +1,75 @@
 #include "LowLevelWindow_Android.h"
 
+using namespace EGLHelper;
+
+LowLevelWindow_Android::LowLevelWindow_Android() : LowLevelWindow_EGL::LowLevelWindow_EGL()
+{
+    m_bWasWindowed = false;
+
+    // Get NativeWindow from Android itself.
+    g_WindowContext = ANDROID_APP_INSTANCE->window;
+}
+
+EGLint LowLevelWindow_Android::GetAttibutesInitConfig()
+{
+    return { EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+             EGL_ALPHA_SIZE, 8
+             EGL_RED_SIZE, 8,
+             EGL_GREEN_SIZE, 8,
+             EGL_BLUE_SIZE, 8,
+             EGL_NONE
+    };
+}
+
+
+void LowLevelWindow_Android::PreContextSetup()
+{
+    // Set config on the Android window.
+    EGLint format;
+    eglGetConfigAttrib(EGLDisplayContext, EGLSelectedConf, EGL_NATIVE_VISUAL_ID, &format);
+    ANativeWindow_setBuffersGeometry(EGLWindowContext, 0, 0, format);
+}
+
+
+EGLConfig* LowLevelWindow_Android::GetEGLConfig()
+{
+    return EGLSelectedConf;
+}
+EGLSurface LowLevelWindow_Android::GetEGLSurface()
+{
+    return EGLSurface;
+}
+EGLDisplay* LowLevelWindow_Android::GetEGLDisplayContext()
+{
+    return EGLDisplayContext;
+}
+EGLNativeWindowType* LowLevelWindow_Android::GetEGLWindowContext()
+{
+    return EGLWindowContext;
+}
+
+class RenderTarget_Android : public RenderTarget_EGL
+{
+public:
+    EGLint GetPBufferConfigAttribs();
+    EGLint GetRTConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer);
+};
+
+EGLint RenderTarget_Android::GetRTConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer)
+{
+    return { EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+             EGL_ALPHA_SIZE, 8
+             EGL_RED_SIZE, 8,
+             EGL_GREEN_SIZE, 8,
+             EGL_BLUE_SIZE, 8,
+             EGL_ALPHA_SIZE, 8,
+             EGL_DEPTH_SIZE, 16,
+             EGL_NONE
+             //EGL_ALPHA_SIZE, pWithAlpha?8:EGL_DONT_CARE, //IF WE USE WITHALPHA EVER
+             //EGL_DEPTH_SIZE, pWithDepthBuffer?16:EGL_DONT_CARE,  //IF WE USE WITHALPHA EVER
+    };
+}
+
 /*
  * (c) 2014 Renaud Lepage
  * All rights reserved.

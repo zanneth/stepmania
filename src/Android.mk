@@ -376,6 +376,7 @@ LOCAL_SRC_FILES:= ver.cpp \
                   arch/InputHandler/InputHandler.cpp \
                   arch/InputHandler/InputHandler_MonkeyKeyboard.cpp \
                   arch/InputHandler/InputHandler_Android_Gamepad.cpp \
+                  arch/LowLevelWindow/LowLevelWindow_EGL.cpp \
                   arch/LowLevelWindow/LowLevelWindow_Android.cpp \
                   arch/LowLevelWindow/LowLevelWindow.cpp \
                   arch/Dialog/Dialog.cpp \
