@@ -6,6 +6,19 @@
 #include "RageDisplay.h" // VideoModeParams
 #include "LowLevelWindow.h"
 
+// Because we must.
+#include "RageDisplay_OGL_Helpers.h"
+
+// Bring in EGL
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+#include <EGL/eglplatform.h>
+
+// Bring in GLES2.
+#include <GLES2/gl2.h>
+#include <GLES2/gl2platform.h>
+#include <GLES2/gl2ext.h>
+
 class LowLevelWindow_EGL : public LowLevelWindow
 {
 public:
@@ -30,8 +43,10 @@ public:
 
 	void GetDisplayResolutions( DisplayResolutions &out ) const;
 
-	bool SupportsRenderToTexture() const { return true; };
-	RenderTarget *CreateRenderTarget();
+	bool SupportsRenderToTexture() const;
+
+	// Downstreams will need to implement this. The core object will define it though.
+	virtual RenderTarget *CreateRenderTarget();
 
 	virtual bool SupportsThreadedRendering();
 	virtual void BeginConcurrentRenderingMainThread();
@@ -40,26 +55,61 @@ public:
 	virtual void EndConcurrentRendering();
 
 private:
-    void Initialize();
-
-    virtual EGLInt GetAttibutesInitConfig();
+    virtual EGLint* GetAttibutesInitConfig();
     virtual void PreContextSetup();
-
-    virtual EGLConfig* GetEGLConfig();
-    virtual EGLSurface GetEGLSurface();
-    virtual EGLDisplay* GetEGLDisplayContext();
-    virtual EGLNativeWindowType* GetEGLWindowContext();
-
-
 
 	bool m_bWasWindowed;
 	VideoModeParams CurrentParams;
 };
 
+
+/**
+ * \class RenderTarget_EGL
+ * \brief EGL implementation of RenderTarget
+ **/
+class RenderTarget_EGL : public RenderTarget
+{
+public:
+    RenderTarget_EGL(LowLevelWindow_EGL *pWind);
+    ~RenderTarget_EGL();
+
+	void Create ( const RenderTargetParam &param, int &iTextureWidthOut, int &iTextureHeightOut );
+	unsigned GetTexture() const { return m_iTexHandle; }
+	void StartRenderingTo();
+	void FinishRenderingTo();
+
+	// Copying from the Pbuffer to the texture flips Y.
+	virtual bool InvertY() const { return true; } // \todo review for EGL/droids
+
+	// Configuration fetching.
+    EGLint* GetAsPBufferConfigAttribs(int pWidth, int pHeight);
+	virtual EGLint* GetRenderTargetConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer);
+
+protected:
+	virtual GLint GetInternalFormatInt(bool pWithAlpha);
+
+private:
+	int m_iWidth, m_iHeight;
+	LowLevelWindow_EGL *m_pWind;
+
+	EGLSurface m_iPbuffer;
+	EGLContext m_pPbufferContext;
+	unsigned int m_iTexHandle;
+
+	EGLContext m_pOldContext;
+	EGLSurface m_pOldSurface;
+
+	EGLint* pbufferAttributes;
+
+};
+
+// Right now, this class is purely virtual. This may be changed in the future.
+/*
 #ifdef ARCH_LOW_LEVEL_WINDOW
 #error "More than one LowLevelWindow selected!"
 #endif
 #define ARCH_LOW_LEVEL_WINDOW LowLevelWindow_EGL
+*/
 
 #endif // LOW_LEVEL_WINDOW_EGL_H
 /*

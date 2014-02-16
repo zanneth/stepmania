@@ -1,15 +1,12 @@
 #include "EGLHelper.h"
 
 // Default init.
-EGLHelper::EGLDisplayContext = NULL;
-EGLHelper::EGLSurface = None;
-EGLHelper::EGLWindowContext = NULL;
-EGLHelper::EGLSelectedConf = NULL;
+EGLDisplay EGLHelper::EGLDisplayContext = NULL;
+EGLSurface  EGLHelper::EGLSurfaceContext = None;
+EGLNativeWindowType EGLHelper::EGLWindowContext = NULL;
+EGLConfig EGLHelper::EGLSelectedConf = NULL;
 
 bool EGLHelper::ObtainContext() {
-
-    DEBUG_ASSERT( EGLDisplayContext == null && EGLSurface == None );
-
     /**
      * Technically, EGL_DEFAULT_DISPLAY is ((EGLNativeDisplayType)0).
      * Nonetheless, use the pre-defined variable.
@@ -24,7 +21,7 @@ bool EGLHelper::ObtainContext() {
         return false;
 
     // Yep. Init after getting the display
-    eglInitialize(display, &major, &minor);
+    eglInitialize(EGLDisplayContext, &major, &minor);
 
     // Set UI Error handlers up here. If at all.
 
@@ -33,15 +30,11 @@ bool EGLHelper::ObtainContext() {
 
 void EGLHelper::TerminateContext() {
 
-	// The surface should have been liberated
-	DEBUG_ASSERT( EGLDisplayContext != NULL );
-	DEBUG_ASSERT( EGLSurface == None );
-
     // Liberate.
     eglTerminate(EGLDisplayContext);
     EGLDisplayContext = NULL;
     EGLWindowContext = NULL;
-    free(EGLSelectedConf);
+    //free(EGLSelectedConf);
 }
 
 /*

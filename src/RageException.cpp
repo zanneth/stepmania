@@ -30,8 +30,15 @@ void RageException::Throw( const char *sFmt, ... )
 {
 #if defined(ANDROID)
     // \todo Make the app crash through Android's AppForceClose
+	va_list	va;
+	va_start( va, sFmt );
 	RString error = vssprintf( sFmt, va );
-    CrashHandler::ForceCrash(error.c_str());
+	va_end( va );
+
+	CrashHandler::ForceCrash(error.c_str());
+
+	// to make the compiler happy
+	exit(1);
 #else
 	va_list	va;
 	va_start( va, sFmt );

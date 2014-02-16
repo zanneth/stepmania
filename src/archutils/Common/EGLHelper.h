@@ -28,7 +28,7 @@ namespace EGLHelper
      * \var EGLDisplay *EGLDisplayContext
      * \brief EGL Display Context holder.
      **/
-    extern EGLDisplay *EGLDisplayContext;
+    extern EGLDisplay EGLDisplayContext;
 
     /**
      * \var EGLSurface EGLSurfaceContext
@@ -42,13 +42,13 @@ namespace EGLHelper
      * \brief EGL Surface Context holder.
      * \note Will probably/surely be renamed because the current name is completely stupid.
      **/
-    extern EGLConfig* EGLSelectedConf;
+    extern EGLConfig EGLSelectedConf;
 
     /**
      * \var EGLNativeWindowType* EGLWindowContext
      * \brief EGL Window Context holder.
      **/
-    extern EGLNativeWindowType* EGLWindowContext;
+    extern EGLNativeWindowType EGLWindowContext;
 
 };
 

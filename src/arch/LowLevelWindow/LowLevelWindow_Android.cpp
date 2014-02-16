@@ -1,26 +1,36 @@
 #include "LowLevelWindow_Android.h"
 
+// EGLhalp
+#include "archutils/Common/EGLHelper.h"
+
 using namespace EGLHelper;
 
+LowLevelWindow_Android::~LowLevelWindow_Android()
+{
+    free(attrsInit);
+}
 LowLevelWindow_Android::LowLevelWindow_Android() : LowLevelWindow_EGL::LowLevelWindow_EGL()
 {
     m_bWasWindowed = false;
 
     // Get NativeWindow from Android itself.
-    g_WindowContext = ANDROID_APP_INSTANCE->window;
+    EGLWindowContext = AndroidGlobals::ANDROID_APP_INSTANCE->window;
+
+    EGLint sizeArray[] = { EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+                          EGL_ALPHA_SIZE, 8,
+                          EGL_RED_SIZE, 8,
+                          EGL_GREEN_SIZE, 8,
+                          EGL_BLUE_SIZE, 8,
+                          EGL_NONE
+                          };
+    attrsInit = (EGLint*)malloc(sizeof(sizeArray));
+    attrsInit = sizeArray;
 }
 
-EGLint LowLevelWindow_Android::GetAttibutesInitConfig()
+EGLint* LowLevelWindow_Android::GetAttibutesInitConfig()
 {
-    return { EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-             EGL_ALPHA_SIZE, 8
-             EGL_RED_SIZE, 8,
-             EGL_GREEN_SIZE, 8,
-             EGL_BLUE_SIZE, 8,
-             EGL_NONE
-    };
+    return attrsInit;
 }
-
 
 void LowLevelWindow_Android::PreContextSetup()
 {
@@ -30,44 +40,53 @@ void LowLevelWindow_Android::PreContextSetup()
     ANativeWindow_setBuffersGeometry(EGLWindowContext, 0, 0, format);
 }
 
-
-EGLConfig* LowLevelWindow_Android::GetEGLConfig()
-{
-    return EGLSelectedConf;
-}
-EGLSurface LowLevelWindow_Android::GetEGLSurface()
-{
-    return EGLSurface;
-}
-EGLDisplay* LowLevelWindow_Android::GetEGLDisplayContext()
-{
-    return EGLDisplayContext;
-}
-EGLNativeWindowType* LowLevelWindow_Android::GetEGLWindowContext()
-{
-    return EGLWindowContext;
-}
-
 class RenderTarget_Android : public RenderTarget_EGL
 {
 public:
-    EGLint GetPBufferConfigAttribs();
-    EGLint GetRTConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer);
+    RenderTarget_Android(LowLevelWindow_Android *pWind);
+    ~RenderTarget_Android();
+    EGLint* GetRenderTargetConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer);
+private:
+	GLint GetInternalFormatInt(bool pWithAlpha);
+	GLint GetBorderInt(bool pWithAlpha);
+
+	EGLint* targetAttrs;
 };
 
-EGLint RenderTarget_Android::GetRTConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer)
+RenderTarget_Android::RenderTarget_Android(LowLevelWindow_Android *pWind)
+    : RenderTarget_EGL::RenderTarget_EGL(pWind)
 {
-    return { EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
-             EGL_ALPHA_SIZE, 8
-             EGL_RED_SIZE, 8,
-             EGL_GREEN_SIZE, 8,
-             EGL_BLUE_SIZE, 8,
-             EGL_ALPHA_SIZE, 8,
-             EGL_DEPTH_SIZE, 16,
-             EGL_NONE
+    EGLint argsSize[] = { EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+                          EGL_ALPHA_SIZE, 8,
+                          EGL_RED_SIZE, 8,
+                          EGL_GREEN_SIZE, 8,
+                          EGL_BLUE_SIZE, 8,
+                          EGL_ALPHA_SIZE, 8,
+                          EGL_DEPTH_SIZE, 16,
+                          EGL_NONE
              //EGL_ALPHA_SIZE, pWithAlpha?8:EGL_DONT_CARE, //IF WE USE WITHALPHA EVER
              //EGL_DEPTH_SIZE, pWithDepthBuffer?16:EGL_DONT_CARE,  //IF WE USE WITHALPHA EVER
     };
+    targetAttrs = (EGLint*)malloc(sizeof(argsSize));
+    targetAttrs = argsSize;
+}
+RenderTarget_Android::~RenderTarget_Android() {
+    free(targetAttrs);
+}
+
+GLint RenderTarget_Android::GetInternalFormatInt(bool pWithAlpha)
+{
+    return (pWithAlpha? GL_RGBA8_OES:GL_RGB8_OES);
+}
+
+EGLint* RenderTarget_Android::GetRenderTargetConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer)
+{
+    return targetAttrs;
+}
+
+RenderTarget *LowLevelWindow_Android::CreateRenderTarget()
+{
+	return new RenderTarget_Android( this );
 }
 
 /*

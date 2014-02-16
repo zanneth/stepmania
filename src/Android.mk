@@ -17,7 +17,46 @@ $(TOP_PATH)/ver.cpp: ; \
  echo "extern const char *const version_date = \"`date +"%Y%m%d"`\";" >> $(TOP_PATH)/ver.cpp;
 
 LOCAL_MODULE:= stepmania
-LOCAL_SRC_FILES:= ver.cpp \
+
+# Architecture-specific Sources
+LOCAL_SRC_FILES:= arch/InputHandler/InputHandler_Android_Gamepad.cpp \
+                  arch/LowLevelWindow/LowLevelWindow_Android.cpp \
+                  arch/LowLevelWindow/LowLevelWindow_EGL.cpp \
+                  arch/ArchHooks/ArchHooks_Android.cpp \
+                  archutils/Android/Globals.cpp \
+                  archutils/Android/SpecialDirs.cpp \
+                  archutils/Android/Framework/cpp/stepstart.cpp \
+                  arch/Sound/RageSoundDriver_Android.cpp
+
+# Shared, Non-Core Sources
+LOCAL_SRC_FILES+= arch/RageDriver.cpp \
+                  arch/LoadingWindow/LoadingWindow.cpp \
+                  arch/Lights/LightsDriver.cpp \
+                  arch/Lights/LightsDriver_Export.cpp \
+                  arch/InputHandler/InputHandler.cpp \
+                  arch/InputHandler/InputHandler_MonkeyKeyboard.cpp \
+                  arch/LowLevelWindow/LowLevelWindow.cpp \
+                  arch/Dialog/Dialog.cpp \
+                  arch/Dialog/DialogDriver.cpp \
+                  arch/ArchHooks/ArchHooks.cpp \
+                  arch/ArchHooks/ArchHooksUtil.cpp \
+                  arch/MemoryCard/MemoryCardDriver.cpp \
+                  arch/MovieTexture/MovieTexture_Null.cpp \
+                  arch/MovieTexture/MovieTexture.cpp \
+                  arch/MovieTexture/MovieTexture_Generic.cpp \
+                  arch/MovieTexture/MovieTexture_FFMpeg.cpp \
+                  arch/Threads/Threads_Pthreads.cpp \
+                  archutils/Common/PthreadHelpers.cpp \
+                  archutils/Common/EGLHelper.cpp \
+                  archutils/Unix/GetSysInfo.cpp \
+                  archutils/Unix/StackCheck.cpp \
+                  archutils/Unix/BacktraceNames.cpp \
+                  archutils/Unix/EmergencyShutdown.cpp \
+                  arch/Sound/RageSoundDriver.cpp \
+                  arch/Sound/RageSoundDriver_Generic_Software.cpp
+
+# Core Sources
+LOCAL_SRC_FILES+= ver.cpp \
                   ActiveAttackList.cpp \
                   Actor.cpp \
                   ActorFrame.cpp \
@@ -171,6 +210,7 @@ LOCAL_SRC_FILES:= ver.cpp \
                   RageDisplay.cpp \
                   RageDisplay_GLES2.cpp \
                   RageDisplay_Null.cpp \
+                  RageDisplay_OGL_Helpers.cpp \
                   RageException.cpp \
                   RageFile.cpp \
                   RageFileBasic.cpp \
@@ -371,44 +411,7 @@ LOCAL_SRC_FILES:= ver.cpp \
                   WorkoutGraph.cpp \
                   XmlFile.cpp \
                   XmlFileUtil.cpp \
-                  global.cpp \
-                  arch/RageDriver.cpp \
-                  arch/InputHandler/InputHandler.cpp \
-                  arch/InputHandler/InputHandler_MonkeyKeyboard.cpp \
-                  arch/InputHandler/InputHandler_Android_Gamepad.cpp \
-                  arch/LowLevelWindow/LowLevelWindow_EGL.cpp \
-                  arch/LowLevelWindow/LowLevelWindow_Android.cpp \
-                  arch/LowLevelWindow/LowLevelWindow.cpp \
-                  arch/Dialog/Dialog.cpp \
-                  arch/Dialog/DialogDriver.cpp \
-                  arch/ArchHooks/ArchHooks.cpp \
-                  arch/ArchHooks/ArchHooksUtil.cpp \
-                  arch/ArchHooks/ArchHooks_Android.cpp \
-                  arch/LoadingWindow/LoadingWindow.cpp \
-                  arch/Lights/LightsDriver.cpp \
-                  arch/Lights/LightsDriver_Export.cpp \
-                  arch/MemoryCard/MemoryCardDriver.cpp \
-                  arch/MovieTexture/MovieTexture_Null.cpp \
-                  arch/MovieTexture/MovieTexture.cpp \
-                  arch/MovieTexture/MovieTexture_Generic.cpp \
-                  arch/MovieTexture/MovieTexture_FFMpeg.cpp \
-                  arch/Threads/Threads_Pthreads.cpp \
-                  archutils/Android/Globals.cpp \
-                  archutils/Android/SpecialDirs.cpp \
-                  archutils/Android/Framework/cpp/stepstart.cpp \
-                  archutils/Common/PthreadHelpers.cpp \
-                  archutils/Unix/GetSysInfo.cpp \
-                  archutils/Unix/StackCheck.cpp \
-                  archutils/Unix/BacktraceNames.cpp \
-                  archutils/Unix/EmergencyShutdown.cpp \
-                  arch/Sound/RageSoundDriver.cpp \
-                  arch/Sound/RageSoundDriver_Android.cpp \
-                  arch/Sound/RageSoundDriver_Generic_Software.cpp
-
-
-#$(TOP_PATH)/
-#ver.cpp:
-
+                  global.cpp
 
 #need to implement these:
                   #archutils/Android/CrashHandler.cpp
@@ -427,7 +430,7 @@ LOCAL_SRC_FILES:= ver.cpp \
 # Deprecated?
 #                  ScreenOptionsReviewWorkout.cpp \
 
-#everything
+#everything else
 
 LOCAL_C_INCLUDES := $(TOP_PATH) \
                     $(ANDEXTERN_PATH)/ffmpeg
@@ -435,9 +438,13 @@ LOCAL_C_INCLUDES := $(TOP_PATH) \
 # Currently, we're locking it to ARM
 LOCAL_CFLAGS := -DANDROID -DCPU_ARM -DENDIAN_LITTLE -DENDIAN_32BITWORD -DGLEW_NO_GLU
 
+# Comment out the next line if we're not doing a testbuild.
+LOCAL_CFLAGS += -DANDROID_TEST
+
 LOCAL_LDLIBS    := -llog -landroid -lz -lGLESv2 -lEGL -lOpenSLES
 LOCAL_STATIC_LIBRARIES := jsoncpp libtomcrypt libtommath glew android_native_app_glue pcre \
                           ndk_helper png libmad libvorbis libjpeg lua stlport_static
+
 LOCAL_SHARED_LIBRARIES := avcodec avfilter avformat swresample swscale avutil
 
 include $(BUILD_SHARED_LIBRARY)
@@ -455,5 +462,6 @@ include $(EXTERN_PATH)/glew-1.10/Android.mk
 #include $(EXTERN_PATH)/regal/build/android/Regal/jni/Android.mk
 include $(EXTERN_PATH)/mad-0.15.1b/Android.mk
 include $(ANDEXTERN_PATH)/Android.mk
+
 $(call import-module,android/ndk_helper)
 $(call import-module,android/native_app_glue)

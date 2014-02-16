@@ -6,7 +6,7 @@
 #include "RageDisplay.h" // VideoModeParams
 #include "LowLevelWindow_EGL.h"
 
-#include "archutils/Android/Globals.cpp"
+#include "archutils/Android/Globals.h"
 
 /**
  * \class LowLevelWindow_Android
@@ -24,29 +24,33 @@ public:
     // Defined as =false upstream
 	//bool IsSoftwareRenderer( RString &sError );
 
-	// Return the current Android display resolution. Nothing more, nothing less.
+	// Should return the current Android display resolution. Nothing more, nothing less.
 	void GetDisplayResolutions( DisplayResolutions &out ) const;
 
-    // Nope all the way.
+    /**
+     * \fn RenderTarget *CreateRenderTarget()
+     * \brief Create a Stepmania-format drawable Render Target.
+     **/
+    RenderTarget *CreateRenderTarget();
+
+    // Nope all the way for now.
     bool SupportsThreadedRendering(){return false;};
-    void BeginConcurrentRenderingMainThread(){return false;};
-    void EndConcurrentRenderingMainThread(){return false;};
-    void BeginConcurrentRendering(){return false;};
-    void EndConcurrentRendering(){return false;};
+    void BeginConcurrentRenderingMainThread(){};
+    void EndConcurrentRenderingMainThread(){};
+    void BeginConcurrentRendering(){};
+    void EndConcurrentRendering(){};
 
 private:
-	//bool m_bWasWindowed;
-
-    EGLint GetAttibutesInitConfig();
+    EGLint* GetAttibutesInitConfig();
     void PreContextSetup();
 
-    EGLConfig* GetEGLConfig();
-    EGLSurface GetEGLSurface();
-    EGLDisplay* GetEGLDisplayContext();
-    EGLNativeWindowType* GetEGLWindowContext();
-
 	void InitializeConfig();
+
+	bool m_bWasWindowed;
 	VideoModeParams CurrentParams;
+
+	EGLint* attrsInit;
+
 };
 
 #ifdef ARCH_LOW_LEVEL_WINDOW
