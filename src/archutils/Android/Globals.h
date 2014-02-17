@@ -16,6 +16,10 @@ namespace AndroidGlobals {
         extern int GetNativeSampleRate();
     };
 
+    namespace Crash {
+        extern void ForceCrash(const char* reason);
+    };
+
     // Hardcoding SHIELD; it's a direct testbench and I don't want to code some
     //  weird conditionals and the like.
     extern RString GetVideoDriverName();

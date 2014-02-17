@@ -6,8 +6,6 @@
 android_app* AndroidGlobals::ANDROID_APP_INSTANCE = NULL;
 
 int AndroidGlobals::Audio::GetNativeSampleRate() {
-    // In this use case, input is basically a
-
     JNIEnv *jni;
     ANDROID_APP_INSTANCE->activity->vm->AttachCurrentThread(&jni, NULL);
 
@@ -21,7 +19,6 @@ int AndroidGlobals::Audio::GetNativeSampleRate() {
     return retval;
 }
 int AndroidGlobals::Audio::GetNativeFramesPerBuffer() {
-
     JNIEnv *jni;
     ANDROID_APP_INSTANCE->activity->vm->AttachCurrentThread(&jni, NULL);
 
@@ -33,6 +30,21 @@ int AndroidGlobals::Audio::GetNativeFramesPerBuffer() {
 
     ANDROID_APP_INSTANCE->activity->vm->DetachCurrentThread();
     return retval;
+}
+
+void AndroidGlobals::Crash::ForceCrash(const char* reason) {
+    JNIEnv *jni;
+    ANDROID_APP_INSTANCE->activity->vm->AttachCurrentThread(&jni, NULL);
+
+    // Classret and calling
+    jclass clazz = jni->GetObjectClass(ANDROID_APP_INSTANCE->activity->clazz);
+    jmethodID methodID =
+        jni->GetMethodID(clazz, "getNativeFramesPerBuffer", "(Ljava/lang/String;)V");
+
+    jni->CallIntMethod
+        (ANDROID_APP_INSTANCE->activity->clazz, methodID, reason);
+
+    ANDROID_APP_INSTANCE->activity->vm->DetachCurrentThread();
 }
 
 RString AndroidGlobals::GetVideoDriverName() {

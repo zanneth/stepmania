@@ -7,20 +7,22 @@
 #include <csignal>
 //#include <ucontext.h>
 
+#include "global.h"
+
 namespace CrashHandler
 {
 	/*void CrashHandlerHandleArgs( int argc, char* argv[] );
 	void InitializeCrashHandler();
 	void CrashSignalHandler( int signal, siginfo_t *si, const ucontext_t *uc );*/
-	void ForceCrash( const char *reason ); // force android app crash from here.
-	void ForceDeadlock( RString reason, uint64_t CrashHandle );
-}
+	void ForceCrash( const char* reason ); // force android app crash from here.
+	//void ForceDeadlock( RString reason, uint64_t CrashHandle );
+};
 
 
 #endif // CRASHHANDLER_ANDROID_H
 
 /*
- * (c) 2014-x Renaud Lepage
+ * (c) 2014 Renaud Lepage
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a

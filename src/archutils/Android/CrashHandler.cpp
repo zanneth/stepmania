@@ -1,16 +1,14 @@
 #include "CrashHandler.h"
 
+#include "archutils/Android/Globals.h"
+
 void CrashHandler::ForceCrash( const char *reason )
 {
-    // Force ANR exit on Android.
-}
-void CrashHandler::ForceCrash( RString reason, uint64_t iID )
-{
-    // Force ANR exit on Android.
+    AndroidGlobals::Crash::ForceCrash(reason);
 }
 
 /*
- * (c) 2014-x Renaud Lepage
+ * (c) 2014 Renaud Lepage
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a

@@ -24,6 +24,7 @@ LOCAL_SRC_FILES:= arch/InputHandler/InputHandler_Android_Gamepad.cpp \
                   arch/LowLevelWindow/EGLProviders/EGLProvider.cpp \
                   arch/LowLevelWindow/LowLevelWindow_EGL.cpp \
                   arch/ArchHooks/ArchHooks_Android.cpp \
+                  archutils/Android/CrashHandler.cpp \
                   archutils/Android/Globals.cpp \
                   archutils/Android/SpecialDirs.cpp \
                   archutils/Android/Framework/cpp/stepstart.cpp \
