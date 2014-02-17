@@ -1,5 +1,5 @@
 #include "LoadingWindow_Android.h"
-
+// Use a standard FragmentDialog in this context or something.
 
 /*
  * (c) 2014-x Renaud Lepage

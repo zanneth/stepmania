@@ -126,7 +126,6 @@ RString LowLevelWindow_EGL::TryVideoMode( const VideoModeParams &p, bool &bNewDe
     // As I'm working on the Android port, this is empty because I'm overriding it to nop.
 }
 
-
 void LowLevelWindow_EGL::LogDebugInformation() const {
     eglProvider->Log("EGL::LogDebugInformation::Stub");
 }

@@ -1,7 +1,6 @@
 #ifndef LOADINGWINDOW_ANDROID_H
 #define LOADINGWINDOW_ANDROID_H
 
-
 #include "LoadingWindow.h"
 
 class LoadingWindow_Android: public LoadingWindow
