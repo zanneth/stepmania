@@ -19,6 +19,9 @@ namespace AndroidGlobals {
     // Hardcoding SHIELD; it's a direct testbench and I don't want to code some
     //  weird conditionals and the like.
     extern RString GetVideoDriverName();
+
+
+    void Log(RString string);
 };
 
 #endif //ANDROID_GLOBALS_H

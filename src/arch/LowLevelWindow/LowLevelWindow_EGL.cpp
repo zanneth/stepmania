@@ -126,6 +126,11 @@ RString LowLevelWindow_EGL::TryVideoMode( const VideoModeParams &p, bool &bNewDe
     // As I'm working on the Android port, this is empty because I'm overriding it to nop.
 }
 
+
+void LowLevelWindow_EGL::LogDebugInformation() const {
+    eglProvider->Log("EGL::LogDebugInformation::Stub");
+}
+
 // MOVED: RenderTarget_EGL to the header. Downstream needs it.
 
 RenderTarget_EGL::RenderTarget_EGL( LowLevelWindow_EGL *pWind )

@@ -647,11 +647,15 @@ RageDisplay_GLES2::SetTextureFiltering( TextureUnit tu, bool b )
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, b ? GL_LINEAR : GL_NEAREST);
 	
 	GLint iMinFilter = 0;
+	// Until nVidia confirms that Tegra has glGetTexLevelParameteriv, skip.
+#if !defined(ANDROID)
 	if (b)
 	{
 		GLint iWidth1 = -1;
 		GLint iWidth2 = -1;
 		// TODO: OpenGL ES on Android does *not* have glGetTexLevelParameteriv. Fix.
+		// QCOM has this.
+		// Does NV have this?
 		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &iWidth1);
 		glGetTexLevelParameteriv(GL_TEXTURE_2D, 1, GL_TEXTURE_WIDTH, &iWidth2);
 		if (iWidth1 > 1 && iWidth2 != 0)
@@ -668,6 +672,7 @@ RageDisplay_GLES2::SetTextureFiltering( TextureUnit tu, bool b )
 		}
 	}
 	else
+#endif
 	{
 		iMinFilter = GL_NEAREST;
 	}
@@ -870,6 +875,7 @@ RageDisplay_GLES2::SetLineWidth(float fWidth)
 void
 RageDisplay_GLES2::SetPolygonMode(PolygonMode pm)
 {
+#if !defined(ANDROID)
 	GLenum m;
 	switch (pm)
 	{
@@ -879,6 +885,9 @@ RageDisplay_GLES2::SetPolygonMode(PolygonMode pm)
 		FAIL_M(ssprintf("Invalid PolygonMode: %i", pm));
 	}
 	glPolygonMode(GL_FRONT_AND_BACK, m);
+#else
+	ssprintf("STUB SetPolygonMode");
+#endif
 }
 
 void

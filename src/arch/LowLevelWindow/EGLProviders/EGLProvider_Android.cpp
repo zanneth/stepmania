@@ -36,6 +36,11 @@ bool EGLProvider_Android::GetWasWindowedValue()
     return false;
 }
 
+void EGLProvider_Android::Log(RString string)
+{
+    AndroidGlobals::Log(string);
+}
+
 void EGLProvider_Android::PreContextSetup()
 {
     // Set config on the Android window.

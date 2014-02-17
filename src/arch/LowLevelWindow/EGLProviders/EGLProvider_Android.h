@@ -18,6 +18,7 @@ public:
     EGLint* GetAttibutesInitConfig();
     void PreContextSetup();
     bool GetWasWindowedValue();
+    void Log(RString string);
 private:
 	EGLint* attrsInit;
 };

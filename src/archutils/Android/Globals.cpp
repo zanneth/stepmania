@@ -1,6 +1,7 @@
 #include "Globals.h"
 
 #include <global.h>
+#include <android/log.h>
 
 android_app* AndroidGlobals::ANDROID_APP_INSTANCE = NULL;
 
@@ -36,6 +37,11 @@ int AndroidGlobals::Audio::GetNativeFramesPerBuffer() {
 
 RString AndroidGlobals::GetVideoDriverName() {
     return "SHIELD";
+}
+
+#define APPNAME "StepMania"
+void AndroidGlobals::Log(RString string) {
+    __android_log_write(ANDROID_LOG_VERBOSE, APPNAME, string.c_str());
 }
 
 

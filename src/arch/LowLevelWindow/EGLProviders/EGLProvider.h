@@ -16,6 +16,7 @@ public:
     virtual EGLint* GetAttibutesInitConfig(){};
     virtual void PreContextSetup(){};
     virtual bool GetWasWindowedValue(){};
+    virtual void Log(RString string){};
 
 };
 
