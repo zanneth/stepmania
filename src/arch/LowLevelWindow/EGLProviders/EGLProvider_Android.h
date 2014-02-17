@@ -1,28 +1,51 @@
-#include "LowLevelWindow_Android.h"
+#ifndef EGL_PROVIDER_ANDROID_H
+#define EGL_PROVIDER_ANDROID_H
 
-// EGLhalp
-#include "archutils/Common/EGLHelper.h"
+#include "EGLProvider.h"
 
-using namespace EGLHelper;
+// Bring in GLES2
+#include <GLES2/gl2.h>
+#include <GLES2/gl2platform.h>
+#include <GLES2/gl2ext.h>
 
-class RenderTarget_Android : public RenderTarget_EGL
+class EGLProvider_Android : public EGLProvider
 {
 public:
-    RenderTarget_Android(LowLevelWindow_Android *pWind);
-    ~RenderTarget_Android();
-    EGLint* GetRenderTargetConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer);
-private:
-	GLint GetInternalFormatInt(bool pWithAlpha);
-	GLint GetBorderInt(bool pWithAlpha);
+    EGLProvider_Android();
+    ~EGLProvider_Android();
 
+
+    EGLint* GetAttibutesInitConfig();
+    void PreContextSetup();
+    bool GetWasWindowedValue();
+private:
+	EGLint* attrsInit;
+};
+
+class EGLRenderTargetProvider_Android : public EGLRenderTargetProvider
+{
+public:
+    EGLRenderTargetProvider_Android();
+    ~EGLRenderTargetProvider_Android();
+
+    EGLint* GetRenderTargetConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer);
+    GLint GetInternalFormatInt(bool pWithAlpha);
+
+private:
 	EGLint* targetAttrs;
 };
 
-RenderTarget *LowLevelWindow_Android::CreateRenderTarget()
-{
-	return new RenderTarget_Android( this );
-}
+#ifdef ARCH_EGL_PROVIDER
+#error "More than one EGLProvider active!"
+#endif
+#define ARCH_EGL_PROVIDER EGLProvider_Android
 
+#ifdef ARCH_EGLRENDER_PROVIDER
+#error "More than one EGLProvider active!"
+#endif
+#define ARCH_EGLRENDER_PROVIDER EGLRenderTargetProvider_Android
+
+#endif // EGL_PROVIDER_ANDROID_H
 /*
  * (c) 2014 Renaud Lepage
  * All rights reserved.

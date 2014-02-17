@@ -1,26 +1,16 @@
-#include "LowLevelWindow_Android.h"
+#include "EGLProvider.h"
 
-// EGLhalp
-#include "archutils/Common/EGLHelper.h"
+// This brings in the necessary EGLProviders
+#include "arch/arch_default.h"
 
-using namespace EGLHelper;
-
-class RenderTarget_Android : public RenderTarget_EGL
+EGLProvider *EGLProvider::Create()
 {
-public:
-    RenderTarget_Android(LowLevelWindow_Android *pWind);
-    ~RenderTarget_Android();
-    EGLint* GetRenderTargetConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer);
-private:
-	GLint GetInternalFormatInt(bool pWithAlpha);
-	GLint GetBorderInt(bool pWithAlpha);
+	return new ARCH_EGL_PROVIDER;
+}
 
-	EGLint* targetAttrs;
-};
-
-RenderTarget *LowLevelWindow_Android::CreateRenderTarget()
+EGLRenderTargetProvider *EGLRenderTargetProvider::Create()
 {
-	return new RenderTarget_Android( this );
+	return new ARCH_EGLRENDER_PROVIDER;
 }
 
 /*

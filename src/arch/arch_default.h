@@ -24,7 +24,8 @@
 #elif defined(ANDROID)
 #include "ArchHooks/ArchHooks_Android.h"
 #include "LoadingWindow/LoadingWindow_Android.h"
-#include "LowLevelWindow/LowLevelWindow_Android.h"
+#include "LowLevelWindow/LowLevelWindow_EGL.h"
+#include "LowLevelWindow/EGLProviders/EGLProvider_Android.h"
 #include "MemoryCard/MemoryCardDriver_Android.h"
 // In the future, Android Inputs may support USB Host.
 #define DEFAULT_INPUT_DRIVER_LIST "Android_Gamepad"

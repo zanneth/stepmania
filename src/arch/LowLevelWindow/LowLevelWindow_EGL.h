@@ -9,6 +9,9 @@
 // Because we must.
 #include "RageDisplay_OGL_Helpers.h"
 
+// Way of working for platform specifics and platform-dependent configurations
+#include "EGLProviders/EGLProvider.h"
+
 // Bring in EGL
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -55,8 +58,12 @@ public:
 	virtual void EndConcurrentRendering();
 
 private:
-    virtual EGLint* GetAttibutesInitConfig();
-    virtual void PreContextSetup();
+
+    /**
+     * \var eglProvider
+     * \brief EGL platform specifics.
+     **/
+    EGLProvider* eglProvider;
 
 	bool m_bWasWindowed;
 	VideoModeParams CurrentParams;
@@ -83,10 +90,6 @@ public:
 
 	// Configuration fetching.
     EGLint* GetAsPBufferConfigAttribs(int pWidth, int pHeight);
-	virtual EGLint* GetRenderTargetConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer);
-
-protected:
-	virtual GLint GetInternalFormatInt(bool pWithAlpha);
 
 private:
 	int m_iWidth, m_iHeight;
@@ -101,15 +104,15 @@ private:
 
 	EGLint* pbufferAttributes;
 
+	EGLRenderTargetProvider* eglRTP;
+
 };
 
-// Right now, this class is purely virtual. This may be changed in the future.
-/*
 #ifdef ARCH_LOW_LEVEL_WINDOW
 #error "More than one LowLevelWindow selected!"
 #endif
 #define ARCH_LOW_LEVEL_WINDOW LowLevelWindow_EGL
-*/
+
 
 #endif // LOW_LEVEL_WINDOW_EGL_H
 /*

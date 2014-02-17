@@ -1,28 +1,34 @@
-#include "LowLevelWindow_Android.h"
+#ifndef EGL_PROVIDER_H
+#define EGL_PROVIDER_H
 
-// EGLhalp
-#include "archutils/Common/EGLHelper.h"
+#include "global.h"
 
-using namespace EGLHelper;
+// Force fwddec typedefs
+typedef int GLint;
+typedef int32_t EGLint;
 
-class RenderTarget_Android : public RenderTarget_EGL
+class EGLProvider
 {
 public:
-    RenderTarget_Android(LowLevelWindow_Android *pWind);
-    ~RenderTarget_Android();
-    EGLint* GetRenderTargetConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer);
-private:
-	GLint GetInternalFormatInt(bool pWithAlpha);
-	GLint GetBorderInt(bool pWithAlpha);
+    static EGLProvider *Create();
 
-	EGLint* targetAttrs;
+    //virtual void
+    virtual EGLint* GetAttibutesInitConfig(){};
+    virtual void PreContextSetup(){};
+    virtual bool GetWasWindowedValue(){};
+
 };
 
-RenderTarget *LowLevelWindow_Android::CreateRenderTarget()
+class EGLRenderTargetProvider
 {
-	return new RenderTarget_Android( this );
-}
+public:
+    static EGLRenderTargetProvider *Create();
 
+    virtual EGLint* GetRenderTargetConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer){};
+    virtual GLint GetInternalFormatInt(bool pWithAlpha){};
+};
+
+#endif // EGL_PROVIDER_H
 /*
  * (c) 2014 Renaud Lepage
  * All rights reserved.

@@ -20,13 +20,17 @@ LOCAL_MODULE:= stepmania
 
 # Architecture-specific Sources
 LOCAL_SRC_FILES:= arch/InputHandler/InputHandler_Android_Gamepad.cpp \
-                  arch/LowLevelWindow/LowLevelWindow_Android.cpp \
+                  arch/LowLevelWindow/EGLProviders/EGLProvider_Android.cpp \
+                  arch/LowLevelWindow/EGLProviders/EGLProvider.cpp \
                   arch/LowLevelWindow/LowLevelWindow_EGL.cpp \
                   arch/ArchHooks/ArchHooks_Android.cpp \
                   archutils/Android/Globals.cpp \
                   archutils/Android/SpecialDirs.cpp \
                   archutils/Android/Framework/cpp/stepstart.cpp \
                   arch/Sound/RageSoundDriver_Android.cpp
+
+# Rehandling to use an EGLProvider approach.
+                  #arch/LowLevelWindow/LowLevelWindow_Android.cpp \
 
 # Shared, Non-Core Sources
 LOCAL_SRC_FILES+= arch/RageDriver.cpp \
