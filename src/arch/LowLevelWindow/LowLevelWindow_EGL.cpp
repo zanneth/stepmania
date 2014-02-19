@@ -130,7 +130,43 @@ void LowLevelWindow_EGL::LogDebugInformation() const {
     eglProvider->Log("EGL::LogDebugInformation::Stub");
 }
 
-// MOVED: RenderTarget_EGL to the header. Downstream needs it.
+/**
+ * \class RenderTarget_EGL
+ * \brief EGL implementation of RenderTarget
+ **/
+class RenderTarget_EGL : public RenderTarget
+{
+public:
+    RenderTarget_EGL(LowLevelWindow_EGL *pWind);
+    ~RenderTarget_EGL();
+
+	void Create ( const RenderTargetParam &param, int &iTextureWidthOut, int &iTextureHeightOut );
+	unsigned GetTexture() const { return m_iTexHandle; }
+	void StartRenderingTo();
+	void FinishRenderingTo();
+
+	// Copying from the Pbuffer to the texture flips Y.
+	virtual bool InvertY() const { return true; } // \todo review for EGL/droids
+
+	// Configuration fetching.
+    EGLint* GetAsPBufferConfigAttribs(int pWidth, int pHeight);
+
+private:
+	int m_iWidth, m_iHeight;
+	LowLevelWindow_EGL *m_pWind;
+
+	EGLSurface m_iPbuffer;
+	EGLContext m_pPbufferContext;
+	unsigned int m_iTexHandle;
+
+	EGLContext m_pOldContext;
+	EGLSurface m_pOldSurface;
+
+	EGLint* pbufferAttributes;
+
+	EGLRenderTargetProvider* eglRTP;
+
+};
 
 RenderTarget_EGL::RenderTarget_EGL( LowLevelWindow_EGL *pWind )
 {
@@ -304,6 +340,13 @@ bool LowLevelWindow_EGL::SupportsRenderToTexture() const
 
 	return true;
 }
+
+
+RenderTarget *LowLevelWindow_EGL::CreateRenderTarget()
+{
+    return new RenderTarget_EGL(this);
+}
+
 
 /*
  * (c) 2014 Renaud Lepage

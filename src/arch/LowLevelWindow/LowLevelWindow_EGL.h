@@ -49,13 +49,13 @@ public:
 	bool SupportsRenderToTexture() const;
 
 	// Downstreams will need to implement this. The core object will define it though.
-	virtual RenderTarget *CreateRenderTarget();
+	RenderTarget *CreateRenderTarget();
 
-	virtual bool SupportsThreadedRendering();
-	virtual void BeginConcurrentRenderingMainThread();
-	virtual void EndConcurrentRenderingMainThread();
-	virtual void BeginConcurrentRendering();
-	virtual void EndConcurrentRendering();
+	bool SupportsThreadedRendering() {return false;};
+	virtual void BeginConcurrentRenderingMainThread(){};
+	virtual void EndConcurrentRenderingMainThread(){};
+	virtual void BeginConcurrentRendering(){};
+	virtual void EndConcurrentRendering(){};
 
 private:
 
@@ -70,43 +70,6 @@ private:
 };
 
 
-/**
- * \class RenderTarget_EGL
- * \brief EGL implementation of RenderTarget
- **/
-class RenderTarget_EGL : public RenderTarget
-{
-public:
-    RenderTarget_EGL(LowLevelWindow_EGL *pWind);
-    ~RenderTarget_EGL();
-
-	void Create ( const RenderTargetParam &param, int &iTextureWidthOut, int &iTextureHeightOut );
-	unsigned GetTexture() const { return m_iTexHandle; }
-	void StartRenderingTo();
-	void FinishRenderingTo();
-
-	// Copying from the Pbuffer to the texture flips Y.
-	virtual bool InvertY() const { return true; } // \todo review for EGL/droids
-
-	// Configuration fetching.
-    EGLint* GetAsPBufferConfigAttribs(int pWidth, int pHeight);
-
-private:
-	int m_iWidth, m_iHeight;
-	LowLevelWindow_EGL *m_pWind;
-
-	EGLSurface m_iPbuffer;
-	EGLContext m_pPbufferContext;
-	unsigned int m_iTexHandle;
-
-	EGLContext m_pOldContext;
-	EGLSurface m_pOldSurface;
-
-	EGLint* pbufferAttributes;
-
-	EGLRenderTargetProvider* eglRTP;
-
-};
 
 #ifdef ARCH_LOW_LEVEL_WINDOW
 #error "More than one LowLevelWindow selected!"

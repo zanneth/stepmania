@@ -7,6 +7,7 @@
 #include "LocalizedString.h"
 #include "SpecialFiles.h"
 //#include "archutils/Unix/SignalHandler.h"
+#include "archutils/Android/Globals.h"
 #include "archutils/Unix/GetSysInfo.h"
 #include "archutils/Common/PthreadHelpers.h"
 #include "archutils/Unix/EmergencyShutdown.h"
@@ -49,18 +50,19 @@ static bool IsFatalSignal( int signal )
 */
 
 // TODO: ANR
-/*
-static bool EmergencyShutdown( int signal, siginfo_t *si, const ucontext_t *uc )
+/*static bool EmergencyShutdown( int signal, siginfo_t *si, const ucontext_t *uc )
 {
 	if( !IsFatalSignal(signal) )
 		return false;
 
 	DoEmergencyShutdown();
+    RString crash = ("" + signal);
+    AndroidGlobals::Crash::ForceCrash("Emergency Shutdown:"+crash.c_str());
 
 	/* We didn't run the crash handler.  Run the default handler, so we can dump core. * /
 	return false;
-}
-*/
+}*/
+
 	
 #if defined(HAVE_TLS)
 static thread_local int g_iTestTLS = 0;
@@ -174,7 +176,7 @@ void ArchHooks_Android::Init()
 	 * This might blow up, so be sure to do it after the crash handler. */
 	// SignalHandler::OnClose( EmergencyShutdown );
 
-	InstallExceptionHandler();
+	//InstallExceptionHandler();
 	
 #if defined(HAVE_TLS) && !defined(BSD)
 	TestTLS();

@@ -31,7 +31,7 @@
 #include "RageSurface_Load.h"
 #include "CommandLineActions.h"
 
-#if !defined(SUPPORT_OPENGL) && !defined(SUPPORT_D3D)
+#if !defined(SUPPORT_OPENGL) && !defined(SUPPORT_D3D) && !defined(SUPPORT_GLES2) && !defined(SUPPORT_GLES2_REGAL)
 #define SUPPORT_OPENGL
 #endif
 
