@@ -130,6 +130,11 @@ void LowLevelWindow_EGL::LogDebugInformation() const {
     eglProvider->Log("EGL::LogDebugInformation::Stub");
 }
 
+void LowLevelWindow_EGL::GetDisplayResolutions( DisplayResolutions &out ) const
+{
+    eglProvider->GetDisplayResolutions(out);
+}
+
 /**
  * \class RenderTarget_EGL
  * \brief EGL implementation of RenderTarget

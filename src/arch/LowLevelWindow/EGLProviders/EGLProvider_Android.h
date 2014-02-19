@@ -19,6 +19,7 @@ public:
     void PreContextSetup();
     bool GetWasWindowedValue();
     void Log(RString string);
+    void GetDisplayResolutions(DisplayResolutions &out) const;
 private:
 	EGLint* attrsInit;
 };

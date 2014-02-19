@@ -41,6 +41,16 @@ void EGLProvider_Android::Log(RString string)
     AndroidGlobals::Log(string);
 }
 
+void EGLProvider_Android::GetDisplayResolutions(DisplayResolutions &out) const
+{
+    DisplayResolution res = {
+                              ANativeWindow_getWidth(AndroidGlobals::ANDROID_APP_INSTANCE->window),
+                              ANativeWindow_getHeight(AndroidGlobals::ANDROID_APP_INSTANCE->window),
+                              true
+                            };
+    out.insert( res );
+}
+
 void EGLProvider_Android::PreContextSetup()
 {
     // Set config on the Android window.

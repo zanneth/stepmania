@@ -3,6 +3,8 @@
 
 #include "global.h"
 
+#include "DisplayResolutions.h"
+
 // Force fwddec typedefs
 typedef int GLint;
 typedef int32_t EGLint;
@@ -17,6 +19,7 @@ public:
     virtual void PreContextSetup(){};
     virtual bool GetWasWindowedValue(){};
     virtual void Log(RString string){};
+    virtual void GetDisplayResolutions(DisplayResolutions &out){};
 
 };
 
