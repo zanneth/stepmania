@@ -10,7 +10,7 @@ project.ext {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "18.0.1"
+    buildToolsVersion "19.0.0"
 
     // Deactivate the automated JNI step altogether.
     // as of Android-Gradle 0.7.3, it's not optimal for this task.
@@ -25,7 +25,7 @@ android {
             aidl.srcDirs = ['src/archutils/Android/Framework/aidl']
             renderscript.srcDirs = ['src/archutils/Android/Framework/renderscript']
             assets.srcDirs = ['src/archutils/Android/Framework/assets']
-            jniLibs.srcDirs = ['extern/android/jniLibs']
+            jniLibs.srcDir 'src/obj/local'
         }
     }
 
@@ -123,3 +123,4 @@ def getVersionCodeFromManifest() {
     matcher.find()
     return Integer.parseInt(matcher.group(1))
 }
+
