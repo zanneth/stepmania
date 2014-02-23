@@ -248,7 +248,7 @@ void ArchHooks::MountInitialFilesystems( const RString &sDirOfExecutable )
 	else if( !stat(RageFileManagerUtil::sInitialWorkingDirectory + "/Songs", &st) && st.st_mode&S_IFDIR )
 		Root = RageFileManagerUtil::sInitialWorkingDirectory;
 	else
-		RageException::Throw( "%s :: Execution Context: %s", COULDNT_FIND_SONGS.GetValue().c_str(), sDirOfExecutable );
+		RageException::Throw( "Couldn't find %s/Songs", sDirOfExecutable.c_str() );
 
 	FILEMAN->Mount( "dir", Root, "/" );
 }
