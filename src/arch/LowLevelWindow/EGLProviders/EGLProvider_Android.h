@@ -43,7 +43,7 @@ private:
 #define ARCH_EGL_PROVIDER EGLProvider_Android
 
 #ifdef ARCH_EGLRENDER_PROVIDER
-#error "More than one EGLProvider active!"
+#error "More than one EGLRenderProvider active!"
 #endif
 #define ARCH_EGLRENDER_PROVIDER EGLRenderTargetProvider_Android
 
