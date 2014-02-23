@@ -19,7 +19,7 @@ $(TOP_PATH)/ver.cpp: ; \
 LOCAL_MODULE:= stepmania
 
 # Architecture-specific Sources
-LOCAL_SRC_FILES:= arch/InputHandler/InputHandler_Android_Gamepad.cpp \
+PLATFORM_SRC   := arch/InputHandler/InputHandler_Android_Gamepad.cpp \
                   arch/LowLevelWindow/EGLProviders/EGLProvider_Android.cpp \
                   arch/LowLevelWindow/EGLProviders/EGLProvider.cpp \
                   arch/LowLevelWindow/LowLevelWindow_EGL.cpp \
@@ -27,11 +27,11 @@ LOCAL_SRC_FILES:= arch/InputHandler/InputHandler_Android_Gamepad.cpp \
                   archutils/Android/CrashHandler.cpp \
                   archutils/Android/Globals.cpp \
                   archutils/Android/SpecialDirs.cpp \
-                  archutils/Android/Framework/cpp/stepstart.cpp \
                   arch/Sound/RageSoundDriver_Android.cpp
 
+                  #archutils/Android/Framework/cpp/stepstart.cpp \
 # Shared, Non-Core Sources
-LOCAL_SRC_FILES+= arch/RageDriver.cpp \
+SHARED_ARCH_SRC:= arch/RageDriver.cpp \
                   arch/LoadingWindow/LoadingWindow.cpp \
                   arch/Lights/LightsDriver.cpp \
                   arch/Lights/LightsDriver_Export.cpp \
@@ -57,8 +57,172 @@ LOCAL_SRC_FILES+= arch/RageDriver.cpp \
                   arch/Sound/RageSoundDriver.cpp \
                   arch/Sound/RageSoundDriver_Generic_Software.cpp
 
+RAGE_ENGINE    := RageBitmapTexture.cpp \
+                  RageDisplay.cpp \
+                  RageDisplay_GLES2.cpp \
+                  RageDisplay_Null.cpp \
+                  RageDisplay_OGL_Helpers.cpp \
+                  RageException.cpp \
+                  RageFile.cpp \
+                  RageFileBasic.cpp \
+                  RageFileDriver.cpp \
+                  RageFileDriverDeflate.cpp \
+                  RageFileDriverDirect.cpp \
+                  RageFileDriverDirectHelpers.cpp \
+                  RageFileDriverMemory.cpp \
+                  RageFileDriverReadAhead.cpp \
+                  RageFileDriverSlice.cpp \
+                  RageFileDriverTimeout.cpp \
+                  RageFileDriverZip.cpp \
+                  RageFileManager.cpp \
+                  RageFileManager_ReadAhead.cpp \
+                  RageInput.cpp \
+                  RageInputDevice.cpp \
+                  RageLog.cpp \
+                  RageMath.cpp \
+                  RageModelGeometry.cpp \
+                  RageSound.cpp \
+                  RageSoundManager.cpp \
+                  RageSoundMixBuffer.cpp \
+                  RageSoundPosMap.cpp \
+                  RageSoundReader.cpp \
+                  RageSoundReader_Chain.cpp \
+                  RageSoundReader_ChannelSplit.cpp \
+                  RageSoundReader_Extend.cpp \
+                  RageSoundReader_FileReader.cpp \
+                  RageSoundReader_MP3.cpp \
+                  RageSoundReader_Merge.cpp \
+                  RageSoundReader_Pan.cpp \
+                  RageSoundReader_PitchChange.cpp \
+                  RageSoundReader_PostBuffering.cpp \
+                  RageSoundReader_Preload.cpp \
+                  RageSoundReader_Resample_Good.cpp \
+                  RageSoundReader_SpeedChange.cpp \
+                  RageSoundReader_ThreadedBuffer.cpp \
+                  RageSoundReader_Vorbisfile.cpp \
+                  RageSoundReader_WAV.cpp \
+                  RageSoundUtil.cpp \
+                  RageSurface.cpp \
+                  RageSurfaceUtils.cpp \
+                  RageSurfaceUtils_Dither.cpp \
+                  RageSurfaceUtils_Palettize.cpp \
+                  RageSurfaceUtils_Zoom.cpp \
+                  RageSurface_Load.cpp \
+                  RageSurface_Load_BMP.cpp \
+                  RageSurface_Load_GIF.cpp \
+                  RageSurface_Load_JPEG.cpp \
+                  RageSurface_Load_PNG.cpp \
+                  RageSurface_Load_XPM.cpp \
+                  RageSurface_Save_BMP.cpp \
+                  RageSurface_Save_JPEG.cpp \
+                  RageSurface_Save_PNG.cpp \
+                  RageTexture.cpp \
+                  RageTextureID.cpp \
+                  RageTextureManager.cpp \
+                  RageTexturePreloader.cpp \
+                  RageTextureRenderTarget.cpp \
+                  RageThreads.cpp \
+                  RageTimer.cpp \
+                  RageTypes.cpp \
+                  RageUtil.cpp \
+                  RageUtil_BackgroundLoader.cpp \
+                  RageUtil_CachedObject.cpp \
+                  RageUtil_CharConversions.cpp \
+                  RageUtil_FileDB.cpp \
+                  RageUtil_WorkerThread.cpp
+
+SCREENS_SRC    := ScoreDisplay.cpp \
+                  ScoreDisplayAliveTime.cpp \
+                  ScoreDisplayBattle.cpp \
+                  ScoreDisplayCalories.cpp \
+                  ScoreDisplayLifeTime.cpp \
+                  ScoreDisplayNormal.cpp \
+                  ScoreDisplayOni.cpp \
+                  ScoreDisplayPercentage.cpp \
+                  ScoreDisplayRave.cpp \
+                  ScoreKeeper.cpp \
+                  ScoreKeeperNormal.cpp \
+                  ScoreKeeperRave.cpp \
+                  ScoreKeeperShared.cpp \
+                  Screen.cpp \
+                  ScreenAttract.cpp \
+                  ScreenBookkeeping.cpp \
+                  ScreenContinue.cpp \
+                  ScreenDebugOverlay.cpp \
+                  ScreenDemonstration.cpp \
+                  ScreenDimensions.cpp \
+                  ScreenEdit.cpp \
+                  ScreenEditMenu.cpp \
+                  ScreenEnding.cpp \
+                  ScreenEvaluation.cpp \
+                  ScreenExit.cpp \
+                  ScreenGameplay.cpp \
+                  ScreenGameplayLesson.cpp \
+                  ScreenGameplayNormal.cpp \
+                  ScreenGameplayShared.cpp \
+                  ScreenGameplaySyncMachine.cpp \
+                  ScreenHighScores.cpp \
+                  ScreenHowToPlay.cpp \
+                  ScreenInstructions.cpp \
+                  ScreenJukebox.cpp \
+                  ScreenManager.cpp \
+                  ScreenMapControllers.cpp \
+                  ScreenMessage.cpp \
+                  ScreenMiniMenu.cpp \
+                  ScreenNameEntry.cpp \
+                  ScreenNameEntryTraditional.cpp \
+                  ScreenNetEvaluation.cpp \
+                  ScreenNetRoom.cpp \
+                  ScreenNetSelectBase.cpp \
+                  ScreenNetSelectMusic.cpp \
+                  ScreenNetworkOptions.cpp \
+                  ScreenOptions.cpp \
+                  ScreenOptionsCourseOverview.cpp \
+                  ScreenOptionsEditCourse.cpp \
+                  ScreenOptionsEditProfile.cpp \
+                  ScreenOptionsExportPackage.cpp \
+                  ScreenOptionsManageCourses.cpp \
+                  ScreenOptionsManageEditSteps.cpp \
+                  ScreenOptionsManageProfiles.cpp \
+                  ScreenOptionsMaster.cpp \
+                  ScreenOptionsMasterPrefs.cpp \
+                  ScreenOptionsMemoryCard.cpp \
+                  ScreenOptionsToggleSongs.cpp \
+                  ScreenPackages.cpp \
+                  ScreenPlayerOptions.cpp \
+                  ScreenProfileLoad.cpp \
+                  ScreenProfileSave.cpp \
+                  ScreenPrompt.cpp \
+                  ScreenRanking.cpp \
+                  ScreenReloadSongs.cpp \
+                  ScreenSMOnlineLogin.cpp \
+                  ScreenSandbox.cpp \
+                  ScreenSaveSync.cpp \
+                  ScreenSelect.cpp \
+                  ScreenSelectCharacter.cpp \
+                  ScreenSelectLanguage.cpp \
+                  ScreenSelectMaster.cpp \
+                  ScreenSelectMusic.cpp \
+                  ScreenSelectProfile.cpp \
+                  ScreenServiceAction.cpp \
+                  ScreenSetTime.cpp \
+                  ScreenSongOptions.cpp \
+                  ScreenSplash.cpp \
+                  ScreenStatsOverlay.cpp \
+                  ScreenSyncOverlay.cpp \
+                  ScreenSystemLayer.cpp \
+                  ScreenTestInput.cpp \
+                  ScreenTestLights.cpp \
+                  ScreenTestSound.cpp \
+                  ScreenTextEntry.cpp \
+                  ScreenTitleMenu.cpp \
+                  ScreenUnlockBrowse.cpp \
+                  ScreenUnlockCelebrate.cpp \
+                  ScreenUnlockStatus.cpp \
+                  ScreenWithMenuElements.cpp
+
 # Core Sources
-LOCAL_SRC_FILES+= ver.cpp \
+STEPMANIA_SRC  += ver.cpp \
                   ActiveAttackList.cpp \
                   Actor.cpp \
                   ActorFrame.cpp \
@@ -208,79 +372,7 @@ LOCAL_SRC_FILES+= ver.cpp \
                   ProfileManager.cpp \
                   Quad.cpp \
                   RadarValues.cpp \
-                  RageBitmapTexture.cpp \
-                  RageDisplay.cpp \
-                  RageDisplay_GLES2.cpp \
-                  RageDisplay_Null.cpp \
-                  RageDisplay_OGL_Helpers.cpp \
-                  RageException.cpp \
-                  RageFile.cpp \
-                  RageFileBasic.cpp \
-                  RageFileDriver.cpp \
-                  RageFileDriverDeflate.cpp \
-                  RageFileDriverDirect.cpp \
-                  RageFileDriverDirectHelpers.cpp \
-                  RageFileDriverMemory.cpp \
-                  RageFileDriverReadAhead.cpp \
-                  RageFileDriverSlice.cpp \
-                  RageFileDriverTimeout.cpp \
-                  RageFileDriverZip.cpp \
-                  RageFileManager.cpp \
-                  RageFileManager_ReadAhead.cpp \
-                  RageInput.cpp \
-                  RageInputDevice.cpp \
-                  RageLog.cpp \
-                  RageMath.cpp \
-                  RageModelGeometry.cpp \
-                  RageSound.cpp \
-                  RageSoundManager.cpp \
-                  RageSoundMixBuffer.cpp \
-                  RageSoundPosMap.cpp \
-                  RageSoundReader.cpp \
-                  RageSoundReader_Chain.cpp \
-                  RageSoundReader_ChannelSplit.cpp \
-                  RageSoundReader_Extend.cpp \
-                  RageSoundReader_FileReader.cpp \
-                  RageSoundReader_MP3.cpp \
-                  RageSoundReader_Merge.cpp \
-                  RageSoundReader_Pan.cpp \
-                  RageSoundReader_PitchChange.cpp \
-                  RageSoundReader_PostBuffering.cpp \
-                  RageSoundReader_Preload.cpp \
-                  RageSoundReader_Resample_Good.cpp \
-                  RageSoundReader_SpeedChange.cpp \
-                  RageSoundReader_ThreadedBuffer.cpp \
-                  RageSoundReader_Vorbisfile.cpp \
-                  RageSoundReader_WAV.cpp \
-                  RageSoundUtil.cpp \
-                  RageSurface.cpp \
-                  RageSurfaceUtils.cpp \
-                  RageSurfaceUtils_Dither.cpp \
-                  RageSurfaceUtils_Palettize.cpp \
-                  RageSurfaceUtils_Zoom.cpp \
-                  RageSurface_Load.cpp \
-                  RageSurface_Load_BMP.cpp \
-                  RageSurface_Load_GIF.cpp \
-                  RageSurface_Load_JPEG.cpp \
-                  RageSurface_Load_PNG.cpp \
-                  RageSurface_Load_XPM.cpp \
-                  RageSurface_Save_BMP.cpp \
-                  RageSurface_Save_JPEG.cpp \
-                  RageSurface_Save_PNG.cpp \
-                  RageTexture.cpp \
-                  RageTextureID.cpp \
-                  RageTextureManager.cpp \
-                  RageTexturePreloader.cpp \
-                  RageTextureRenderTarget.cpp \
-                  RageThreads.cpp \
-                  RageTimer.cpp \
-                  RageTypes.cpp \
-                  RageUtil.cpp \
-                  RageUtil_BackgroundLoader.cpp \
-                  RageUtil_CachedObject.cpp \
-                  RageUtil_CharConversions.cpp \
-                  RageUtil_FileDB.cpp \
-                  RageUtil_WorkerThread.cpp \
+                  $(RAGE_ENGINE) \
                   RandomSample.cpp \
                   ReceptorArrow.cpp \
                   ReceptorArrowRow.cpp \
@@ -288,95 +380,7 @@ LOCAL_SRC_FILES+= ver.cpp \
                   RoomInfoDisplay.cpp \
                   RoomWheel.cpp \
                   SampleHistory.cpp \
-                  ScoreDisplay.cpp \
-                  ScoreDisplayAliveTime.cpp \
-                  ScoreDisplayBattle.cpp \
-                  ScoreDisplayCalories.cpp \
-                  ScoreDisplayLifeTime.cpp \
-                  ScoreDisplayNormal.cpp \
-                  ScoreDisplayOni.cpp \
-                  ScoreDisplayPercentage.cpp \
-                  ScoreDisplayRave.cpp \
-                  ScoreKeeper.cpp \
-                  ScoreKeeperNormal.cpp \
-                  ScoreKeeperRave.cpp \
-                  ScoreKeeperShared.cpp \
-                  Screen.cpp \
-                  ScreenAttract.cpp \
-                  ScreenBookkeeping.cpp \
-                  ScreenContinue.cpp \
-                  ScreenDebugOverlay.cpp \
-                  ScreenDemonstration.cpp \
-                  ScreenDimensions.cpp \
-                  ScreenEdit.cpp \
-                  ScreenEditMenu.cpp \
-                  ScreenEnding.cpp \
-                  ScreenEvaluation.cpp \
-                  ScreenExit.cpp \
-                  ScreenGameplay.cpp \
-                  ScreenGameplayLesson.cpp \
-                  ScreenGameplayNormal.cpp \
-                  ScreenGameplayShared.cpp \
-                  ScreenGameplaySyncMachine.cpp \
-                  ScreenHighScores.cpp \
-                  ScreenHowToPlay.cpp \
-                  ScreenInstructions.cpp \
-                  ScreenJukebox.cpp \
-                  ScreenManager.cpp \
-                  ScreenMapControllers.cpp \
-                  ScreenMessage.cpp \
-                  ScreenMiniMenu.cpp \
-                  ScreenNameEntry.cpp \
-                  ScreenNameEntryTraditional.cpp \
-                  ScreenNetEvaluation.cpp \
-                  ScreenNetRoom.cpp \
-                  ScreenNetSelectBase.cpp \
-                  ScreenNetSelectMusic.cpp \
-                  ScreenNetworkOptions.cpp \
-                  ScreenOptions.cpp \
-                  ScreenOptionsCourseOverview.cpp \
-                  ScreenOptionsEditCourse.cpp \
-                  ScreenOptionsEditProfile.cpp \
-                  ScreenOptionsExportPackage.cpp \
-                  ScreenOptionsManageCourses.cpp \
-                  ScreenOptionsManageEditSteps.cpp \
-                  ScreenOptionsManageProfiles.cpp \
-                  ScreenOptionsMaster.cpp \
-                  ScreenOptionsMasterPrefs.cpp \
-                  ScreenOptionsMemoryCard.cpp \
-                  ScreenOptionsToggleSongs.cpp \
-                  ScreenPackages.cpp \
-                  ScreenPlayerOptions.cpp \
-                  ScreenProfileLoad.cpp \
-                  ScreenProfileSave.cpp \
-                  ScreenPrompt.cpp \
-                  ScreenRanking.cpp \
-                  ScreenReloadSongs.cpp \
-                  ScreenSMOnlineLogin.cpp \
-                  ScreenSandbox.cpp \
-                  ScreenSaveSync.cpp \
-                  ScreenSelect.cpp \
-                  ScreenSelectCharacter.cpp \
-                  ScreenSelectLanguage.cpp \
-                  ScreenSelectMaster.cpp \
-                  ScreenSelectMusic.cpp \
-                  ScreenSelectProfile.cpp \
-                  ScreenServiceAction.cpp \
-                  ScreenSetTime.cpp \
-                  ScreenSongOptions.cpp \
-                  ScreenSplash.cpp \
-                  ScreenStatsOverlay.cpp \
-                  ScreenSyncOverlay.cpp \
-                  ScreenSystemLayer.cpp \
-                  ScreenTestInput.cpp \
-                  ScreenTestLights.cpp \
-                  ScreenTestSound.cpp \
-                  ScreenTextEntry.cpp \
-                  ScreenTitleMenu.cpp \
-                  ScreenUnlockBrowse.cpp \
-                  ScreenUnlockCelebrate.cpp \
-                  ScreenUnlockStatus.cpp \
-                  ScreenWithMenuElements.cpp \
+                  $(SCREENS_SRC) \
                   ScrollBar.cpp \
                   SnapDisplay.cpp \
                   Song.cpp \
@@ -415,6 +419,10 @@ LOCAL_SRC_FILES+= ver.cpp \
                   XmlFileUtil.cpp \
                   global.cpp
 
+LOCAL_SRC_FILES:= $(PLATFORM_SRC) \
+                  $(SHARED_ARCH_SRC) \
+                  $(STEPMANIA_SRC)
+
 #need to implement these:
                   #archutils/Android/CrashHandler.cpp
                   #arch/MemoryCard/MemoryCardDriver_Android.cpp \
@@ -441,28 +449,32 @@ LOCAL_C_INCLUDES := $(TOP_PATH) \
 LOCAL_CFLAGS := -DANDROID -DCPU_ARM -DENDIAN_LITTLE -DENDIAN_32BITWORD -DGLEW_NO_GLU
 
 # Comment out the next line if we're not doing a testbuild.
-LOCAL_CFLAGS += -DANDROID_TEST
+LOCAL_CFLAGS += -DANDROID_TEST -finline-limit=300 -fno-exceptions
 
 LOCAL_LDLIBS    := -llog -landroid -lz -lGLESv2 -lEGL -lOpenSLES
 LOCAL_STATIC_LIBRARIES := jsoncpp libtomcrypt libtommath glew android_native_app_glue pcre \
-                          ndk_helper png libmad libvorbis libjpeg lua stlport_static
+                          ndk_helper lua png libmad libvorbis libjpeg  stlport_static
 
-LOCAL_SHARED_LIBRARIES := avcodec avfilter avformat swresample swscale avutil
+LOCAL_SHARED_LIBRARIES := avcodec avfilter avformat swresample swscale avutil \
+                          
 
 include $(BUILD_SHARED_LIBRARY)
 
-include $(TOP_PATH)/libtomcrypt/Android.mk
-include $(TOP_PATH)/libtommath/Android.mk
-include $(EXTERN_PATH)/lua-5.1/Android.mk
-include $(EXTERN_PATH)/jsoncpp/Android.mk
-include $(EXTERN_PATH)/libpng/Android.mk
-include $(EXTERN_PATH)/libjpeg/Android.mk
-include $(EXTERN_PATH)/pcre/Android.mk
+$(call import-module,$(TOP_PATH)/libtomcrypt)
+$(call import-module,$(TOP_PATH)/libtommath)
+$(call import-module,$(EXTERN_PATH)/lua-5.1)
+$(call import-module,$(EXTERN_PATH)/jsoncpp)
+$(call import-module,$(EXTERN_PATH)/libpng)
+$(call import-module,$(EXTERN_PATH)/libjpeg)
+$(call import-module,$(EXTERN_PATH)/pcre)
 # Vorbis brings in libogg by itself
-include $(EXTERN_PATH)/android/vorbis/Android.mk
-include $(EXTERN_PATH)/glew-1.10/Android.mk
-#include $(EXTERN_PATH)/regal/build/android/Regal/jni/Android.mk
-include $(EXTERN_PATH)/mad-0.15.1b/Android.mk
+$(call import-module,$(EXTERN_PATH)/android/vorbis)
+$(call import-module,$(EXTERN_PATH)/glew-1.10)
+$(call import-module,$(EXTERN_PATH)/mad-0.15.1b)
+
+#$(call import-module,$(EXTERN_PATH)/regal/build/android/Regal/jni)
+
+# Pull FFMpeg in.
 include $(ANDEXTERN_PATH)/Android.mk
 
 $(call import-module,android/ndk_helper)
