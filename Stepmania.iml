@@ -66,6 +66,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/archutils/Android/Framework/aidl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/archutils/Android/Framework/assets" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/archutils/Android/Framework/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/archutils/Android/Framework/renderscript" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/archutils/Android/Framework/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/archutils/Android/Framework/resources" type="java-resource" />
