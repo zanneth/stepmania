@@ -3,6 +3,8 @@ apply plugin: 'android'
 
 project.ext {
     nativearch = "none";
+    libdir = "none";
+    eabi = "none";
 }
 project.ext {
     ndkDir = "/opt/android-ndk";
@@ -10,12 +12,10 @@ project.ext {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.0"
-
+    buildToolsVersion '19.0.0'
     // Deactivate the automated JNI step altogether.
     // as of Android-Gradle 0.7.3, it's not optimal for this task.
-    sourceSets.main.jni.srcDirs = []
-
+//    sourceSets.main.jni.srcDirs = []
     sourceSets {
         main {
             manifest.srcFile 'src/archutils/Android/Framework/AndroidManifest.xml'
@@ -25,10 +25,9 @@ android {
             aidl.srcDirs = ['src/archutils/Android/Framework/aidl']
             renderscript.srcDirs = ['src/archutils/Android/Framework/renderscript']
             assets.srcDirs = ['src/archutils/Android/Framework/assets']
-            jniLibs.srcDir 'src/obj/local'
+            jniLibs.srcDirs = ['src/obj/local']
         }
     }
-
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 19
@@ -46,27 +45,33 @@ android {
             debuggable true
         }
     }
-
     // From http://ph0b.com/android-studio-gradle-and-ndk-integration/
     productFlavors {
         x86 {
             versionCode Integer.parseInt("6" + defaultConfig.versionCode)
+            project.ext.nativearch = "x86"
+            project.ext.eabi = "x86"
+            project.ext.libdir = "x86"
             ndk {
                 abiFilter "x86"
-                project.ext.nativearch = "x86"
             }
         }
         mips {
             versionCode Integer.parseInt("4" + defaultConfig.versionCode)
-            ndk {
+            project.ext.nativearch = "mips"
+            project.ext.eabi = "mips"
+            project.ext.libdir = "mips"
+            /*ndk {
                 abiFilter "mips"
-            }
+            }*/
         }
         armv7 {
             versionCode Integer.parseInt("2" + defaultConfig.versionCode)
+            project.ext.nativearch = "armv7-a"
+            project.ext.eabi = "armeabi-v7a"
+            project.ext.libdir = "armv7"
             ndk {
                 abiFilter "armeabi-v7a"
-                project.ext.nativearch = "armv7-a"
             }
         }
         // No love for mips for now.
@@ -79,6 +84,12 @@ android {
         }
         */
         fat
+    }
+    signingConfigs {
+        config1 {
+            storeFile file('/home/cybik/.android/adbkey')
+            storePassword 'ata66udma'
+        }
     }
 }
 dependencies {
@@ -97,12 +108,12 @@ task compileFFMPEG(type:Exec){
 task compileStepmania(type:Exec){
     // Build the Skeleton[s?]
     workingDir '.'
-    commandLine project.ext.ndkDir+'/ndk-build','-j16','APP_PLATFORM=android-'+project.android.defaultConfig.minSdkVersion,'NDK_PROJECT_PATH=src/','APP_BUILD_SCRIPT=src/Android.mk','NDK_APPLICATION_MK=src/Application.mk'
+    commandLine project.ext.ndkDir+'/ndk-build','-j16','APP_PLATFORM=android-'+project.android.defaultConfig.minSdkVersion,'NDK_PROJECT_PATH=src/','APP_BUILD_SCRIPT=src/Android.mk','NDK_APPLICATION_MK=src/Application.mk','NDK_MODULE_PATH=./','APP_ABI='+project.ext.eabi
 }
 task cleanStepmania(type:Exec){
     // Build the Skeleton[s?]
     workingDir '.'
-    commandLine project.ext.ndkDir+'/ndk-build','-j16','APP_PLATFORM=android-'+project.android.defaultConfig.minSdkVersion,'NDK_PROJECT_PATH=src/','APP_BUILD_SCRIPT=src/Android.mk','NDK_APPLICATION_MK=src/Application.mk','clean'
+    commandLine project.ext.ndkDir+'/ndk-build','-j16','APP_PLATFORM=android-'+project.android.defaultConfig.minSdkVersion,'NDK_PROJECT_PATH=src/','APP_BUILD_SCRIPT=src/Android.mk','NDK_APPLICATION_MK=src/Application.mk','NDK_MODULE_PATH=./','APP_ABI='+project.ext.eabi,'clean'
 }
 task redirLibs(type:Exec){
     // Rename/move some libraries to more NDK-proper paths
@@ -123,4 +134,3 @@ def getVersionCodeFromManifest() {
     matcher.find()
     return Integer.parseInt(matcher.group(1))
 }
-
