@@ -12,7 +12,6 @@ LOCAL_SRC_FILES := bit.c \
                    huffman.c \
                    layer12.c \
                    layer3.c \
-                   minimad.c \
                    stream.c \
                    synth.c \
                    timer.c \

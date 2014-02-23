@@ -29,13 +29,13 @@ LOCAL_SRC_FILES := src/lauxlib.c \
 		  src/lparser.c \
 		  src/ldo.c \
 		  src/lstring.c \
-		  src/lua.c \
 		  src/lmem.c \
 		  src/ldblib.c \
 		  src/lstrlib.c \
 		  src/liolib.c \
 		  src/lfunc.c \
-		  src/ldebug.c \
+		  src/ldebug.c
+#		  src/lua.c \
 		  
 LOCAL_C_INCLUDES := $(LOC_LUA_PATH)/src
 LOCAL_EXPORT_C_INCLUDES := $(LOC_LUA_PATH)/src

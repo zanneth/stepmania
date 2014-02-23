@@ -6,7 +6,6 @@ for i in armeabi x86
 do
     mkdir -p jniLibs/$i; echo "ARM structure done"
     cp ffmpeg_output/$i/lib/lib*-*.so jniLibs/$i; echo "$i FFMPEG relibbing done"
-    cp libs/$i/libstepstart.so jniLibs/$i; echo "$i app relibbing done"
 done
 
 #mkdir -p jniLibs/armeabi; echo "ARM structure done"

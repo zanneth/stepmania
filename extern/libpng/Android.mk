@@ -16,11 +16,12 @@ LOCAL_SRC_FILES := include/png.c \
                    include/pngset.c \
                    include/pngtest.c \
                    include/pngtrans.c \
-                   include/pngvalid.c \
                    include/pngwio.c \
                    include/pngwrite.c \
                    include/pngwtran.c \
                    include/pngwutil.c
+
+#                   include/pngvalid.c \
 
 LOCAL_C_INCLUDES := $(LOC_PNG_PATH)/include
 LOCAL_EXPORT_C_INCLUDES := $(LOC_PNG_PATH)/include
