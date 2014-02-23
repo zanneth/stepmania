@@ -968,7 +968,7 @@ void android_main(android_app* state) {
     AndroidGlobals::ANDROID_APP_INSTANCE = state;
 
     // Just call the method upstream and exit. This is a skeleton, not an app.
-    Launch(0, NULL);
+    Launch(0, AndroidGlobals::GetDefaultCommandArguments());
 }
 #endif
 

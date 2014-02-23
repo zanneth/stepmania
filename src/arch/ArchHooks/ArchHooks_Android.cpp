@@ -239,16 +239,6 @@ void ArchHooks_Android::SetTime( tm newtime )
 static LocalizedString COULDNT_FIND_SONGS( "ArchHooks_Android", "Couldn't find 'Songs'" );
 void ArchHooks::MountInitialFilesystems( const RString &sDirOfExecutable )
 {
-#if defined(UNIX)
-	/* Mount the root filesystem, so we can read files in /proc, /etc, and so on.
-	 * This is /rootfs, not /root, to avoid confusion with root's home directory. */
-	FILEMAN->Mount( "dir", "/", "/rootfs" );
-
-	/* Mount /proc, so Alsa9Buf::GetSoundCardDebugInfo() and others can access it.
-	 * (Deprecated; use rootfs.) */
-	FILEMAN->Mount( "dir", "/proc", "/proc" );
-#endif
-
 	RString Root;
 	struct stat st;
 	if( !stat(sDirOfExecutable + "/Packages", &st) && st.st_mode&S_IFDIR )
@@ -258,7 +248,7 @@ void ArchHooks::MountInitialFilesystems( const RString &sDirOfExecutable )
 	else if( !stat(RageFileManagerUtil::sInitialWorkingDirectory + "/Songs", &st) && st.st_mode&S_IFDIR )
 		Root = RageFileManagerUtil::sInitialWorkingDirectory;
 	else
-		RageException::Throw( "%s", COULDNT_FIND_SONGS.GetValue().c_str() );
+		RageException::Throw( "%s :: Execution Context: %s", COULDNT_FIND_SONGS.GetValue().c_str(), sDirOfExecutable );
 
 	FILEMAN->Mount( "dir", Root, "/" );
 }

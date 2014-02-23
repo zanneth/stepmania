@@ -26,6 +26,9 @@ namespace AndroidGlobals {
 
 
     void Log(RString string);
+
+    char** GetDefaultCommandArguments();
+    extern char** commandArguments;
 };
 
 #endif //ANDROID_GLOBALS_H
