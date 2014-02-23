@@ -172,10 +172,17 @@ public:
 };
 static RageFileDriverMountpoints *g_Mountpoints = NULL;
 
+/**
+ * \todo Can this be thrown into archhooks?
+ **/
 static RString GetDirOfExecutable( RString argv0 )
 {
 	// argv[0] can be wrong in most OS's; try to avoid using it.
 
+#if defined(ANDROID)
+    // Path was pre-processed. Return directly.
+    return argv0;
+#else
 	RString sPath;
 #if defined(WIN32)
 	char szBuf[MAX_PATH];
@@ -204,7 +211,7 @@ static RString GetDirOfExecutable( RString argv0 )
 
 	if( !bIsAbsolutePath )
 	{
-#if defined(UNIX) || defined(MACOSX)
+#if (defined(UNIX) && !defined(ANDROID)) || defined(MACOSX)
 		if( sPath.empty() )
 		{
 			// This is in our path so look for it.
@@ -237,6 +244,7 @@ static RString GetDirOfExecutable( RString argv0 )
 #endif
 	}
 	return sPath;
+#endif
 }
 
 static void ChangeToDirOfExecutable( const RString &argv0 )
@@ -1128,7 +1136,7 @@ LUA_REGISTER_CLASS( RageFileManager )
 // lua end
 
 /*
- * Copyright (c) 2001-2004 Glenn Maynard, Chris Danford
+ * Copyright (c) 2001-2014 Glenn Maynard, Chris Danford, Renaud Lepage
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
