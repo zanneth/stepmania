@@ -57,7 +57,9 @@ char** AndroidGlobals::GetDefaultCommandArguments() {
     // argv[0] is a path.
     char** theArgv;
     theArgv = (char**)malloc(sizeof(char*[0]));
-    theArgv[0] = (char*)malloc(sizeof(ANDROID_APP_INSTANCE->activity->externalDataPath));
+    theArgv[0] = (char*)malloc(16*sizeof(ANDROID_APP_INSTANCE->activity->externalDataPath));
+
+    Log(RString(ANDROID_APP_INSTANCE->activity->externalDataPath));
 
     strcpy(theArgv[0], ANDROID_APP_INSTANCE->activity->externalDataPath);
 
