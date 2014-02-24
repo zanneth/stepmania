@@ -61,7 +61,7 @@ private:
     SLPlayItf slesPlayerItf;
 
     // SLES+Android management interfaces
-    SLAndroidConfigurationItf slesAndroidConfItf;
+    SLAndroidConfigurationItf slesAndroidPlayerConfItf;
     SLAndroidSimpleBufferQueueItf slesAndroidSimpleBufQueueItf;
 
     SLresult SimpleEnqueue(SLAndroidSimpleBufferQueueItf self,
@@ -79,7 +79,7 @@ private:
 
 
     static const int M_CHANNELS_DEFAULT = 2;
-    static const int M_SPEAKERS = (M_CHANNELS_DEFAULT >1
+    static const int M_SPEAKERS_MASK = (M_CHANNELS_DEFAULT >1
         ? (SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT)
         : SL_SPEAKER_FRONT_CENTER
     );
@@ -90,7 +90,7 @@ private:
     int M_PREF_CHKSIZE_FRAMES;
 
     // Native sample rate. Get once, don't ask Java again.
-    int M_SAMPLERATE;
+    SLuint32 M_SAMPLERATE;
 
 	// Let us define the max chunk number at 8; chunksize is 1024 so that makes a 8kb writeahead.
 	//static const int M_PREF_MAXCHUNKNB = 8;

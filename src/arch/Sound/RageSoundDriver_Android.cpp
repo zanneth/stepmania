@@ -16,7 +16,7 @@ REGISTER_SOUND_DRIVER_CLASS2( Android, Android );
  **/
 
 RageSoundDriver_Android::RageSoundDriver_Android() {
-    M_SAMPLERATE = AndroidGlobals::Audio::GetNativeSampleRate();
+    M_SAMPLERATE = (AndroidGlobals::Audio::GetNativeSampleRate()*1000);
     M_PREF_CHKSIZE_FRAMES = AndroidGlobals::Audio::GetNativeFramesPerBuffer();
 }
 RageSoundDriver_Android::~RageSoundDriver_Android() {
@@ -103,15 +103,15 @@ RString RageSoundDriver_Android::CreateSLESInterfaces() {
                 break;
             }
 
-            rslt = (*slesCoreItf)->GetInterface
-                (slesCoreItf, SL_IID_PLAY, &slesPlayerItf);
+            rslt = (*slesPlayerObj)->GetInterface
+                (slesPlayerObj, SL_IID_PLAY, &slesPlayerItf);
             if(rslt != SL_RESULT_SUCCESS) {
                 failure = "GetInterface SL_IID_PLAY";
                 break;
             }
 
-            rslt = (*slesCoreItf)->GetInterface
-                (slesCoreItf, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, &slesAndroidSimpleBufQueueItf);
+            rslt = (*slesPlayerObj)->GetInterface
+                (slesPlayerObj, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, &slesAndroidSimpleBufQueueItf);
             if(rslt != SL_RESULT_SUCCESS) {
                 failure = "GetInterface SL_IID_ANDROIDSIMPLEBUFFERQUEUE";
                 break;
@@ -124,12 +124,12 @@ RString RageSoundDriver_Android::CreateSLESInterfaces() {
                 break;
             }
 
-            rslt = (*slesCoreItf)->GetInterface
-                (slesCoreItf, SL_IID_ANDROIDCONFIGURATION, &slesAndroidConfItf);
+            /*rslt = (*slesPlayerObj)->GetInterface
+                (slesPlayerObj, SL_IID_ANDROIDCONFIGURATION, &slesAndroidPlayerConfItf);
             if(rslt != SL_RESULT_SUCCESS) {
                 failure = "GetInterface SL_IID_ANDROIDCONFIGURATION";
                 break;
-            }
+            }*/
 
             return "";
         }
@@ -143,7 +143,12 @@ RString RageSoundDriver_Android::CreateSLESInterfaces() {
 
 bool RageSoundDriver_Android::InitAudioPlayback() {
 
-    const SLInterfaceID ids_buffer_queue_slitfid[] = {SL_IID_ANDROIDBUFFERQUEUESOURCE};
+    //const SLInterfaceID ids_buffer_queue_slitfid[] = {SL_IID_ANDROIDBUFFERQUEUESOURCE};
+    const SLInterfaceID ids_buffer_queue_slitfid[] = {SL_IID_ANDROIDSIMPLEBUFFERQUEUE};
+    const SLInterfaceID ids_buffer_queue_conf_slitfid[] = {
+                                                            SL_IID_ANDROIDSIMPLEBUFFERQUEUE,
+                                                            SL_IID_ANDROIDCONFIGURATION
+                                                          };
     const SLInterfaceID ids_volume_only_slitfid[] = {SL_IID_VOLUME};
     const SLInterfaceID ids_no_interfaces_slitfid[] = {SL_IID_NULL};
     const SLboolean required_false_slbool[] = {SL_BOOLEAN_FALSE};
@@ -160,9 +165,11 @@ bool RageSoundDriver_Android::InitAudioPlayback() {
         ids_no_interfaces_slitfid,
         required_false_slbool // Volume interface not required; Array.
      );
+    LOG->Trace("%s :: %s", "RSD_A", "Creating OutputMix");
     if(rslt != SL_RESULT_SUCCESS) return false;
     // Realize outputmix
     rslt = (*slesOutputMixObj)->Realize(slesOutputMixObj, SL_BOOLEAN_FALSE);
+    LOG->Trace("%s :: %s", "RSD_A", "Realizing OutputMix");
     if(rslt != SL_RESULT_SUCCESS) return false;
 
     SLDataLocator_AndroidBufferQueue localBufferQueue = {
@@ -173,10 +180,10 @@ bool RageSoundDriver_Android::InitAudioPlayback() {
     SLDataFormat_PCM format_pcm = {
         SL_DATAFORMAT_PCM,
         M_CHANNELS_DEFAULT,
-        M_SAMPLERATE,
+        (SLuint32)M_SAMPLERATE,
         SL_PCMSAMPLEFORMAT_FIXED_16,
         SL_PCMSAMPLEFORMAT_FIXED_16,
-        M_SPEAKERS,
+        M_SPEAKERS_MASK,
         SL_BYTEORDER_LITTLEENDIAN
     };
     SLDataLocator_OutputMix outMixer = {SL_DATALOCATOR_OUTPUTMIX, slesOutputMixObj};
@@ -189,12 +196,14 @@ bool RageSoundDriver_Android::InitAudioPlayback() {
         &audioSrc,
         &soundSink,
         1, // interface count
-        ids_buffer_queue_slitfid,
+        ids_buffer_queue_slitfid, //ids_buffer_queue_slitfid
         required_true_slbool
     );
+    LOG->Trace("%s :: %s :: %d :: %d", "RSD_A", "CreateAudioPlayer", rslt, M_SAMPLERATE);
     if(rslt != SL_RESULT_SUCCESS) return false;
 
     rslt = (*slesPlayerObj)->Realize(slesPlayerObj, SL_BOOLEAN_FALSE);
+    LOG->Trace("%s :: %s", "RSD_A", "Realizing player");
     if(rslt != SL_RESULT_SUCCESS) return false;
 
     return true;
