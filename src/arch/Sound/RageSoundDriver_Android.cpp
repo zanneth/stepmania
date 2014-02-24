@@ -55,7 +55,7 @@ RString RageSoundDriver_Android::Init() {
             // Realize the Core
             // ARGS: self, SLboolean async [asynchronous init]
             if((*slesCoreItf)->Realize(slesCoreItf, SL_BOOLEAN_FALSE) != SL_RESULT_SUCCESS)
-                return "Init failed";
+                return "RSD_Android :: Init failed";
 
             return CreateSLESInterfaces();
         }
@@ -63,9 +63,9 @@ RString RageSoundDriver_Android::Init() {
         case SL_RESULT_MEMORY_FAILURE:
         case SL_RESULT_FEATURE_UNSUPPORTED:
         case SL_RESULT_RESOURCE_ERROR:
-            return "Init failed";
+            return "RSD_Android :: Init failed";
     }
-    return "Init failed";
+    return "RSD_Android :: Init failed";
 }
 
 
@@ -84,6 +84,7 @@ RString RageSoundDriver_Android::CreateSLESInterfaces() {
      *  GetInterface(selfReference, ENGINEID, &TargetVariable)
      **/
 
+    RString failure = "";
     switch((*slesCoreItf)->GetInterface(slesCoreItf, SL_IID_ENGINE, &slesEngineItf)){
         case SL_RESULT_SUCCESS: {
             SLresult rslt;
@@ -91,52 +92,72 @@ RString RageSoundDriver_Android::CreateSLESInterfaces() {
             // Engine doesn't have a Realize method.
             rslt = (*slesCoreItf)->GetInterface
                 (slesCoreItf, SL_IID_ENGINE, &slesEngineItf);
-            if(rslt != SL_RESULT_SUCCESS) break;
+            if(rslt != SL_RESULT_SUCCESS) {
+                failure = "GetInterface SL_IID_ENGINE";
+                break;
+            }
 
             // Contain the playback objects into one method. Less clutter.
-            if(!InitAudioPlayback()) break;
+            if(!InitAudioPlayback()) {
+                failure = "InitAudioPlayback";
+                break;
+            }
 
             rslt = (*slesCoreItf)->GetInterface
                 (slesCoreItf, SL_IID_PLAY, &slesPlayerItf);
-            if(rslt != SL_RESULT_SUCCESS) break;
+            if(rslt != SL_RESULT_SUCCESS) {
+                failure = "GetInterface SL_IID_PLAY";
+                break;
+            }
 
             rslt = (*slesCoreItf)->GetInterface
                 (slesCoreItf, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, &slesAndroidSimpleBufQueueItf);
-            if(rslt != SL_RESULT_SUCCESS) break;
+            if(rslt != SL_RESULT_SUCCESS) {
+                failure = "GetInterface SL_IID_ANDROIDSIMPLEBUFFERQUEUE";
+                break;
+            }
 
             rslt = (*slesAndroidSimpleBufQueueItf)->RegisterCallback
                 (slesAndroidSimpleBufQueueItf, BufferIsEmptyCB, this);
-            if(rslt != SL_RESULT_SUCCESS) break;
+            if(rslt != SL_RESULT_SUCCESS) {
+                failure = "RegisterCB Empty Buffer";
+                break;
+            }
 
             rslt = (*slesCoreItf)->GetInterface
                 (slesCoreItf, SL_IID_ANDROIDCONFIGURATION, &slesAndroidConfItf);
-            if(rslt != SL_RESULT_SUCCESS) break;
+            if(rslt != SL_RESULT_SUCCESS) {
+                failure = "GetInterface SL_IID_ANDROIDCONFIGURATION";
+                break;
+            }
 
             return "";
         }
         case SL_RESULT_PARAMETER_INVALID:
         case SL_RESULT_FEATURE_UNSUPPORTED:
         case SL_RESULT_PRECONDITIONS_VIOLATED:
-            return "Init failure";
+            return "RSD_Android :: Interface Creation failure";
     }
-    return "Init failure";
+    return RString(RString("RSD_Android :: Interface Creation failure@")+RString(failure)).c_str();
 }
 
 bool RageSoundDriver_Android::InitAudioPlayback() {
 
     const SLInterfaceID ids_buffer_queue_slitfid[] = {SL_IID_ANDROIDBUFFERQUEUESOURCE};
     const SLInterfaceID ids_volume_only_slitfid[] = {SL_IID_VOLUME};
+    const SLInterfaceID ids_no_interfaces_slitfid[] = {SL_IID_NULL};
     const SLboolean required_false_slbool[] = {SL_BOOLEAN_FALSE};
     const SLboolean required_true_slbool[] = {SL_BOOLEAN_TRUE};
 
     // Result Container
     SLresult rslt;
 
+    // See Android documentation for OpenSLES details and interface supports.
     rslt = (*slesEngineItf)->CreateOutputMix(
         slesEngineItf,
         &slesOutputMixObj,
-        1, // Only one interface. By default?
-        ids_volume_only_slitfid, // Connect to Volume interfaces?; Array
+        0, // Only one interface. By default?
+        ids_no_interfaces_slitfid,
         required_false_slbool // Volume interface not required; Array.
      );
     if(rslt != SL_RESULT_SUCCESS) return false;
