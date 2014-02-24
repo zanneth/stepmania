@@ -237,6 +237,16 @@ void RageLog::UserLog( const RString &sType, const RString &sElement, const char
 
 void RageLog::Write( int where, const RString &sLine )
 {
+#if defined(ANDROID)
+    if(where&(WRITE_LOUD & WRITE_TO_INFO)) // WARN
+        AndroidGlobals::Log_Warn(sLine);
+    else if(where&WRITE_TO_INFO)
+        AndroidGlobals::Log_Info(sLine);
+    else if(where&WRITE_TO_USER_LOG)
+        AndroidGlobals::Log(sLine);
+    else if(where == 0) // traces
+        AndroidGlobals::Log_Debug(sLine);
+#endif
 	LockMut( *g_Mutex );
 
 	const char *const sWarningSeparator = "/////////////////////////////////////////";

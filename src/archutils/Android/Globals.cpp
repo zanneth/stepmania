@@ -1,7 +1,6 @@
 #include "Globals.h"
 
 #include <global.h>
-#include <android/log.h>
 
 android_app* AndroidGlobals::ANDROID_APP_INSTANCE = NULL;
 char** AndroidGlobals::commandArguments = NULL;
@@ -59,8 +58,6 @@ char** AndroidGlobals::GetDefaultCommandArguments() {
     theArgv = (char**)malloc(sizeof(char*[0]));
     theArgv[0] = (char*)malloc(16*sizeof(ANDROID_APP_INSTANCE->activity->externalDataPath));
 
-    Log(RString(ANDROID_APP_INSTANCE->activity->externalDataPath));
-
     strcpy(theArgv[0], ANDROID_APP_INSTANCE->activity->externalDataPath);
 
     commandArguments = theArgv;
@@ -68,8 +65,23 @@ char** AndroidGlobals::GetDefaultCommandArguments() {
 }
 
 #define APPNAME "StepMania"
+void AndroidGlobals::Log(android_LogPriority prio, RString string) {
+    __android_log_write(prio, APPNAME, string.c_str());
+}
 void AndroidGlobals::Log(RString string) {
-    __android_log_write(ANDROID_LOG_VERBOSE, APPNAME, string.c_str());
+    Log(ANDROID_LOG_VERBOSE, string.c_str());
+}
+void AndroidGlobals::Log_Error(RString string) {
+    Log(ANDROID_LOG_ERROR, string.c_str());
+}
+void AndroidGlobals::Log_Warn(RString string) {
+    Log(ANDROID_LOG_WARN, string.c_str());
+}
+void AndroidGlobals::Log_Debug(RString string) {
+    Log(ANDROID_LOG_DEBUG, string.c_str());
+}
+void AndroidGlobals::Log_Info(RString string) {
+    Log(ANDROID_LOG_INFO, string.c_str());
 }
 
 

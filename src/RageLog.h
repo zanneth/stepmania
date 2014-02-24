@@ -3,6 +3,11 @@
 #ifndef RAGE_LOG_H
 #define RAGE_LOG_H
 
+
+#if defined(ANDROID)
+#include "archutils/Android/Globals.h"
+#endif
+
 class RageLog
 {
 public:

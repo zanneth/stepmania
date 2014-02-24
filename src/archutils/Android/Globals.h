@@ -3,6 +3,7 @@
 
 // Proper app glue.
 #include <android_native_app_glue.h>
+#include <android/log.h>
 
 // Typedefs
 #include "global.h"
@@ -25,7 +26,12 @@ namespace AndroidGlobals {
     extern RString GetVideoDriverName();
 
 
-    void Log(RString string);
+    extern void Log(android_LogPriority prio, RString string);
+    extern void Log(RString string);
+    extern void Log_Error(RString string);
+    extern void Log_Warn(RString string);
+    extern void Log_Debug(RString string);
+    extern void Log_Info(RString string);
 
     char** GetDefaultCommandArguments();
     extern char** commandArguments;
