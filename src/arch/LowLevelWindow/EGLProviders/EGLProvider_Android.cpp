@@ -2,33 +2,67 @@
 
 #include "archutils/Android/Globals.h"
 
-// EGLhalp
-#include "archutils/Common/EGLHelper.h"
 
-EGLProvider_Android::EGLProvider_Android()
+// Logger
+#include "RageLog.h"
+
+EGLint EGLProvider_Android::attrsInit[] = {
+    EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+    EGL_RED_SIZE, 8,
+    EGL_GREEN_SIZE, 8,
+    EGL_BLUE_SIZE, 8,
+    EGL_ALPHA_SIZE, 8,
+    EGL_NONE
+};
+
+EGLint EGLRenderTargetProvider_Android::targetAttrs[] = {
+    EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+    EGL_ALPHA_SIZE, 8,
+    EGL_RED_SIZE, 8,
+    EGL_GREEN_SIZE, 8,
+    EGL_BLUE_SIZE, 8,
+    EGL_ALPHA_SIZE, 8,  // hardset
+    EGL_DEPTH_SIZE, 16, // hardset
+    EGL_NONE
+    //EGL_ALPHA_SIZE, pWithAlpha?8:EGL_DONT_CARE, //IF WE USE WITHALPHA EVER
+    //EGL_DEPTH_SIZE, pWithDepthBuffer?16:EGL_DONT_CARE,  //IF WE USE WITHALPHA EVER
+};
+
+EGLProvider_Android::EGLProvider_Android() {}
+
+EGLProvider_Android::~EGLProvider_Android(){}
+
+void EGLProvider_Android::PrintDebug()
 {
-    // Get NativeWindow from Android itself; set into the EGLhalp
-    EGLHelper::EGLWindowContext = AndroidGlobals::ANDROID_APP_INSTANCE->window;
-
-    EGLint sizeArray[] = { EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-                          EGL_ALPHA_SIZE, 8,
-                          EGL_RED_SIZE, 8,
-                          EGL_GREEN_SIZE, 8,
-                          EGL_BLUE_SIZE, 8,
-                          EGL_NONE
-                          };
-    attrsInit = (EGLint*)malloc(sizeof(sizeArray));
-    attrsInit = sizeArray;
+    LOG->Trace("WindowContext ptr :: %d", EGLHelper::EGLWindowContext);
+    LOG->Trace("WindowContext drct :: %d", AndroidGlobals::ANDROID_APP_INSTANCE->window);
+    LOG->Trace("SelectedConf :: %d", EGLHelper::EGLSelectedConf);
 }
 
-EGLProvider_Android::~EGLProvider_Android()
+void EGLProvider_Android::PreContextSetup()
 {
-    free(attrsInit);
+    // Set config on the Android window.
+    EGLint format;
+    eglGetConfigAttrib(EGLHelper::EGLDisplayContext,
+                       EGLHelper::EGLSelectedConf,
+                       EGL_NATIVE_VISUAL_ID,
+                       &format);
+
+    PrintDebug();
+    LOG->Trace("Format :: %d", format);
+    ANativeWindow_setBuffersGeometry(
+        //AndroidGlobals::ANDROID_APP_INSTANCE->window,
+        EGLHelper::EGLWindowContext,
+        0,
+        0,
+        format
+    );
 }
 
-EGLint* EGLProvider_Android::GetAttibutesInitConfig()
+void EGLProvider_Android::SetAttibutesInitConfig(EGLint* &target)
 {
-    return attrsInit;
+    target = attrsInit;
 }
 
 bool EGLProvider_Android::GetWasWindowedValue()
@@ -44,57 +78,26 @@ void EGLProvider_Android::Log(RString string)
 void EGLProvider_Android::GetDisplayResolutions(DisplayResolutions &out) const
 {
     DisplayResolution res = {
-                              ANativeWindow_getWidth(AndroidGlobals::ANDROID_APP_INSTANCE->window),
-                              ANativeWindow_getHeight(AndroidGlobals::ANDROID_APP_INSTANCE->window),
-                              true
-                            };
+          ANativeWindow_getWidth(AndroidGlobals::ANDROID_APP_INSTANCE->window),
+          ANativeWindow_getHeight(AndroidGlobals::ANDROID_APP_INSTANCE->window),
+          true
+    };
     out.insert( res );
 }
 
-void EGLProvider_Android::PreContextSetup()
+
+EGLRenderTargetProvider_Android::EGLRenderTargetProvider_Android(){}
+EGLRenderTargetProvider_Android::~EGLRenderTargetProvider_Android(){}
+
+void EGLRenderTargetProvider_Android::SetRenderTargetConfigAttribs
+    (bool pWithAlpha, bool pWithDepthBuffer, EGLint* &target)
 {
-    // Set config on the Android window.
-    EGLint format;
-    eglGetConfigAttrib(EGLHelper::EGLDisplayContext,
-                       EGLHelper::EGLSelectedConf,
-                       EGL_NATIVE_VISUAL_ID,
-                       &format);
-
-    ANativeWindow_setBuffersGeometry(EGLHelper::EGLWindowContext, 0, 0, format);
-}
-
-
-EGLRenderTargetProvider_Android::EGLRenderTargetProvider_Android()
-{
-    EGLint argsSize[] = { EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
-                          EGL_ALPHA_SIZE, 8,
-                          EGL_RED_SIZE, 8,
-                          EGL_GREEN_SIZE, 8,
-                          EGL_BLUE_SIZE, 8,
-                          EGL_ALPHA_SIZE, 8,
-                          EGL_DEPTH_SIZE, 16,
-                          EGL_NONE
-             //EGL_ALPHA_SIZE, pWithAlpha?8:EGL_DONT_CARE, //IF WE USE WITHALPHA EVER
-             //EGL_DEPTH_SIZE, pWithDepthBuffer?16:EGL_DONT_CARE,  //IF WE USE WITHALPHA EVER
-    };
-    targetAttrs = (EGLint*)malloc(sizeof(argsSize));
-    targetAttrs = argsSize;
-}
-
-EGLint* EGLRenderTargetProvider_Android::GetRenderTargetConfigAttribs
-    (bool pWithAlpha, bool pWithDepthBuffer)
-{
-    return targetAttrs;
+    target = targetAttrs;
 }
 
 GLint EGLRenderTargetProvider_Android::GetInternalFormatInt(bool pWithAlpha)
 {
     return (pWithAlpha? GL_RGBA8_OES:GL_RGB8_OES);
-}
-
-EGLRenderTargetProvider_Android::~EGLRenderTargetProvider_Android()
-{
-    free(targetAttrs);
 }
 
 /*

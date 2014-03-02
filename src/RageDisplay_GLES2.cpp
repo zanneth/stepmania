@@ -228,10 +228,12 @@ RageDisplay_GLES2::Init( const VideoModeParams &p, bool bAllowUnacceleratedRende
 {
 	g_pWind = LowLevelWindow::Create();
 
+    LOG->Trace("GLES2Init");
 	bool bIgnore = false;
 	RString sError = SetVideoMode( p, bIgnore );
 	if (sError != "")
 		return sError;
+    LOG->Trace("/GLES2Init");
 
 	// Get GPU capabilities up front so we don't have to query later.
 	glGetIntegerv( GL_MAX_TEXTURE_SIZE, &Caps::iMaxTextureSize );
@@ -376,6 +378,7 @@ RString RageDisplay_GLES2::TryVideoMode( const VideoModeParams &p, bool &bNewDev
 	if (err != "")
 		return err;	// failed to set video mode
 
+    LOG->Trace("Did TryVidMode");
 	if (bNewDeviceOut)
 	{
 		// NOTE: This isn't needed in an actual GLES2 context...

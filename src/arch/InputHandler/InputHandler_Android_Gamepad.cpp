@@ -13,10 +13,9 @@ InputHandler_Android_Gamepad::InputHandler_Android_Gamepad() {
 
     // Keep a pointer to this object/context at all times.
     // We will be using this in a static context.
-    appInstance->userData = this;
+    appInstance->userData = this; // \todo : this is obviously bad. Do an interobj in Gameloop
 
-    //appInstance->onAppCmd = TouchscreenEvent;
-    appInstance->onInputEvent = InputEvent;
+    AndroidGlobals::AttachInputHandler(&InputEvent);
 
 }
 

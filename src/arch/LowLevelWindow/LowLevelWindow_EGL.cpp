@@ -22,61 +22,73 @@ LowLevelWindow_EGL::LowLevelWindow_EGL()
 		RageException::Throw( "%s", "Failed to fetch EGL Context" );
 
     // The EGL LLW has been designed using the Android LLW and trying to keep it abstracted.
+    { //egl init block
+    // Do a lock on the current EGLconfig. We'll hardlock on 32bits for now, because whatev.
+    EGLint* attributes_initconf;
+    eglProvider->SetAttibutesInitConfig(attributes_initconf);
+                                                            // eglProvider->GetAttibutesInitConfig();
+
+    EGLint numberConfigs;
+
+    if (EGL_FALSE == eglChooseConfig(EGLHelper::EGLDisplayContext,
+                                     attributes_initconf,
+                                     NULL, 0, &numberConfigs)
+                                    || (numberConfigs == 0) )
     {
-        // Do a lock on the current EGLconfig. We'll hardlock on 32bits for now, because whatev.
-        EGLint* attributes_initconf = eglProvider->GetAttibutesInitConfig();
-
-        EGLint numberConfigs;
-        EGLConfig* matchingConfigs;
-
-        if (EGL_FALSE == eglChooseConfig(EGLHelper::EGLDisplayContext,
-                                         attributes_initconf,
-                                         NULL, 0, &numberConfigs)
-                                        || (numberConfigs == 0) )
-        {
-            /* Hardcrashes! */
-            if(numberConfigs == 0)
-                RageException::Throw( "%s", "No EGL configurations available." );
-            else
-                RageException::Throw( "%s", "EGL just crashed. :(" );
-        }
-
-        matchingConfigs = (EGLConfig*)malloc( numberConfigs * sizeof(EGLConfig));
-
-        if (EGL_FALSE == eglChooseConfig(EGLHelper::EGLDisplayContext, attributes_initconf,
-                                         matchingConfigs, numberConfigs, &numberConfigs))
-        {
-            /* Hardcrash, AGAIN. */
-            RageException::Throw( "%s", "EGL config just crashed. :(" );
-        }
-
-        // Loop through all the configurations.
-        for(int monitor = 0; monitor < numberConfigs; monitor++)
-        {
-            EGLBoolean success;
-            EGLint red, green, blue;
-
-            success =
-                eglGetConfigAttrib(EGLHelper::EGLDisplayContext,
-                                    matchingConfigs[monitor], EGL_RED_SIZE, &red)
-                &eglGetConfigAttrib(EGLHelper::EGLDisplayContext,
-                                    matchingConfigs[monitor], EGL_BLUE_SIZE, &blue)
-                &eglGetConfigAttrib(EGLHelper::EGLDisplayContext,
-                                    matchingConfigs[monitor], EGL_GREEN_SIZE, &green);
-
-            /* Check that no error occurred and the attributes match */
-            if (( success == EGL_TRUE) && (red==8) && (green==8) && (blue==8) )
-            {
-                EGLHelper::EGLSelectedConf = matchingConfigs[monitor];
-                break;
-            }
-        }
-        // Clean up after ourselves.
-        free(matchingConfigs);
+        /* Hardcrashes! */
+        if(numberConfigs == 0)
+            RageException::Throw( "%s", "No EGL configurations available." );
+        else
+            RageException::Throw( "%s", "EGL just crashed. :(" );
     }
+
+    EGLConfig matchingConfigs[numberConfigs];
+
+    if (EGL_FALSE == eglChooseConfig(EGLHelper::EGLDisplayContext, attributes_initconf,
+                                     matchingConfigs, numberConfigs, &numberConfigs))
+    {
+        /* Hardcrash, AGAIN. */
+        RageException::Throw( "%s", "EGL config just crashed. :(" );
+    }
+
+    // Loop through all the configurations.
+    for(int monitor = 0; monitor < numberConfigs; monitor++)
+    {
+        EGLBoolean success;
+        EGLint red, green, blue;
+
+        success =
+            eglGetConfigAttrib(EGLHelper::EGLDisplayContext,
+                                matchingConfigs[monitor], EGL_RED_SIZE, &red)
+            &eglGetConfigAttrib(EGLHelper::EGLDisplayContext,
+                                matchingConfigs[monitor], EGL_BLUE_SIZE, &blue)
+            &eglGetConfigAttrib(EGLHelper::EGLDisplayContext,
+                                matchingConfigs[monitor], EGL_GREEN_SIZE, &green);
+
+        /* Check that no error occurred and the attributes match */
+        // All are hardcoded to 8 for debug purposes
+        // \todo UNDEBUG THIS
+        if (( success == EGL_TRUE) && (red==8) && (green==8) && (blue==8) )
+        {
+            EGLHelper::EGLSelectedConf = matchingConfigs[monitor];
+            break;
+        }
+    }
+    // Clean up after ourselves.
+    // free(matchingConfigs);
+    } // end init block
+
+    eglProvider->PrintDebug();
 
     if(EGLHelper::EGLSelectedConf == NULL)
         RageException::Throw( "%s", "For some reason, we didn't get a config/crash before here." );
+
+    EGLHelper::EGLSurfaceContext =
+        eglCreateWindowSurface(EGLHelper::EGLDisplayContext,
+                               EGLHelper::EGLSelectedConf,
+                               EGLHelper::EGLWindowContext,
+//                               AndroidGlobals::ANDROID_APP_INSTANCE->window,
+                               EGLempty);
 
     // As this class is, originally, mostly/purely virtual, we call downstream.
     eglProvider->PreContextSetup();
@@ -85,11 +97,6 @@ LowLevelWindow_EGL::LowLevelWindow_EGL()
     // as of yet completely unpopulated, as we're directly being called from the CTOR layer.
     // Also, reloading to try video modes is, well, basically a huge NOEP.
 
-    EGLHelper::EGLSurfaceContext =
-        eglCreateWindowSurface(EGLHelper::EGLDisplayContext,
-                               EGLHelper::EGLSelectedConf,
-                               EGLHelper::EGLWindowContext,
-                               EGLempty);
 
     // Create drawcontext.
     g_MainContext = eglCreateContext(EGLHelper::EGLDisplayContext,
@@ -101,6 +108,7 @@ LowLevelWindow_EGL::LowLevelWindow_EGL()
     eglMakeCurrent(EGLHelper::EGLDisplayContext, EGLHelper::EGLSurfaceContext,
                    EGLHelper::EGLSurfaceContext, g_MainContext);
 
+    LOG->Trace("EGL CTOR Done.");
 }
 
 LowLevelWindow_EGL::~LowLevelWindow_EGL()
@@ -124,6 +132,7 @@ void *LowLevelWindow_EGL::GetProcAddress( RString s )
 RString LowLevelWindow_EGL::TryVideoMode( const VideoModeParams &p, bool &bNewDeviceOut )
 {
     // As I'm working on the Android port, this is empty because I'm overriding it to nop.
+    return "";
 }
 
 void LowLevelWindow_EGL::LogDebugInformation() const {
@@ -203,7 +212,8 @@ void RenderTarget_EGL::Create( const RenderTargetParam &param, int &iTextureWidt
                                                                int &iTextureHeightOut )
 {
     // \todo : For now, hardset at false. Please review and fix.
-    EGLint* RenderTargetAttribs = eglRTP->GetRenderTargetConfigAttribs(false, false);
+    EGLint* RenderTargetAttribs;
+    eglRTP->SetRenderTargetConfigAttribs(false, false, RenderTargetAttribs);
 
     // \todo : THIS IS COMPLETELY WRONG AND HERE ONLY FOR COMPILATION.
     EGLint* PBufferAttribs = GetAsPBufferConfigAttribs(0,0);

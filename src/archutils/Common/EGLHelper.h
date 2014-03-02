@@ -9,6 +9,7 @@
 // Define this manually; it's defined in X11 and we want to keep it simple while reimplementing EGL
 #define None 0L
 
+
 namespace EGLHelper
 {
     /**
@@ -49,7 +50,6 @@ namespace EGLHelper
      * \brief EGL Window Context holder.
      **/
     extern EGLNativeWindowType EGLWindowContext;
-
 };
 
 #endif // EGL_HELPER_H

@@ -2,9 +2,9 @@
 
 // Default init.
 EGLDisplay EGLHelper::EGLDisplayContext = NULL;
-EGLSurface  EGLHelper::EGLSurfaceContext = None;
+EGLSurface EGLHelper::EGLSurfaceContext = None;
+EGLConfig  EGLHelper::EGLSelectedConf = NULL;
 EGLNativeWindowType EGLHelper::EGLWindowContext = NULL;
-EGLConfig EGLHelper::EGLSelectedConf = NULL;
 
 bool EGLHelper::ObtainContext() {
     /**
@@ -17,11 +17,12 @@ bool EGLHelper::ObtainContext() {
     EGLint major, minor;
     EGLDisplayContext = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 
-    if(EGLDisplayContext == NULL)
+    if(EGLDisplayContext == NULL || EGLDisplayContext == EGL_NO_DISPLAY)
         return false;
 
     // Yep. Init after getting the display
-    eglInitialize(EGLDisplayContext, &major, &minor);
+    if(!eglInitialize(EGLDisplayContext, &major, &minor))
+        return false;
 
     // Set UI Error handlers up here. If at all.
 
@@ -33,7 +34,7 @@ void EGLHelper::TerminateContext() {
     // Liberate.
     eglTerminate(EGLDisplayContext);
     EGLDisplayContext = NULL;
-    EGLWindowContext = NULL;
+//    EGLWindowContext = NULL;
     //free(EGLSelectedConf);
 }
 

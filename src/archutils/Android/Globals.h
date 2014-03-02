@@ -25,6 +25,7 @@ namespace AndroidGlobals {
     //  weird conditionals and the like.
     extern RString GetVideoDriverName();
 
+    extern void PollEventLoop();
 
     extern void Log(android_LogPriority prio, RString string);
     extern void Log(RString string);
@@ -33,8 +34,41 @@ namespace AndroidGlobals {
     extern void Log_Debug(RString string);
     extern void Log_Info(RString string);
 
-    char** GetDefaultCommandArguments();
-    extern char** commandArguments;
+    extern void SetAppInstance(android_app* state);
+    extern char** GetDefaultCommandArguments();
+    extern char* commandArguments[1];
+
+    extern void InitializeApp(int (*Launch)(int, char**), int argc, char* argv[]);
+    extern void AttachInputHandler(int32_t (*InputHandler)(android_app* app, AInputEvent* ev));
+    extern void AttachCommandHandler(void (*InputHandler)(android_app* app, int32_t cmd));
+
+    extern bool InitDone;
+
+
+    // Internal
+    static void HandleCommand(struct android_app* app, int32_t cmd);
+    static int32_t HandleInput(struct android_app* app, AInputEvent* IE);
+
+    /*
+    class EventCore {
+    public:
+        virtual void HandleCommand(struct android_app* app, int32_t cmd);
+        virtual void HandleInput(struct android_app* app, AInputEvent* IE);
+    protected:
+        virtual EventCore(){};
+        virtual ~EventCore(){};
+    private:
+
+    };
+
+    class InitEventCore : public EventCore {
+    public:
+        void HandleCommand(struct android_app* app, int32_t cmd);
+        void HandleInput(struct android_app* app, AInputEvent* IE);
+    protected:
+        InitEventCore();
+        virtual ~InitEventCore(){};
+    };*/
 };
 
 #endif //ANDROID_GLOBALS_H

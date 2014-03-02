@@ -3,6 +3,9 @@
 
 #include "EGLProvider.h"
 
+// EGLhalp
+#include "archutils/Common/EGLHelper.h"
+
 // Bring in GLES2
 #include <GLES2/gl2.h>
 #include <GLES2/gl2platform.h>
@@ -15,13 +18,14 @@ public:
     ~EGLProvider_Android();
 
 
-    EGLint* GetAttibutesInitConfig();
+    void SetAttibutesInitConfig(EGLint* &target);
     void PreContextSetup();
     bool GetWasWindowedValue();
     void Log(RString string);
     void GetDisplayResolutions(DisplayResolutions &out) const;
+    void PrintDebug();
 private:
-	EGLint* attrsInit;
+	static EGLint attrsInit[];
 };
 
 class EGLRenderTargetProvider_Android : public EGLRenderTargetProvider
@@ -30,11 +34,11 @@ public:
     EGLRenderTargetProvider_Android();
     ~EGLRenderTargetProvider_Android();
 
-    EGLint* GetRenderTargetConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer);
+    void SetRenderTargetConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer, EGLint* &target);
     GLint GetInternalFormatInt(bool pWithAlpha);
 
 private:
-	EGLint* targetAttrs;
+	static EGLint targetAttrs[];
 };
 
 #ifdef ARCH_EGL_PROVIDER

@@ -15,12 +15,12 @@ public:
     static EGLProvider *Create();
 
     //virtual void
-    virtual EGLint* GetAttibutesInitConfig(){};
+    virtual void SetAttibutesInitConfig(EGLint* &target){};
     virtual void PreContextSetup(){};
     virtual bool GetWasWindowedValue(){};
     virtual void Log(RString string){};
     virtual void GetDisplayResolutions(DisplayResolutions &out){};
-
+    virtual void PrintDebug(){};
 };
 
 class EGLRenderTargetProvider
@@ -28,7 +28,7 @@ class EGLRenderTargetProvider
 public:
     static EGLRenderTargetProvider *Create();
 
-    virtual EGLint* GetRenderTargetConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer){};
+    virtual void SetRenderTargetConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer, EGLint* &target){};
     virtual GLint GetInternalFormatInt(bool pWithAlpha){};
 };
 

@@ -965,10 +965,12 @@ int main( int argc, char* argv[] ) {
 
 void android_main(android_app* state) {
     app_dummy(); // always.
-    AndroidGlobals::ANDROID_APP_INSTANCE = state;
+    AndroidGlobals::SetAppInstance(state);
 
     // Just call the method upstream and exit. This is a skeleton, not an app.
-    Launch(0, AndroidGlobals::GetDefaultCommandArguments());
+
+    AndroidGlobals::InitializeApp(&Launch, 0, AndroidGlobals::GetDefaultCommandArguments());
+//    Launch(0, AndroidGlobals::GetDefaultCommandArguments());
 }
 #endif
 
@@ -1149,6 +1151,7 @@ int Launch(int argc, char* argv[])
 	INPUTFILTER	= new InputFilter;
 	INPUTMAPPER	= new InputMapper;
 
+    LOG->Trace("SMSTATE ::: ChangeCurrentGame.");
 	StepMania::ChangeCurrentGame( GAMESTATE->GetCurrentGame() );
 
 	INPUTQUEUE	= new InputQueue;
@@ -1186,7 +1189,9 @@ int Launch(int argc, char* argv[])
 		return 0;
 	}
 
+    LOG->Trace("SMSTATE ::: StartDisplay.");
 	StartDisplay();
+    LOG->Trace("SMSTATE ::: /StartDisplay.");
 
 	StoreActualGraphicOptions();
 	LOG->Info( "%s", GetActualGraphicOptionsString().c_str() );
@@ -1201,6 +1206,7 @@ int Launch(int argc, char* argv[])
 	FONT		= new FontManager;
 	SCREENMAN	= new ScreenManager;
 
+    LOG->Trace("StepMania::ResetGame.");
 	StepMania::ResetGame();
 
 	/* Now that GAMESTATE is reset, tell SCREENMAN to update the theme (load
@@ -1217,6 +1223,8 @@ int Launch(int argc, char* argv[])
 
 	if( GetCommandlineArgument("netip") )
 		NSMAN->DisplayStartupStatus();	// If we're using networking show what happened
+
+    LOG->Trace("SMSTATE ::: Game Loop: Hajime.");
 
 	// Run the main loop.
 	GameLoop::RunGameLoop();

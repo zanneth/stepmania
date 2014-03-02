@@ -1,9 +1,81 @@
 #include "Globals.h"
 
-#include <global.h>
+#include "archutils/Common/EGLHelper.h"
 
 android_app* AndroidGlobals::ANDROID_APP_INSTANCE = NULL;
-char** AndroidGlobals::commandArguments = NULL;
+char* AndroidGlobals::commandArguments[1];
+bool AndroidGlobals::InitDone = false;
+
+void AndroidGlobals::SetAppInstance(android_app* state) {
+    ANDROID_APP_INSTANCE = state;
+    commandArguments[0] = new char[strlen(ANDROID_APP_INSTANCE->activity->externalDataPath)+1];
+    strcpy(commandArguments[0], ANDROID_APP_INSTANCE->activity->externalDataPath);
+}
+
+void AndroidGlobals::HandleCommand(struct android_app* app, int32_t IE) {
+    switch( IE )
+    {
+    case APP_CMD_SAVE_STATE:
+        break;
+    case APP_CMD_INIT_WINDOW:
+        // The window is being shown, get it ready.
+        if( app->window != NULL ) {
+            EGLHelper::EGLWindowContext = app->window;
+            AndroidGlobals::InitDone = true;
+        }
+        break;
+    case APP_CMD_TERM_WINDOW:
+        // The window is being hidden or closed. Clean.
+        break;
+    case APP_CMD_STOP:
+        // Activity::FullStop
+        break;
+    case APP_CMD_GAINED_FOCUS:
+        // Restart from where we were
+        break;
+    case APP_CMD_LOST_FOCUS:
+        // PAUSE
+        break;
+    case APP_CMD_LOW_MEMORY:
+        // Can we free up some shite?
+        break;
+    }
+}
+
+int32_t AndroidGlobals::HandleInput(struct android_app* app, AInputEvent* IE) { /*nop*/ }
+
+void AndroidGlobals::InitializeApp(int (*Launch)(int, char**), int argc, char* argv[]) {
+    //ANDROID_APP_INSTANCE->&IEC; // First Event Core: the Init EC.
+    ANDROID_APP_INSTANCE->onAppCmd = HandleCommand;
+    ANDROID_APP_INSTANCE->onInputEvent = HandleInput;
+
+    // Read all pending events.
+    int id;
+    int events;
+    android_poll_source* source;
+
+    while(!InitDone) {
+        // While the App Init isn't done in itself, we loop here.
+        while( (id = ALooper_pollAll( 0, NULL, &events,(void**) &source)) >= 0 )
+        {
+            // Process this event.
+            if( source != NULL )
+                source->process( ANDROID_APP_INSTANCE, source );
+        }
+    }
+
+    // Check if the event loop actually works. We'll Launch later.
+    Log("YUS. Event Loop DONE!");
+
+    ANDROID_APP_INSTANCE->onAppCmd = NULL;
+    ANDROID_APP_INSTANCE->onInputEvent = NULL;
+
+    // Screw it for now. Crash up.
+    //Crash::ForceCrash("YAME.");
+
+    // We actually have the staticref to the proper entry point. GO.
+    Launch(argc, argv);
+}
 
 int AndroidGlobals::Audio::GetNativeSampleRate() {
     JNIEnv *jni;
@@ -53,16 +125,31 @@ RString AndroidGlobals::GetVideoDriverName() {
 }
 
 char** AndroidGlobals::GetDefaultCommandArguments() {
-    // argv[0] is a path.
-    char** theArgv;
-    theArgv = (char**)malloc(sizeof(char*[0]));
-    theArgv[0] = (char*)malloc(16*sizeof(ANDROID_APP_INSTANCE->activity->externalDataPath));
-
-    strcpy(theArgv[0], ANDROID_APP_INSTANCE->activity->externalDataPath);
-
-    commandArguments = theArgv;
     return commandArguments;
 }
+
+void AndroidGlobals::AttachInputHandler(int32_t (*InputHandler)(android_app* pApplication, AInputEvent* pEvent)) {
+    ANDROID_APP_INSTANCE->onInputEvent = InputHandler;
+}
+
+void AndroidGlobals::AttachCommandHandler(void (*CommandHandler)(android_app* app, int32_t cmd)) {
+}
+
+void AndroidGlobals::PollEventLoop() {
+    //nop
+    /*
+    int ident;
+    int fdesc;
+    int events;
+    struct android_poll_source* source;
+    while((ident = ALooper_pollAll(0, &fdesc, &events, (void**)&source)) >= 0) {
+        // process this event
+        if (source)
+            source->process(ANDROID_APP_INSTANCE, source);
+    }
+    */
+}
+
 
 #define APPNAME "StepMania"
 void AndroidGlobals::Log(android_LogPriority prio, RString string) {
