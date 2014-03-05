@@ -132,6 +132,20 @@ void *LowLevelWindow_EGL::GetProcAddress( RString s )
 RString LowLevelWindow_EGL::TryVideoMode( const VideoModeParams &p, bool &bNewDeviceOut )
 {
     // As I'm working on the Android port, this is empty because I'm overriding it to nop.
+
+    // From Android; May be relocated to EGLProvider.
+    // We are being given a context from the Core.
+    bNewDeviceOut = false;
+
+    CurrentParams = p;
+    eglGetConfigAttrib(EGLHelper::EGLDisplayContext,
+                       EGLHelper::EGLSelectedConf,
+                       EGL_DEPTH_SIZE,
+                       &(CurrentParams.bpp));
+
+    CurrentParams.rate = 0; // VSync?
+
+
     return "";
 }
 

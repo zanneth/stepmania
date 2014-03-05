@@ -17,12 +17,11 @@ public:
     EGLProvider_Android();
     ~EGLProvider_Android();
 
-
     void SetAttibutesInitConfig(EGLint* &target);
     void PreContextSetup();
     bool GetWasWindowedValue();
     void Log(RString string);
-    void GetDisplayResolutions(DisplayResolutions &out) const;
+    void GetDisplayResolutions(DisplayResolutions &out);
     void PrintDebug();
 private:
 	static EGLint attrsInit[];

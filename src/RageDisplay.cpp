@@ -71,7 +71,8 @@ RString RageDisplay::SetVideoMode( VideoModeParams p, bool &bNeedReloadTextures 
 	RString err;
 	vector<RString> vs;
 
-    LOG->Trace("TryVideoMode1");
+	//Outdeffed because, on Android, it's one resolution or GTFO.
+#if !defined(ANDROID)
 	if( (err = this->TryVideoMode(p,bNeedReloadTextures)) == "" )
 		return RString();
 	LOG->Trace( "TryVideoMode failed: %s", err.c_str() );
@@ -79,7 +80,6 @@ RString RageDisplay::SetVideoMode( VideoModeParams p, bool &bNeedReloadTextures 
 
 	// fall back to settings that will most likely work
 	p.bpp = 16;
-    LOG->Trace("TryVideoMode Fallback");
 	if( (err = this->TryVideoMode(p,bNeedReloadTextures)) == "" )
 		return RString();
 	vs.push_back( err );
@@ -87,15 +87,13 @@ RString RageDisplay::SetVideoMode( VideoModeParams p, bool &bNeedReloadTextures 
 	// "Intel(R) 82810E Graphics Controller" won't accept a 16 bpp surface if 
 	// the desktop is 32 bpp, so try 32 bpp as well.
 	p.bpp = 32;
-    LOG->Trace("TryVideoMode 3?");
 	if( (err = this->TryVideoMode(p,bNeedReloadTextures)) == "" )
 		return RString();
 	vs.push_back( err );
-
+#endif
 	// Fall back on a known resolution good rather than 640 x 480.
 	DisplayResolutions dr;
 	this->GetDisplayResolutions( dr );
-    LOG->Trace("Video Ultiderp");
 	if( dr.empty() )
 	{
 		vs.push_back( "No display resolutions" );

@@ -75,7 +75,7 @@ void EGLProvider_Android::Log(RString string)
     AndroidGlobals::Log(string);
 }
 
-void EGLProvider_Android::GetDisplayResolutions(DisplayResolutions &out) const
+void EGLProvider_Android::GetDisplayResolutions(DisplayResolutions &out)
 {
     DisplayResolution res = {
           ANativeWindow_getWidth(AndroidGlobals::ANDROID_APP_INSTANCE->window),
