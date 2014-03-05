@@ -64,14 +64,8 @@ void AndroidGlobals::InitializeApp(int (*Launch)(int, char**), int argc, char* a
         }
     }
 
-    // Check if the event loop actually works. We'll Launch later.
-    Log("YUS. Event Loop DONE!");
-
     ANDROID_APP_INSTANCE->onAppCmd = NULL;
     ANDROID_APP_INSTANCE->onInputEvent = NULL;
-
-    // Screw it for now. Crash up.
-    //Crash::ForceCrash("YAME.");
 
     // We actually have the staticref to the proper entry point. GO.
     Launch(argc, argv);
@@ -114,8 +108,13 @@ void AndroidGlobals::Crash::ForceCrash(const char* reason) {
     jmethodID methodID =
         jni->GetMethodID(clazz, "crash", "(Ljava/lang/String;)V");
 
-    jni->CallVoidMethod
-        (ANDROID_APP_INSTANCE->activity->clazz, methodID, jni->NewStringUTF(reason));
+    jni->CallVoidMethod(ANDROID_APP_INSTANCE->activity->clazz,
+                        methodID,
+                        jni->NewStringUTF(reason)
+    );
+
+    abort();
+    abort();
 
     ANDROID_APP_INSTANCE->activity->vm->DetachCurrentThread();
 }
