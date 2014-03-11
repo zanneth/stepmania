@@ -122,8 +122,9 @@ task redirLibs(type:Exec){
 }
 
 // Task Dependancy tree
-cleanStepmania.dependsOn compileFFMPEG
-compileStepmania.dependsOn cleanStepmania
+//cleanStepmania.dependsOn compileFFMPEG
+//compileStepmania.dependsOn cleanStepmania
+compileStepmania.dependsOn compileFFMPEG
 
 redirLibs.dependsOn compileStepmania
 

@@ -131,7 +131,7 @@ RAGE_ENGINE    := RageBitmapTexture.cpp \
                   RageUtil_FileDB.cpp \
                   RageUtil_WorkerThread.cpp
 
-SCREENS_SRC    := ScoreDisplay.cpp \
+SCORES_SRC     := ScoreDisplay.cpp \
                   ScoreDisplayAliveTime.cpp \
                   ScoreDisplayBattle.cpp \
                   ScoreDisplayCalories.cpp \
@@ -143,86 +143,88 @@ SCREENS_SRC    := ScoreDisplay.cpp \
                   ScoreKeeper.cpp \
                   ScoreKeeperNormal.cpp \
                   ScoreKeeperRave.cpp \
-                  ScoreKeeperShared.cpp \
-                  Screen.cpp \
-                  ScreenAttract.cpp \
-                  ScreenBookkeeping.cpp \
-                  ScreenContinue.cpp \
-                  ScreenDebugOverlay.cpp \
-                  ScreenDemonstration.cpp \
-                  ScreenDimensions.cpp \
-                  ScreenEdit.cpp \
-                  ScreenEditMenu.cpp \
-                  ScreenEnding.cpp \
-                  ScreenEvaluation.cpp \
-                  ScreenExit.cpp \
-                  ScreenGameplay.cpp \
-                  ScreenGameplayLesson.cpp \
-                  ScreenGameplayNormal.cpp \
-                  ScreenGameplayShared.cpp \
-                  ScreenGameplaySyncMachine.cpp \
-                  ScreenHighScores.cpp \
-                  ScreenHowToPlay.cpp \
-                  ScreenInstructions.cpp \
-                  ScreenJukebox.cpp \
-                  ScreenManager.cpp \
-                  ScreenMapControllers.cpp \
-                  ScreenMessage.cpp \
-                  ScreenMiniMenu.cpp \
-                  ScreenNameEntry.cpp \
-                  ScreenNameEntryTraditional.cpp \
-                  ScreenNetEvaluation.cpp \
-                  ScreenNetRoom.cpp \
-                  ScreenNetSelectBase.cpp \
-                  ScreenNetSelectMusic.cpp \
-                  ScreenNetworkOptions.cpp \
-                  ScreenOptions.cpp \
-                  ScreenOptionsCourseOverview.cpp \
-                  ScreenOptionsEditCourse.cpp \
-                  ScreenOptionsEditProfile.cpp \
-                  ScreenOptionsExportPackage.cpp \
-                  ScreenOptionsManageCourses.cpp \
-                  ScreenOptionsManageEditSteps.cpp \
-                  ScreenOptionsManageProfiles.cpp \
-                  ScreenOptionsMaster.cpp \
-                  ScreenOptionsMasterPrefs.cpp \
-                  ScreenOptionsMemoryCard.cpp \
-                  ScreenOptionsToggleSongs.cpp \
-                  ScreenPackages.cpp \
-                  ScreenPlayerOptions.cpp \
-                  ScreenProfileLoad.cpp \
-                  ScreenProfileSave.cpp \
-                  ScreenPrompt.cpp \
-                  ScreenRanking.cpp \
-                  ScreenReloadSongs.cpp \
-                  ScreenSMOnlineLogin.cpp \
-                  ScreenSandbox.cpp \
-                  ScreenSaveSync.cpp \
-                  ScreenSelect.cpp \
-                  ScreenSelectCharacter.cpp \
-                  ScreenSelectLanguage.cpp \
-                  ScreenSelectMaster.cpp \
-                  ScreenSelectMusic.cpp \
-                  ScreenSelectProfile.cpp \
-                  ScreenServiceAction.cpp \
-                  ScreenSetTime.cpp \
-                  ScreenSongOptions.cpp \
-                  ScreenSplash.cpp \
-                  ScreenStatsOverlay.cpp \
-                  ScreenSyncOverlay.cpp \
-                  ScreenSystemLayer.cpp \
-                  ScreenTestInput.cpp \
-                  ScreenTestLights.cpp \
-                  ScreenTestSound.cpp \
-                  ScreenTextEntry.cpp \
-                  ScreenTitleMenu.cpp \
-                  ScreenUnlockBrowse.cpp \
-                  ScreenUnlockCelebrate.cpp \
-                  ScreenUnlockStatus.cpp \
-                  ScreenWithMenuElements.cpp
+                  ScoreKeeperShared.cpp
 
+SCREENS_SRC    :=   Screen.cpp \
+                    ScreenAttract.cpp \
+                    ScreenBookkeeping.cpp \
+                    ScreenContinue.cpp \
+                    ScreenDebugOverlay.cpp \
+                    ScreenDemonstration.cpp \
+                    ScreenEdit.cpp \
+                    ScreenEditMenu.cpp \
+                    ScreenEnding.cpp \
+                    ScreenEvaluation.cpp \
+                    ScreenExit.cpp \
+                    ScreenGameplay.cpp \
+                    ScreenGameplayLesson.cpp \
+                    ScreenGameplayNormal.cpp \
+                    ScreenGameplayShared.cpp \
+                    ScreenGameplaySyncMachine.cpp \
+                    ScreenHighScores.cpp \
+                    ScreenHowToPlay.cpp \
+                    ScreenInstructions.cpp \
+                    ScreenJukebox.cpp \
+                    ScreenManager.cpp \
+                    ScreenMapControllers.cpp \
+                    ScreenMessage.cpp \
+                    ScreenMiniMenu.cpp \
+                    ScreenNameEntry.cpp \
+                    ScreenNameEntryTraditional.cpp \
+                    ScreenNetEvaluation.cpp \
+                    ScreenNetRoom.cpp \
+                    ScreenNetSelectBase.cpp \
+                    ScreenNetSelectMusic.cpp \
+                    ScreenNetworkOptions.cpp \
+                    ScreenOptions.cpp \
+                    ScreenOptionsCourseOverview.cpp \
+                    ScreenOptionsEditCourse.cpp \
+                    ScreenOptionsEditProfile.cpp \
+                    ScreenOptionsExportPackage.cpp \
+                    ScreenOptionsManageCourses.cpp \
+                    ScreenDimensions.cpp \
+                    ScreenOptionsManageEditSteps.cpp \
+                    ScreenOptionsManageProfiles.cpp \
+                    ScreenOptionsMaster.cpp \
+                    ScreenOptionsMasterPrefs.cpp \
+                    ScreenOptionsToggleSongs.cpp \
+                    ScreenPackages.cpp \
+                    ScreenPlayerOptions.cpp \
+                    ScreenProfileLoad.cpp \
+                    ScreenProfileSave.cpp \
+                    ScreenPrompt.cpp \
+                    ScreenRanking.cpp \
+                    ScreenReloadSongs.cpp \
+                    ScreenSandbox.cpp \
+                    ScreenSelect.cpp \
+                    ScreenSaveSync.cpp \
+                    ScreenServiceAction.cpp \
+                    ScreenStatsOverlay.cpp \
+                    ScreenSelectCharacter.cpp \
+                    ScreenSelectLanguage.cpp \
+                    ScreenSelectMaster.cpp \
+                    ScreenSelectMusic.cpp \
+                    ScreenSelectProfile.cpp \
+                    ScreenSyncOverlay.cpp \
+                    ScreenSystemLayer.cpp \
+                    ScreenSetTime.cpp \
+                    ScreenSongOptions.cpp \
+                    ScreenSplash.cpp \
+                    ScreenTestInput.cpp \
+                    ScreenTestLights.cpp \
+                    ScreenTestSound.cpp \
+                    ScreenTextEntry.cpp \
+                    ScreenTitleMenu.cpp \
+                    ScreenUnlockBrowse.cpp \
+                    ScreenUnlockCelebrate.cpp \
+                    ScreenUnlockStatus.cpp \
+                    ScreenWithMenuElements.cpp \
+                    ScreenInstallOverlay.cpp
+
+#                 ScreenOptionsMemoryCard.cpp \
 # Core Sources
 STEPMANIA_SRC  += ver.cpp \
+                  ezsockets.cpp \
                   ActiveAttackList.cpp \
                   Actor.cpp \
                   ActorFrame.cpp \
@@ -381,6 +383,7 @@ STEPMANIA_SRC  += ver.cpp \
                   RoomWheel.cpp \
                   SampleHistory.cpp \
                   $(SCREENS_SRC) \
+                  $(SCORES_SRC) \
                   ScrollBar.cpp \
                   SnapDisplay.cpp \
                   Song.cpp \
@@ -430,8 +433,7 @@ LOCAL_SRC_FILES:= $(PLATFORM_SRC) \
 
 # will need to get these fixed
 # can't because networking
-#                  ezsockets.cpp \
-#                  ScreenInstallOverlay.cpp \
+#                  ScreenSMOnlineLogin.cpp \
 # Unix platform derp.
 #                  archutils/Unix/CrashHandlerInternal.cpp \
 #                  archutils/Unix/CrashHandlerChild.cpp \
@@ -447,13 +449,14 @@ LOCAL_C_INCLUDES := $(TOP_PATH) \
 
 # Currently, we're locking it to ARM
 LOCAL_CFLAGS := -DANDROID -DCPU_ARM -DENDIAN_LITTLE -DENDIAN_32BITWORD -DGLEW_NO_GLU
-
-# Comment out the next line if we're not doing a testbuild.
 LOCAL_CFLAGS += -DANDROID_TEST -finline-limit=300 -fno-exceptions
+# Comment out the previous line if we're not doing a testbuild.
 
-LOCAL_LDLIBS    := -llog -landroid -lz -lGLESv2 -lEGL -lOpenSLES
-LOCAL_STATIC_LIBRARIES := jsoncpp libtomcrypt libtommath glew android_native_app_glue pcre \
-                          ndk_helper lua png libmad libvorbis libjpeg  stlport_static
+LOCAL_LDLIBS    := -llog -landroid -lz -lEGL -lGLESv2 -lOpenSLES -ldl -lm
+
+LOCAL_STATIC_LIBRARIES := jsoncpp libtomcrypt libtommath glew android_native_app_glue \
+                          pcre ndk_helper lua png libmad libvorbis libjpeg \
+                          stlport_static
 
 LOCAL_SHARED_LIBRARIES := avcodec avfilter avformat swresample swscale avutil \
                           
@@ -479,3 +482,4 @@ include $(ANDEXTERN_PATH)/Android.mk
 
 $(call import-module,android/ndk_helper)
 $(call import-module,android/native_app_glue)
+$(call import-module,android/cpufeatures)
