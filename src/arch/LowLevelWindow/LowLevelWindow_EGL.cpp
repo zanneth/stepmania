@@ -9,6 +9,7 @@
 
 static EGLContext g_MainContext = NULL;
 static EGLint EGLempty[] = {EGL_NONE};
+static EGLint EGL_BindGLESV2[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
 
 // Initial implementation lacks anything background because of its focus on Android
 
@@ -102,7 +103,7 @@ LowLevelWindow_EGL::LowLevelWindow_EGL()
     g_MainContext = eglCreateContext(EGLHelper::EGLDisplayContext,
                                      EGLHelper::EGLSelectedConf,
                                      EGL_NO_CONTEXT,
-                                     EGLempty);
+                                     EGL_BindGLESV2);
 
     // Context switchover!
     eglMakeCurrent(EGLHelper::EGLDisplayContext, EGLHelper::EGLSurfaceContext,

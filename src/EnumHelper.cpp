@@ -3,6 +3,14 @@
 #include "LuaManager.h"
 #include "RageUtil.h"
 
+#if defined(ANDROID)
+#include "archutils/Android/Globals.h"
+
+void PrintStuffToAndroid(char* buffer) {
+    AndroidGlobals::Log_Debug(buffer);
+}
+#endif
+
 int CheckEnum( lua_State *L, LuaReference &table, int iPos, int iInvalid, const char *szType, bool bAllowInvalid )
 {
 	luaL_checkany( L, iPos );
@@ -65,13 +73,26 @@ int CheckEnum( lua_State *L, LuaReference &table, int iPos, int iInvalid, const 
 	}
 	int iRet = lua_tointeger( L, -1 );
 	lua_pop( L, 2 );
+
+#if defined(ANDROID)
+	iRet = lua_tointeger( L, -1 );
+	char buffer[500];
+    sprintf(buffer,
+        "EnumCheck :: type :: %s :: iPos :: %d :: iRet :: %d:: iRet toint :: %d :: ret str :: %s ",
+        szType, iPos, iRet, lua_tointeger( L, -1 ), lua_tostring( L, -1 )
+    );
+    PrintStuffToAndroid(buffer);
+	//lua_pop( L, -1 );
+#endif
+
 	return iRet;
 }
+
 
 // szNameArray is of size iMax; pNameCache is of size iMax+2.
 const RString &EnumToString( int iVal, int iMax, const char **szNameArray, auto_ptr<RString> *pNameCache )
 {
-	if( unlikely(pNameCache[0].get() == NULL) )
+    if( unlikely(pNameCache[0].get() == NULL) )
 	{
 		for( int i = 0; i < iMax; ++i )
 		{

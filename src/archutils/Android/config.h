@@ -56,7 +56,7 @@
 /* #undef WITHOUT_GLES2 */
 
 /* For now, comment out Networking on Android */
-#define WITHOUT_NETWORKING
+//#define WITHOUT_NETWORKING
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

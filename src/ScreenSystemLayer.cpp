@@ -40,7 +40,7 @@ namespace
 		bool bShowCreditsMessage;
 		if( SCREENMAN && SCREENMAN->GetTopScreen() && SCREENMAN->GetTopScreen()->GetScreenType() == system_menu )
 			bShowCreditsMessage = true;
-		else if( MEMCARDMAN->GetCardLocked(pn) )
+		else if( MEMCARDMAN && MEMCARDMAN->GetCardLocked(pn) )
 			bShowCreditsMessage = !GAMESTATE->IsPlayerEnabled( pn );
 		else 
 			bShowCreditsMessage = !GAMESTATE->m_bSideIsJoined[pn];

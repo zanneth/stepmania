@@ -113,6 +113,9 @@ void AndroidGlobals::Crash::ForceCrash(const char* reason) {
                         jni->NewStringUTF(reason)
     );
 
+    // Log the error, in case the detach happens out of sync and the tombstone doesn'T get generated
+    Log_Error(reason);
+
     abort();
     abort();
 
