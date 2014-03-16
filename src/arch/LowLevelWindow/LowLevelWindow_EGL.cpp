@@ -22,6 +22,15 @@ LowLevelWindow_EGL::LowLevelWindow_EGL()
     if(!EGLHelper::ObtainContext())
 		RageException::Throw( "%s", "Failed to fetch EGL Context" );
 
+
+    LOG->Trace("EGL CTOR Done :: EGLSC %d :: EGLMC %d :: EGLDC %d :: EGLWin %d :: GetCurDisp %d ",
+                EGLHelper::EGLSurfaceContext,
+                g_MainContext,
+                EGLHelper::EGLDisplayContext,
+                EGLHelper::EGLWindowContext,
+                eglGetCurrentDisplay()
+                );
+
     // The EGL LLW has been designed using the Android LLW and trying to keep it abstracted.
     { //egl init block
     // Do a lock on the current EGLconfig. We'll hardlock on 32bits for now, because whatev.
@@ -79,10 +88,13 @@ LowLevelWindow_EGL::LowLevelWindow_EGL()
     // free(matchingConfigs);
     } // end init block
 
-    eglProvider->PrintDebug();
+    //eglProvider->PrintDebug();
 
     if(EGLHelper::EGLSelectedConf == NULL)
         RageException::Throw( "%s", "For some reason, we didn't get a config/crash before here." );
+
+    // As this class is, originally, mostly/purely virtual, we call downstream.
+    eglProvider->PreContextSetup();
 
     EGLHelper::EGLSurfaceContext =
         eglCreateWindowSurface(EGLHelper::EGLDisplayContext,
@@ -90,9 +102,6 @@ LowLevelWindow_EGL::LowLevelWindow_EGL()
                                EGLHelper::EGLWindowContext,
 //                               AndroidGlobals::ANDROID_APP_INSTANCE->window,
                                EGLempty);
-
-    // As this class is, originally, mostly/purely virtual, we call downstream.
-    eglProvider->PreContextSetup();
 
     // in theory, for this execution path and context, the Display and Surface contexts are
     // as of yet completely unpopulated, as we're directly being called from the CTOR layer.
@@ -106,10 +115,18 @@ LowLevelWindow_EGL::LowLevelWindow_EGL()
                                      EGL_BindGLESV2);
 
     // Context switchover!
-    eglMakeCurrent(EGLHelper::EGLDisplayContext, EGLHelper::EGLSurfaceContext,
-                   EGLHelper::EGLSurfaceContext, g_MainContext);
+    if(eglMakeCurrent(EGLHelper::EGLDisplayContext, EGLHelper::EGLSurfaceContext,
+                   EGLHelper::EGLSurfaceContext, g_MainContext) == EGL_FALSE) {
+		RageException::Throw( "%s", "Failed to switch current EGL context" );
+    }
 
-    LOG->Trace("EGL CTOR Done.");
+    LOG->Trace("EGL CTOR Done :: EGLSC %d :: EGLMC %d :: EGLDC %d :: EGLWin %d :: GetCurDisp %d ",
+                EGLHelper::EGLSurfaceContext,
+                g_MainContext,
+                EGLHelper::EGLDisplayContext,
+                EGLHelper::EGLWindowContext,
+                eglGetCurrentDisplay()
+    );
 }
 
 LowLevelWindow_EGL::~LowLevelWindow_EGL()
@@ -177,9 +194,6 @@ public:
 	// Copying from the Pbuffer to the texture flips Y.
 	virtual bool InvertY() const { return true; } // \todo review for EGL/droids
 
-	// Configuration fetching.
-    EGLint* GetAsPBufferConfigAttribs(int pWidth, int pHeight);
-
 private:
 	int m_iWidth, m_iHeight;
 	LowLevelWindow_EGL *m_pWind;
@@ -226,13 +240,23 @@ RenderTarget_EGL::~RenderTarget_EGL()
 void RenderTarget_EGL::Create( const RenderTargetParam &param, int &iTextureWidthOut,
                                                                int &iTextureHeightOut )
 {
+	m_Param = param;
+
     // \todo : For now, hardset at false. Please review and fix.
     EGLint* RenderTargetAttribs;
     eglRTP->SetRenderTargetConfigAttribs(false, false, RenderTargetAttribs);
 
     // \todo : THIS IS COMPLETELY WRONG AND HERE ONLY FOR COMPILATION.
-    EGLint* PBufferAttribs = GetAsPBufferConfigAttribs(0,0);
-    //EGLint* PBufferAttribs = GetAsPBufferConfigAttribs(param.iWidth,param.iHeight);
+    //EGLint* PBufferAttribs = GetAsPBufferConfigAttribs(0,0);
+    EGLint PBufferAttribs[] = {
+        m_Param.iWidth,//eglRTP->GetEGLProviderWidth(),
+        m_Param.iHeight,//eglRTP->GetEGLProviderHeight(),
+        EGL_NONE
+    };
+
+    LOG->Trace("Fix the pbufferattribs, fucking dumbass.");
+
+    RageException::Throw( "%s", "Rendertarget! now fuck off" );
 
 #if !defined(ANDROID_TEST)
 #error You should REALLY NOT be here.
@@ -336,23 +360,6 @@ void RenderTarget_EGL::FinishRenderingTo()
 	eglMakeCurrent( EGLHelper::EGLDisplayContext, m_pOldSurface, m_pOldSurface, m_pOldContext );
 	m_pOldContext = NULL;
 	m_pOldSurface = 0;
-}
-
-// \todo THIS METHOD IS BAD. BAD. BAD.
-EGLint* RenderTarget_EGL::GetAsPBufferConfigAttribs(int pWidth, int pHeight)
-{
-    // EGL works differently from GLX in that there is a Pbuffer-specific CreateContext
-    EGLint attrTemp[] =
-    {
-        EGL_WIDTH, pWidth,
-        EGL_HEIGHT, pHeight,
-        EGL_NONE
-    };
-
-    pbufferAttributes = (EGLint *)malloc(sizeof(attrTemp));
-    pbufferAttributes = attrTemp;
-
-    return pbufferAttributes;
 }
 
 bool LowLevelWindow_EGL::SupportsRenderToTexture() const

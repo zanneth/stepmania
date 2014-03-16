@@ -11,6 +11,7 @@
 #include <GLES2/gl2platform.h>
 #include <GLES2/gl2ext.h>
 
+
 class EGLProvider_Android : public EGLProvider
 {
 public:
@@ -22,7 +23,8 @@ public:
     bool GetWasWindowedValue();
     void Log(RString string);
     void GetDisplayResolutions(DisplayResolutions &out);
-    void PrintDebug();
+
+    //void PrintDebug();
 private:
 	static EGLint attrsInit[];
 };
@@ -35,6 +37,9 @@ public:
 
     void SetRenderTargetConfigAttribs(bool pWithAlpha, bool pWithDepthBuffer, EGLint* &target);
     GLint GetInternalFormatInt(bool pWithAlpha);
+
+    EGLint GetEGLProviderWidth();
+    EGLint GetEGLProviderHeight();
 
 private:
 	static EGLint targetAttrs[];

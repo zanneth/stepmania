@@ -44,6 +44,16 @@ void AndroidGlobals::HandleCommand(struct android_app* app, int32_t IE) {
 
 int32_t AndroidGlobals::HandleInput(struct android_app* app, AInputEvent* IE) { /*nop*/ }
 
+void AndroidGlobals::PollEventLoop() {
+    int ident, fdesc, events;
+    struct android_poll_source* source;
+    while((ident = ALooper_pollAll(0, &fdesc, &events, (void**)&source)) >= 0) {
+        // process this event
+        if (source)
+            source->process(ANDROID_APP_INSTANCE, source);
+    }
+}
+
 void AndroidGlobals::InitializeApp(int (*Launch)(int, char**), int argc, char* argv[]) {
     //ANDROID_APP_INSTANCE->&IEC; // First Event Core: the Init EC.
     ANDROID_APP_INSTANCE->onAppCmd = HandleCommand;
@@ -135,21 +145,6 @@ void AndroidGlobals::AttachInputHandler(int32_t (*InputHandler)(android_app* pAp
 }
 
 void AndroidGlobals::AttachCommandHandler(void (*CommandHandler)(android_app* app, int32_t cmd)) {
-}
-
-void AndroidGlobals::PollEventLoop() {
-    //nop
-    /*
-    int ident;
-    int fdesc;
-    int events;
-    struct android_poll_source* source;
-    while((ident = ALooper_pollAll(0, &fdesc, &events, (void**)&source)) >= 0) {
-        // process this event
-        if (source)
-            source->process(ANDROID_APP_INSTANCE, source);
-    }
-    */
 }
 
 

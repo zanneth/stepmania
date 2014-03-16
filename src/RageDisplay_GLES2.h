@@ -1,6 +1,9 @@
 #ifndef RAGE_DISPLAY_GLES2_H
 #define RAGE_DISPLAY_GLES2_H
 
+// Because we must.
+#include "RageDisplay.h"
+
 class RageDisplay_GLES2: public RageDisplay
 {
 public:
@@ -67,6 +70,22 @@ public:
 	RageCompiledGeometry* CreateCompiledGeometry();
 	void DeleteCompiledGeometry( RageCompiledGeometry* p );
 
+	/* Create a render target, returning a texture handle. In addition to normal
+	 * texture functions, this can be passed to SetRenderTarget. Delete with
+	 * DeleteTexture. (UpdateTexture is not permitted.) Returns 0 if render-to-
+	 * texture is unsupported.
+	 */
+	unsigned CreateRenderTarget (
+	    const RenderTargetParam &, int &iTextureWidthOut, int &iTextureHeightOut );
+
+	/* Set the render target, or 0 to resume rendering to the framebuffer. An active render
+	 * target may not be used as a texture. If bPreserveTexture is true, the contents
+	 * of the texture will be preserved from the previous call; otherwise, cleared.  If
+	 * bPreserveTexture is true the first time a render target is used, behave as if
+	 * bPreserveTexture was false.
+	 */
+	void SetRenderTarget( unsigned iHandle, bool bPreserveTexture = true );
+
 protected:
 	void DrawQuadsInternal( const RageSpriteVertex v[], int iNumVerts );
 	void DrawQuadStripInternal( const RageSpriteVertex v[], int iNumVerts );
@@ -82,9 +101,6 @@ protected:
 	RageMatrix GetOrthoMatrix( float l, float r, float b, float t, float zn, float zf ); 
 	bool SupportsSurfaceFormat( RagePixelFormat pixfmt );
 	bool SupportsRenderToTexture() const { return true; }
-#if defined(ANDROID)
-#define glDepthRange(near, far) glDepthRangex(near, far)
-#endif
 };
 
 #endif

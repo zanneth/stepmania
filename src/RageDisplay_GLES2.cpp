@@ -167,6 +167,12 @@ namespace
 
 	LowLevelWindow *g_pWind;
 
+	// These three are striaght from OGL
+    // Targets!
+    RenderTarget *g_pCurrentRenderTarget = NULL;
+    map<unsigned, RenderTarget *> g_mapRenderTargets;
+    bool g_bInvertY = false;
+
 	void FixLittleEndian()
 	{
 #if defined(ENDIAN_LITTLE)
@@ -584,9 +590,20 @@ RageDisplay_GLES2::UpdateTexture(
 }
 
 void
-RageDisplay_GLES2::DeleteTexture( unsigned iTexHandle )
+RageDisplay_GLES2::DeleteTexture( unsigned iTexture )
 {
-	// TODO
+    // Straight from OGL
+	if (iTexture == 0)
+		return;
+
+	if (g_mapRenderTargets.find(iTexture) != g_mapRenderTargets.end())
+	{
+		delete g_mapRenderTargets[iTexture];
+		g_mapRenderTargets.erase( iTexture );
+		return;
+	}
+
+	glDeleteTextures( 1, reinterpret_cast<GLuint*>(&iTexture) );
 }
 
 void
@@ -648,7 +665,7 @@ void
 RageDisplay_GLES2::SetTextureFiltering( TextureUnit tu, bool b )
 {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, b ? GL_LINEAR : GL_NEAREST);
-	
+
 	GLint iMinFilter = 0;
 	// Until nVidia confirms that Tegra has glGetTexLevelParameteriv, skip.
 #if !defined(ANDROID)
@@ -679,7 +696,6 @@ RageDisplay_GLES2::SetTextureFiltering( TextureUnit tu, bool b )
 	{
 		iMinFilter = GL_NEAREST;
 	}
-
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, iMinFilter );
 }
 
@@ -711,6 +727,9 @@ RageDisplay_GLES2::SetZBias( float f )
 	float fNear = SCALE( f, 0.0f, 1.0f, 0.05f, 0.0f );
 	float fFar = SCALE( f, 0.0f, 1.0f, 1.0f, 0.95f );
 
+    /*abort();
+    abort();*/
+
 	glDepthRange( fNear, fFar );
 }
 
@@ -733,12 +752,7 @@ RageDisplay_GLES2::SetZTestMode( ZTestMode mode )
 	State::bZTestEnabled = true;
 }
 
-
-
-
-
 /*
-
 
 void RageDisplay_Legacy::SetBlendMode( BlendMode mode )
 {
@@ -991,6 +1005,79 @@ RageDisplay_GLES2::SupportsSurfaceFormat( RagePixelFormat pixfmt )
 	}
 }
 
+unsigned RageDisplay_GLES2::CreateRenderTarget( const RenderTargetParam &param,
+                                                int &iTextureWidthOut,
+                                                int &iTextureHeightOut )
+{
+    LOG->Trace("GLES2 :: RenderTarget Hit.");
+	RenderTarget *pTarget = g_pWind->CreateRenderTarget();
+	pTarget->Create(param, iTextureWidthOut, iTextureHeightOut);
+	unsigned iTexture = pTarget->GetTexture();
+	ASSERT( g_mapRenderTargets.find(iTexture) == g_mapRenderTargets.end() ); // Eh?
+	g_mapRenderTargets[iTexture] = pTarget;
+	return iTexture;
+}
+
+void RageDisplay_GLES2::SetRenderTarget( unsigned iTexture, bool bPreserveTexture )
+{
+	if (iTexture == 0)
+	{
+		g_bInvertY = false;
+		glFrontFace( GL_CCW );
+
+		/* Pop matrixes affected by SetDefaultRenderStates. */
+		DISPLAY->CameraPopMatrix();
+
+		/* Reset the viewport. */
+		int fWidth = g_pWind->GetActualVideoModeParams().width;
+		int fHeight = g_pWind->GetActualVideoModeParams().height;
+		glViewport( 0, 0, fWidth, fHeight );
+
+		if (g_pCurrentRenderTarget)
+			g_pCurrentRenderTarget->FinishRenderingTo();
+		g_pCurrentRenderTarget = NULL;
+		return;
+	}
+
+	/* If we already had a render target, disable it. */
+	if (g_pCurrentRenderTarget != NULL)
+		SetRenderTarget(0, true);
+
+	/* Enable the new render target. */
+	ASSERT(g_mapRenderTargets.find(iTexture) != g_mapRenderTargets.end());
+	RenderTarget *pTarget = g_mapRenderTargets[iTexture];
+	pTarget->StartRenderingTo();
+	g_pCurrentRenderTarget = pTarget;
+
+	/* Set the viewport to the size of the render target. */
+	glViewport(0, 0, pTarget->GetParam().iWidth, pTarget->GetParam().iHeight);
+
+	/* If this render target implementation flips Y, compensate.   Inverting will
+	 * switch the winding order. */
+	g_bInvertY = pTarget->InvertY();
+	if (g_bInvertY)
+		glFrontFace(GL_CW);
+
+	/* The render target may be in a different OpenGL context, so re-send
+	 * state.  Push matrixes affected by SetDefaultRenderStates. */
+	DISPLAY->CameraPushMatrix();
+	SetDefaultRenderStates();
+
+	/* Clear the texture, if requested.  Always set the associated state, for
+	 * consistency. */
+	glClearColor(0,0,0,0);
+	SetZWrite(true);
+
+	/* If bPreserveTexture is false, clear the render target.  Only clear the depth
+	 * buffer if the target has one; otherwise we're clearing the real depth buffer. */
+	if (!bPreserveTexture)
+	{
+		int iBit = GL_COLOR_BUFFER_BIT;
+		if (pTarget->GetParam().bWithDepthBuffer)
+			iBit |= GL_DEPTH_BUFFER_BIT;
+		glClear(iBit);
+	}
+}
 /*
  * Copyright (c) 2012 Colby Klein
  * All rights reserved.

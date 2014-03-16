@@ -33,12 +33,12 @@ EGLProvider_Android::EGLProvider_Android() {}
 
 EGLProvider_Android::~EGLProvider_Android(){}
 
-void EGLProvider_Android::PrintDebug()
+/* void EGLProvider_Android::PrintDebug()
 {
     LOG->Trace("WindowContext ptr :: %d", EGLHelper::EGLWindowContext);
     LOG->Trace("WindowContext drct :: %d", AndroidGlobals::ANDROID_APP_INSTANCE->window);
     LOG->Trace("SelectedConf :: %d", EGLHelper::EGLSelectedConf);
-}
+} */
 
 void EGLProvider_Android::PreContextSetup()
 {
@@ -49,7 +49,7 @@ void EGLProvider_Android::PreContextSetup()
                        EGL_NATIVE_VISUAL_ID,
                        &format);
 
-    PrintDebug();
+    //PrintDebug();
     LOG->Trace("Format :: %d", format);
     ANativeWindow_setBuffersGeometry(
         //AndroidGlobals::ANDROID_APP_INSTANCE->window,
@@ -86,13 +86,20 @@ void EGLProvider_Android::GetDisplayResolutions(DisplayResolutions &out)
 }
 
 
-EGLRenderTargetProvider_Android::EGLRenderTargetProvider_Android(){}
-EGLRenderTargetProvider_Android::~EGLRenderTargetProvider_Android(){}
+EGLRenderTargetProvider_Android::EGLRenderTargetProvider_Android() {}
+EGLRenderTargetProvider_Android::~EGLRenderTargetProvider_Android() {}
 
 void EGLRenderTargetProvider_Android::SetRenderTargetConfigAttribs
     (bool pWithAlpha, bool pWithDepthBuffer, EGLint* &target)
 {
     target = targetAttrs;
+}
+
+EGLint EGLRenderTargetProvider_Android::GetEGLProviderWidth() {
+    return ANativeWindow_getWidth(AndroidGlobals::ANDROID_APP_INSTANCE->window);
+}
+EGLint EGLRenderTargetProvider_Android::GetEGLProviderHeight() {
+    return ANativeWindow_getHeight(AndroidGlobals::ANDROID_APP_INSTANCE->window);
 }
 
 GLint EGLRenderTargetProvider_Android::GetInternalFormatInt(bool pWithAlpha)

@@ -17,11 +17,14 @@
 /* For RageLog */
 #define HAVE_VERSION_INFO
 
+// Define a GLES override for RageDisplay_GLES2
+#define glDepthRange(near, far) glDepthRangef(near, far)
+
 #include "config.h"
 
 #endif //ARCH_SETUP_ANDROID_H
 /*
- * (c) 2014-x Renaud Lepage
+ * (c) 2014 Renaud Lepage
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a

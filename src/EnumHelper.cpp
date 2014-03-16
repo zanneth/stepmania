@@ -72,16 +72,33 @@ int CheckEnum( lua_State *L, LuaReference &table, int iPos, int iInvalid, const 
 		lua_error( L );
 	}
 	int iRet = lua_tointeger( L, -1 );
+
+	/*sprintf(buffer,
+        "EnumCheck :: type :: %s :: iPos :: %d :: iRet :: %d:: iRet toint :: %d :: ret str :: %s ",
+        szType, iPos, iRet, lua_tointeger( L, -1 ), lua_tostring( L, -1 )
+    );
+    sprintf(buffer,
+        "EnumCheck :: type :: %s :: iPos :: %d :: iRet :: %d:: iRet toint :: %d :: ret str :: %s ",
+        szType, iPos, iRet, lua_tointeger( L, 0 ), lua_tostring( L, 0 )
+    );
+    sprintf(buffer,
+        "EnumCheck :: type :: %s :: iPos :: %d :: iRet :: %d:: iRet toint :: %d :: ret str :: %s ",
+        szType, iPos, iRet, lua_tointeger( L, 1 ), lua_tostring( L, 1 )
+    );
+    sprintf(buffer,
+        "EnumCheck :: type :: %s :: iPos :: %d :: iRet :: %d:: iRet toint :: %d :: ret str :: %s ",
+        szType, iPos, iRet, lua_tointeger( L, 2 ), lua_tostring( L, 2 )
+    );*/
 	lua_pop( L, 2 );
 
 #if defined(ANDROID)
-	iRet = lua_tointeger( L, -1 );
-	char buffer[500];
+    iRet = lua_tointeger( L, -1 );
+	/*char buffer[500];
     sprintf(buffer,
         "EnumCheck :: type :: %s :: iPos :: %d :: iRet :: %d:: iRet toint :: %d :: ret str :: %s ",
         szType, iPos, iRet, lua_tointeger( L, -1 ), lua_tostring( L, -1 )
     );
-    PrintStuffToAndroid(buffer);
+    PrintStuffToAndroid(buffer);*/
 	//lua_pop( L, -1 );
 #endif
 

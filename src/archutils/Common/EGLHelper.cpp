@@ -14,7 +14,7 @@ bool EGLHelper::ObtainContext() {
      * In the future, if we're inside this very context,
      * we can use eglGetCurrentDisplay
      **/
-    EGLint major, minor;
+    EGLint major, minor, initstate;
     EGLDisplayContext = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 
     if(EGLDisplayContext == NULL || EGLDisplayContext == EGL_NO_DISPLAY)

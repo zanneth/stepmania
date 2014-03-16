@@ -45,7 +45,7 @@ extern StepStart* ANDROID_ENTRY;
 
 #endif // STEPMANIA_NATIVE_ACTIVITY_H
 /*
- * (c) 2014-x Renaud Lepage
+ * (c) 2014 Renaud Lepage
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
