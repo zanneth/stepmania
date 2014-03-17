@@ -18,7 +18,7 @@ public:
     EGLProvider_Android();
     ~EGLProvider_Android();
 
-    void SetAttibutesInitConfig(EGLint* &target);
+    EGLint* GetAttibutesInitConfig();
     void PreContextSetup();
     bool GetWasWindowedValue();
     void Log(RString string);

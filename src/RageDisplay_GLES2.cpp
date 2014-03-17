@@ -15,7 +15,12 @@
 
 #include "arch/LowLevelWindow/LowLevelWindow.h"
 
-#include <GL/glew.h>
+//#include <GL/glew.h>
+
+// Bring in GLES2
+#include <GLES2/gl2.h>
+#include <GLES2/gl2platform.h>
+#include <GLES2/gl2ext.h>
 
 #ifdef NO_GL_FLUSH
 #define glFlush()
@@ -113,13 +118,13 @@ namespace
 	} const g_GLPixFmtInfo[NUM_RagePixelFormat] = {
 		{
 			/* R8G8B8A8 */
-			GL_RGBA8,
+			GL_RGBA8_OES, // OESEXT from Android
 			GL_RGBA,
 			GL_UNSIGNED_BYTE,
 		}, {
 			/* R8G8B8A8 */
-			GL_RGBA8,
-			GL_BGRA,
+			GL_RGBA8_OES, // OESEXT from Android
+			GL_BGRA_EXT,
 			GL_UNSIGNED_BYTE,
 		}, {
 			/* B4G4R4A4 */
@@ -133,35 +138,37 @@ namespace
 			GL_UNSIGNED_SHORT_5_5_5_1,
 		}, {
 			/* B5G5R5 */
-			GL_RGB5,
+			GL_RGB,
 			GL_RGBA,
 			GL_UNSIGNED_SHORT_5_5_5_1,
 		}, {
 			/* B8G8R8 */
-			GL_RGB8,
+			GL_RGB8_OES,
 			GL_RGB,
 			GL_UNSIGNED_BYTE,
-		}, {
-			/* Paletted */
+		}, /* {
+			/* Paletted * /
 			GL_COLOR_INDEX8_EXT,
 			GL_COLOR_INDEX,
 			GL_UNSIGNED_BYTE,
-		}, {
+		},*/ {
 			/* B8G8R8 */
-			GL_RGB8,
-			GL_BGR,
+			GL_RGB8_OES, // OES'd from GL_RGB8; present in Android.
+			GL_BGRA_EXT, // from GL_BGR originally; BGR is documented to not make sense?
 			GL_UNSIGNED_BYTE,
-		}, {
+		}
+		, {
 			// TODO: These don't work on ES2. Work out what needs to happen.
+			// more: These are literally not defined.
 			/* A1R5G5B5 (matches D3DFMT_A1R5G5B5) */
 			GL_RGB5_A1,
-			GL_BGRA,
-			GL_UNSIGNED_SHORT_1_5_5_5_REV,
+			GL_BGRA_EXT,
+			GL_UNSIGNED_SHORT_1_5_5_5_REV_EXT, // EXT from Android.
 		}, {
 			/* X1R5G5B5 */
-			GL_RGB5,
-			GL_BGRA,
-			GL_UNSIGNED_SHORT_1_5_5_5_REV,
+			GL_RGB,
+			GL_BGRA_EXT,
+			GL_UNSIGNED_SHORT_1_5_5_5_REV_EXT, // EXT from Android.
 		}
 	};
 
@@ -359,8 +366,8 @@ RageDisplay_GLES2::Init( const VideoModeParams &p, bool bAllowUnacceleratedRende
 		}
 	}
 
-	glewExperimental = true;
-	glewInit();
+	/*glewExperimental = true;
+	glewInit();*/
 
 	/* Log this, so if people complain that the radar looks bad on their
 	 * system we can compare them: */
@@ -388,7 +395,7 @@ RString RageDisplay_GLES2::TryVideoMode( const VideoModeParams &p, bool &bNewDev
 	if (bNewDeviceOut)
 	{
 		// NOTE: This isn't needed in an actual GLES2 context...
-		glewInit();
+		//glewInit();
 
 		/* We have a new OpenGL context, so we have to tell our textures that
 		 * their OpenGL texture number is invalid. */
@@ -547,18 +554,20 @@ RageDisplay_GLES2::SupportsTextureFormat( RagePixelFormat pixfmt, bool realtime 
 	if (realtime && !SupportsSurfaceFormat(pixfmt))
 		return false;
 
+// The following values are downright not defined on Android.
+#if !defined(ANDROID)
 	switch (g_GLPixFmtInfo[pixfmt].format)
 	{
 	case GL_COLOR_INDEX:
 		return false;
 	case GL_BGR:
-	case GL_BGRA:
+	case GL_BGRA_EXT:
 		//return !!GLEW_EXT_bgra;
 		return false; // no BGRA on ES2 (without exts)
 	default:
 		return true;
 	}
-
+#endif
 	return true;
 }
 
@@ -864,11 +873,12 @@ RageDisplay_GLES2::SetCullMode( CullMode mode )
 void
 RageDisplay_GLES2::SetAlphaTest( bool b )
 {
-	if (State::bAlphaTestEnabled != b)
+	/*if (State::bAlphaTestEnabled != b)
 	{
 		State::bAlphaTestEnabled = b;
 		b ? glEnable(GL_ALPHA_TEST) : glDisable(GL_ALPHA_TEST);
-	}
+	}*/
+	//LOG->Trace("GLES2::Alpha Test is now stubbed.");
 }
 
 void
@@ -903,7 +913,7 @@ RageDisplay_GLES2::SetPolygonMode(PolygonMode pm)
 	}
 	glPolygonMode(GL_FRONT_AND_BACK, m);
 #else
-	ssprintf("STUB SetPolygonMode");
+	ssprintf("GLES2 :: STUB SetPolygonMode");
 #endif
 }
 
@@ -997,7 +1007,7 @@ RageDisplay_GLES2::SupportsSurfaceFormat( RagePixelFormat pixfmt )
 {
 	switch (g_GLPixFmtInfo[pixfmt].type)
 	{
-	case GL_UNSIGNED_SHORT_1_5_5_5_REV:
+	case GL_UNSIGNED_SHORT_1_5_5_5_REV_EXT: // EXT from Android.
 		return false;
 		//return GLEW_EXT_bgra && g_bReversePackedPixelsWorks;
 	default:
@@ -1005,11 +1015,17 @@ RageDisplay_GLES2::SupportsSurfaceFormat( RagePixelFormat pixfmt )
 	}
 }
 
+bool
+RageDisplay_GLES2::SupportsRenderToTexture( ) const
+{
+	return g_pWind->SupportsRenderToTexture() ;
+}
+
 unsigned RageDisplay_GLES2::CreateRenderTarget( const RenderTargetParam &param,
                                                 int &iTextureWidthOut,
                                                 int &iTextureHeightOut )
 {
-    LOG->Trace("GLES2 :: RenderTarget Hit.");
+    LOG->Trace("GLES2 :: CreateRenderTarget Hit.");
 	RenderTarget *pTarget = g_pWind->CreateRenderTarget();
 	pTarget->Create(param, iTextureWidthOut, iTextureHeightOut);
 	unsigned iTexture = pTarget->GetTexture();
@@ -1020,6 +1036,7 @@ unsigned RageDisplay_GLES2::CreateRenderTarget( const RenderTargetParam &param,
 
 void RageDisplay_GLES2::SetRenderTarget( unsigned iTexture, bool bPreserveTexture )
 {
+    LOG->Trace("GLES2 :: SetRenderTarget Hit.");
 	if (iTexture == 0)
 	{
 		g_bInvertY = false;

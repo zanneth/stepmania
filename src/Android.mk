@@ -61,7 +61,6 @@ RAGE_ENGINE    := RageBitmapTexture.cpp \
                   RageDisplay.cpp \
                   RageDisplay_GLES2.cpp \
                   RageDisplay_Null.cpp \
-                  RageDisplay_OGL_Helpers.cpp \
                   RageException.cpp \
                   RageFile.cpp \
                   RageFileBasic.cpp \
@@ -439,6 +438,7 @@ LOCAL_SRC_FILES:= $(PLATFORM_SRC) \
 #                  archutils/Unix/CrashHandlerChild.cpp \
 #                  archutils/Unix/AssertionHandler.cpp
 #                  archutils/Unix/SignalHandler.cpp \
+#                  RageDisplay_OGL_Helpers.cpp \
 # Deprecated?
 #                  ScreenOptionsReviewWorkout.cpp \
 
@@ -448,13 +448,13 @@ LOCAL_C_INCLUDES := $(TOP_PATH) \
                     $(ANDEXTERN_PATH)/ffmpeg
 
 # Currently, we're locking it to ARM
-LOCAL_CFLAGS := -DANDROID -DCPU_ARM -DENDIAN_LITTLE -DENDIAN_32BITWORD -DGLEW_NO_GLU
+LOCAL_CFLAGS := -DANDROID -DCPU_ARM -DENDIAN_LITTLE -DENDIAN_32BITWORD
 LOCAL_CFLAGS += -DANDROID_TEST -finline-limit=300 -fno-exceptions
 # Comment out the previous line if we're not doing a testbuild.
 
 LOCAL_LDLIBS    := -llog -landroid -lz -lEGL -lGLESv2 -lOpenSLES -ldl -lm
 
-LOCAL_STATIC_LIBRARIES := jsoncpp libtomcrypt libtommath glew android_native_app_glue \
+LOCAL_STATIC_LIBRARIES := jsoncpp libtomcrypt libtommath android_native_app_glue \
                           pcre ndk_helper lua png libmad libvorbis libjpeg \
                           stlport_static
 
@@ -472,9 +472,9 @@ $(call import-module,$(EXTERN_PATH)/libjpeg)
 $(call import-module,$(EXTERN_PATH)/pcre)
 # Vorbis brings in libogg by itself
 $(call import-module,$(EXTERN_PATH)/android/vorbis)
-$(call import-module,$(EXTERN_PATH)/glew-1.10)
 $(call import-module,$(EXTERN_PATH)/mad-0.15.1b)
 
+#$(call import-module,$(EXTERN_PATH)/glew-1.10)
 #$(call import-module,$(EXTERN_PATH)/regal/build/android/Regal/jni)
 
 # Pull FFMpeg in.

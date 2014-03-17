@@ -50,7 +50,9 @@ void EGLProvider_Android::PreContextSetup()
                        &format);
 
     //PrintDebug();
-    LOG->Trace("Format :: %d", format);
+    LOG->Trace("Format :: %d :: EGLWC :: %d :: EGLDC :: %d",
+        format, EGLHelper::EGLWindowContext, EGLHelper::EGLDisplayContext
+    );
     ANativeWindow_setBuffersGeometry(
         //AndroidGlobals::ANDROID_APP_INSTANCE->window,
         EGLHelper::EGLWindowContext,
@@ -60,9 +62,9 @@ void EGLProvider_Android::PreContextSetup()
     );
 }
 
-void EGLProvider_Android::SetAttibutesInitConfig(EGLint* &target)
+EGLint* EGLProvider_Android::GetAttibutesInitConfig()
 {
-    target = attrsInit;
+    return attrsInit;
 }
 
 bool EGLProvider_Android::GetWasWindowedValue()

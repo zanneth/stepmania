@@ -15,7 +15,7 @@ public:
     static EGLProvider *Create();
 
     //virtual void
-    virtual void SetAttibutesInitConfig(EGLint* &target) = 0;
+    virtual EGLint* GetAttibutesInitConfig() = 0;
     virtual void PreContextSetup() = 0;
     virtual bool GetWasWindowedValue() = 0;
     virtual void Log(RString string) = 0;

@@ -6,9 +6,6 @@
 #include "RageDisplay.h" // VideoModeParams
 #include "LowLevelWindow.h"
 
-// Because we must.
-#include "RageDisplay_OGL_Helpers.h"
-
 // Way of working for platform specifics and platform-dependent configurations
 #include "EGLProviders/EGLProvider.h"
 

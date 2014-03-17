@@ -34,16 +34,13 @@ LowLevelWindow_EGL::LowLevelWindow_EGL()
     // The EGL LLW has been designed using the Android LLW and trying to keep it abstracted.
     { //egl init block
     // Do a lock on the current EGLconfig. We'll hardlock on 32bits for now, because whatev.
-    EGLint* attributes_initconf;
-    eglProvider->SetAttibutesInitConfig(attributes_initconf);
-                                                            // eglProvider->GetAttibutesInitConfig();
 
     EGLint numberConfigs;
 
     if (EGL_FALSE == eglChooseConfig(EGLHelper::EGLDisplayContext,
-                                     attributes_initconf,
+                                     eglProvider->GetAttibutesInitConfig(),
                                      NULL, 0, &numberConfigs)
-                                    || (numberConfigs == 0) )
+                                     || (numberConfigs == 0) )
     {
         /* Hardcrashes! */
         if(numberConfigs == 0)
@@ -54,7 +51,8 @@ LowLevelWindow_EGL::LowLevelWindow_EGL()
 
     EGLConfig matchingConfigs[numberConfigs];
 
-    if (EGL_FALSE == eglChooseConfig(EGLHelper::EGLDisplayContext, attributes_initconf,
+    if (EGL_FALSE == eglChooseConfig(EGLHelper::EGLDisplayContext,
+                                     eglProvider->GetAttibutesInitConfig(),
                                      matchingConfigs, numberConfigs, &numberConfigs))
     {
         /* Hardcrash, AGAIN. */
@@ -161,7 +159,11 @@ RString LowLevelWindow_EGL::TryVideoMode( const VideoModeParams &p, bool &bNewDe
                        EGL_DEPTH_SIZE,
                        &(CurrentParams.bpp));
 
-    CurrentParams.rate = 0; // VSync?
+
+#if !defined(ANDROID_TEST)
+#error "COMPLETELY WRONG. FIX."
+#endif
+    CurrentParams.rate = 60; // VSync?
 
 
     return "";
@@ -323,7 +325,7 @@ void RenderTarget_EGL::Create( const RenderTargetParam &param, int &iTextureWidt
 			      GL_UNSIGNED_BYTE, NULL );
 
 	GLenum error = glGetError();
-	ASSERT_M( error == GL_NO_ERROR, RageDisplay_Legacy_Helpers::GLToString(error) );
+	ASSERT_M( error == GL_NO_ERROR, ssprintf("LLWEGL :: GLError :: %i", error) );
 
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
@@ -353,7 +355,7 @@ void RenderTarget_EGL::FinishRenderingTo()
 	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, m_iWidth, m_iHeight );
 
 	GLenum error = glGetError();
-	ASSERT_M( error == GL_NO_ERROR, RageDisplay_Legacy_Helpers::GLToString(error) );
+	ASSERT_M( error == GL_NO_ERROR, ssprintf("LLWEGL :: GLError :: %i", error) );
 
 	glBindTexture( GL_TEXTURE_2D, 0 );
 
