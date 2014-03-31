@@ -21,6 +21,23 @@ namespace AndroidGlobals {
         extern void ForceCrash(const char* reason);
     };
 
+    namespace LoadingWindow {
+        extern void fragInitializeLoadingWindowDialog();
+        extern void fragTeardownLoadingWindowDialog();
+        extern void SetText(RString str);
+        extern void SetProgress(const int progress);
+        extern void SetTotalWork(const int tw);
+        extern void SetIndeterminate(bool indet);
+    };
+
+    class EventHandlers {
+    public:
+        EventHandlers() : InputContext(NULL), CommandContext(NULL){};
+        void* InputContext;
+        void* CommandContext;
+    };
+    extern EventHandlers sEventHandlers;
+
     // Hardcoding SHIELD; it's a direct testbench and I don't want to code some
     //  weird conditionals and the like.
     extern RString GetVideoDriverName();
@@ -39,7 +56,7 @@ namespace AndroidGlobals {
     extern char* commandArguments[1];
 
     extern void InitializeApp(int (*Launch)(int, char**), int argc, char* argv[]);
-    extern void AttachInputHandler(int32_t (*InputHandler)(android_app* app, AInputEvent* ev));
+    extern void AttachInputHandler(int32_t (*InputHandler)(android_app* app, AInputEvent* ev), void* Context);
     extern void AttachCommandHandler(void (*InputHandler)(android_app* app, int32_t cmd));
 
     extern bool InitDone;
@@ -48,6 +65,7 @@ namespace AndroidGlobals {
     // Internal
     static void HandleCommand(struct android_app* app, int32_t cmd);
     static int32_t HandleInput(struct android_app* app, AInputEvent* IE);
+
 
     /*
     class EventCore {

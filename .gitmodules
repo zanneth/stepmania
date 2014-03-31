@@ -1,0 +1,3 @@
+[submodule "extern/regal"]
+	path = extern/regal
+	url = https://github.com/p3/regal.git

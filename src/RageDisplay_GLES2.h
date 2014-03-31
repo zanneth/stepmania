@@ -36,7 +36,10 @@ public:
 	void SetTextureMode( TextureUnit tu, TextureMode tm );
 	void SetTextureWrapping( TextureUnit tu, bool b );
 	int GetMaxTextureSize() const;
+	static bool SetTextureUnit(TextureUnit tu);
 	void SetTextureFiltering( TextureUnit tu, bool b );
+	bool IsEffectModeSupported( EffectMode effect );
+	void SetEffectMode( EffectMode effect );
 	bool IsZWriteEnabled() const;
 	bool IsZTestEnabled() const;
 	void SetZWrite( bool b );
@@ -87,6 +90,8 @@ public:
 	void SetRenderTarget( unsigned iHandle, bool bPreserveTexture = true );
 
 protected:
+    static void InvalidateObjects();
+    void InitShaders();
 	void DrawQuadsInternal( const RageSpriteVertex v[], int iNumVerts );
 	void DrawQuadStripInternal( const RageSpriteVertex v[], int iNumVerts );
 	void DrawFanInternal( const RageSpriteVertex v[], int iNumVerts );
@@ -95,12 +100,15 @@ protected:
 	void DrawCompiledGeometryInternal( const RageCompiledGeometry *p, int iMeshIndex );
 	void DrawLineStripInternal( const RageSpriteVertex v[], int iNumVerts, float LineWidth );
 	void DrawSymmetricQuadStripInternal( const RageSpriteVertex v[], int iNumVerts );
+    void SendCurrentMatrices();
 
 	RString TryVideoMode( const VideoModeParams &p, bool &bNewDeviceOut );
 	RageSurface* CreateScreenshot();
 	RageMatrix GetOrthoMatrix( float l, float r, float b, float t, float zn, float zf ); 
 	bool SupportsSurfaceFormat( RagePixelFormat pixfmt );
 	bool SupportsRenderToTexture() const;
+
+	RagePixelFormat GetImgPixelFormat( RageSurface* &img, bool &FreeImg, int width, int height, bool bPalettedTexture );
 };
 
 #endif

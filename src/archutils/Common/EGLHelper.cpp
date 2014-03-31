@@ -7,6 +7,9 @@ EGLConfig  EGLHelper::EGLSelectedConf = NULL;
 EGLNativeWindowType EGLHelper::EGLWindowContext = NULL;
 
 bool EGLHelper::ObtainContext() {
+    // Force setting up EGL to accept OGLES as the calling API.
+    eglBindAPI(EGL_OPENGL_ES_API);
+
     /**
      * Technically, EGL_DEFAULT_DISPLAY is ((EGLNativeDisplayType)0).
      * Nonetheless, use the pre-defined variable.

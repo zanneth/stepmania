@@ -52,6 +52,9 @@
 #define PACKAGE_URL ""
 #define PACKAGE_VERSION "alpha 0 variant Android"
 
+
+#define HAVE_LOADINGWINDOW
+
 /* OpenGL ES 2.0 support not available */
 /* #undef WITHOUT_GLES2 */
 

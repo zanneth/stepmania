@@ -5,7 +5,9 @@
 #include <windows.h>
 #endif
 
+#if !defined(ANDROID)
 #include <GL/glew.h>
+#endif
 
 /* Import RageDisplay, for types.  Do not include RageDisplay_Legacy.h. */
 #include "RageDisplay.h"

@@ -4,23 +4,18 @@
 //#include <archutils/Android/Globals.h>
 #include <Foreach.h>
 #include <InputFilter.h>
+#include "RageLog.h"
 
-REGISTER_INPUT_HANDLER_CLASS2( AndroidGamepad, Android_Gamepad );
+REGISTER_INPUT_HANDLER_CLASS2( Android_Gamepad, Android_Gamepad );
 
 InputHandler_Android_Gamepad::InputHandler_Android_Gamepad() {
-    // Set everything up from here.
-    appInstance = AndroidGlobals::ANDROID_APP_INSTANCE;
-
-    // Keep a pointer to this object/context at all times.
-    // We will be using this in a static context.
-    appInstance->userData = this; // \todo : this is obviously bad. Do an interobj in Gameloop
-
-    AndroidGlobals::AttachInputHandler(&InputEvent);
-
+    AndroidGlobals::AttachInputHandler(&InputEvent, this);
 }
 
 int32_t InputHandler_Android_Gamepad::InputEvent(android_app* pApplication, AInputEvent* pEvent) {
-    InputHandler_Android_Gamepad& lHandler = *(InputHandler_Android_Gamepad*)pApplication->userData;
+    InputHandler_Android_Gamepad& lHandler =
+        *(InputHandler_Android_Gamepad*)((AndroidGlobals::EventHandlers*)pApplication->userData);
+
     return lHandler.consume(pEvent);
 }
 

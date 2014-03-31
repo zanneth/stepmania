@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Stepmania</string>
+    <string name="loading_res">Loading Resource</string>
 </resources>

@@ -1,6 +1,32 @@
 #include "LoadingWindow_Android.h"
 // Use a standard FragmentDialog in this context or something.
 
+LoadingWindow_Android::LoadingWindow_Android() {
+    AndroidGlobals::LoadingWindow::fragInitializeLoadingWindowDialog();
+}
+LoadingWindow_Android::~LoadingWindow_Android() {
+    AndroidGlobals::LoadingWindow::fragTeardownLoadingWindowDialog();
+}
+
+RString LoadingWindow_Android::Init() {
+
+    // No init to do here. Whatever.
+    return RString("");
+}
+
+void LoadingWindow_Android::SetText(RString str) {
+    AndroidGlobals::LoadingWindow::SetText(str);
+}
+void LoadingWindow_Android::SetProgress(const int progress) {
+    AndroidGlobals::LoadingWindow::SetProgress(progress);
+}
+void LoadingWindow_Android::SetTotalWork(const int totalWork) {
+    AndroidGlobals::LoadingWindow::SetTotalWork(totalWork);
+}
+void LoadingWindow_Android::SetIndeterminate(bool indeterminate) {
+    AndroidGlobals::LoadingWindow::SetIndeterminate(indeterminate);
+}
+
 /*
  * (c) 2014-x Renaud Lepage
  * All rights reserved.

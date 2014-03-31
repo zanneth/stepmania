@@ -136,6 +136,11 @@ LowLevelWindow_EGL::~LowLevelWindow_EGL()
 // Modelled over the X11
 void LowLevelWindow_EGL::SwapBuffers()
 {
+    eglWaitGL();
+    /*LOG->Trace("EGL SwapBuf :: EGLDC %d :: EGLSC %d :: OP %d ",
+        EGLHelper::EGLDisplayContext, EGLHelper::EGLSurfaceContext,
+    );*/
+
     eglSwapBuffers(EGLHelper::EGLDisplayContext, EGLHelper::EGLSurfaceContext);
 }
 

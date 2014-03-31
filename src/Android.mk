@@ -20,6 +20,7 @@ LOCAL_MODULE:= stepmania
 
 # Architecture-specific Sources
 PLATFORM_SRC   := arch/InputHandler/InputHandler_Android_Gamepad.cpp \
+                  arch/LoadingWindow/LoadingWindow_Android.cpp \
                   arch/LowLevelWindow/EGLProviders/EGLProvider_Android.cpp \
                   arch/LowLevelWindow/EGLProviders/EGLProvider.cpp \
                   arch/LowLevelWindow/LowLevelWindow_EGL.cpp \
@@ -57,6 +58,7 @@ SHARED_ARCH_SRC:= arch/RageDriver.cpp \
                   arch/Sound/RageSoundDriver.cpp \
                   arch/Sound/RageSoundDriver_Generic_Software.cpp
 
+# The Rage engine itself
 RAGE_ENGINE    := RageBitmapTexture.cpp \
                   RageDisplay.cpp \
                   RageDisplay_GLES2.cpp \
@@ -428,7 +430,7 @@ LOCAL_SRC_FILES:= $(PLATFORM_SRC) \
 #need to implement these:
                   #archutils/Android/CrashHandler.cpp
                   #arch/MemoryCard/MemoryCardDriver_Android.cpp \
-                  #arch/LoadingWindow/LoadingWindow_Android.cpp \
+
 
 # will need to get these fixed
 # can't because networking
@@ -438,7 +440,6 @@ LOCAL_SRC_FILES:= $(PLATFORM_SRC) \
 #                  archutils/Unix/CrashHandlerChild.cpp \
 #                  archutils/Unix/AssertionHandler.cpp
 #                  archutils/Unix/SignalHandler.cpp \
-#                  RageDisplay_OGL_Helpers.cpp \
 # Deprecated?
 #                  ScreenOptionsReviewWorkout.cpp \
 
@@ -458,7 +459,7 @@ LOCAL_STATIC_LIBRARIES := jsoncpp libtomcrypt libtommath android_native_app_glue
                           pcre ndk_helper lua png libmad libvorbis libjpeg \
                           stlport_static
 
-LOCAL_SHARED_LIBRARIES := avcodec avfilter avformat swresample swscale avutil \
+LOCAL_SHARED_LIBRARIES := avcodec avfilter avformat swresample swscale avutil
                           
 
 include $(BUILD_SHARED_LIBRARY)

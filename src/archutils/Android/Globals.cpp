@@ -5,6 +5,7 @@
 android_app* AndroidGlobals::ANDROID_APP_INSTANCE = NULL;
 char* AndroidGlobals::commandArguments[1];
 bool AndroidGlobals::InitDone = false;
+AndroidGlobals::EventHandlers AndroidGlobals::sEventHandlers;
 
 void AndroidGlobals::SetAppInstance(android_app* state) {
     ANDROID_APP_INSTANCE = state;
@@ -76,6 +77,7 @@ void AndroidGlobals::InitializeApp(int (*Launch)(int, char**), int argc, char* a
 
     ANDROID_APP_INSTANCE->onAppCmd = NULL;
     ANDROID_APP_INSTANCE->onInputEvent = NULL;
+    ANDROID_APP_INSTANCE->userData = &sEventHandlers;
 
     // We actually have the staticref to the proper entry point. GO.
     Launch(argc, argv);
@@ -140,13 +142,13 @@ char** AndroidGlobals::GetDefaultCommandArguments() {
     return commandArguments;
 }
 
-void AndroidGlobals::AttachInputHandler(int32_t (*InputHandler)(android_app* pApplication, AInputEvent* pEvent)) {
+void AndroidGlobals::AttachInputHandler(int32_t (*InputHandler)(android_app* pApplication, AInputEvent* pEvent), void* AndroidInputHandler) {
     ANDROID_APP_INSTANCE->onInputEvent = InputHandler;
+    sEventHandlers.InputContext = AndroidInputHandler;
 }
 
 void AndroidGlobals::AttachCommandHandler(void (*CommandHandler)(android_app* app, int32_t cmd)) {
 }
-
 
 #define APPNAME "StepMania"
 void AndroidGlobals::Log(android_LogPriority prio, RString string) {
@@ -168,6 +170,84 @@ void AndroidGlobals::Log_Info(RString string) {
     Log(ANDROID_LOG_INFO, string.c_str());
 }
 
+
+/**LoadingWindow**/
+
+void AndroidGlobals::LoadingWindow::fragInitializeLoadingWindowDialog() {
+    JNIEnv *jni;
+    ANDROID_APP_INSTANCE->activity->vm->AttachCurrentThread(&jni, NULL);
+
+    // Classret and calling
+    jclass clazz = jni->GetObjectClass(ANDROID_APP_INSTANCE->activity->clazz);
+    jmethodID methodID = jni->GetMethodID(clazz, "fragInitializeLoadingWindowDialog", "()V");
+    jni->CallIntMethod(ANDROID_APP_INSTANCE->activity->clazz, methodID, NULL);
+
+    ANDROID_APP_INSTANCE->activity->vm->DetachCurrentThread();
+}
+
+void AndroidGlobals::LoadingWindow::fragTeardownLoadingWindowDialog() {
+    JNIEnv *jni;
+    ANDROID_APP_INSTANCE->activity->vm->AttachCurrentThread(&jni, NULL);
+
+    // Classret and calling
+    jclass clazz = jni->GetObjectClass(ANDROID_APP_INSTANCE->activity->clazz);
+    jmethodID methodID = jni->GetMethodID(clazz, "fragTeardownLoadingWindowDialog", "()V");
+    jni->CallIntMethod(ANDROID_APP_INSTANCE->activity->clazz, methodID, NULL);
+
+    ANDROID_APP_INSTANCE->activity->vm->DetachCurrentThread();
+}
+
+void AndroidGlobals::LoadingWindow::SetText(RString text) {
+    JNIEnv *jni;
+    ANDROID_APP_INSTANCE->activity->vm->AttachCurrentThread(&jni, NULL);
+
+    // Classret and calling
+    jclass clazz = jni->GetObjectClass(ANDROID_APP_INSTANCE->activity->clazz);
+    jmethodID methodID = jni->GetMethodID(clazz, "fragSetText", "(Ljava/lang/String;)V");
+
+    jni->CallVoidMethod(ANDROID_APP_INSTANCE->activity->clazz,
+                        methodID,
+                        jni->NewStringUTF(text.c_str())
+    );
+
+    ANDROID_APP_INSTANCE->activity->vm->DetachCurrentThread();
+}
+
+void AndroidGlobals::LoadingWindow::SetProgress(const int progress) {
+    JNIEnv *jni;
+    ANDROID_APP_INSTANCE->activity->vm->AttachCurrentThread(&jni, NULL);
+
+    // Classret and calling
+    jclass clazz = jni->GetObjectClass(ANDROID_APP_INSTANCE->activity->clazz);
+    jmethodID methodID = jni->GetMethodID(clazz, "fragSetProgress", "(I)V");
+    jni->CallIntMethod(ANDROID_APP_INSTANCE->activity->clazz, methodID, progress);
+
+    ANDROID_APP_INSTANCE->activity->vm->DetachCurrentThread();
+}
+
+void AndroidGlobals::LoadingWindow::SetTotalWork(const int tw) {
+    JNIEnv *jni;
+    ANDROID_APP_INSTANCE->activity->vm->AttachCurrentThread(&jni, NULL);
+
+    // Classret and calling
+    jclass clazz = jni->GetObjectClass(ANDROID_APP_INSTANCE->activity->clazz);
+    jmethodID methodID = jni->GetMethodID(clazz, "fragSetTotalWork", "(I)V");
+    jni->CallIntMethod(ANDROID_APP_INSTANCE->activity->clazz, methodID, tw);
+
+    ANDROID_APP_INSTANCE->activity->vm->DetachCurrentThread();
+}
+
+void AndroidGlobals::LoadingWindow::SetIndeterminate(bool indet) {
+    JNIEnv *jni;
+    ANDROID_APP_INSTANCE->activity->vm->AttachCurrentThread(&jni, NULL);
+
+    // Classret and calling
+    jclass clazz = jni->GetObjectClass(ANDROID_APP_INSTANCE->activity->clazz);
+    jmethodID methodID = jni->GetMethodID(clazz, "fragSetIndeterminate", "(Z)V");
+    jni->CallIntMethod(ANDROID_APP_INSTANCE->activity->clazz, methodID, indet);
+
+    ANDROID_APP_INSTANCE->activity->vm->DetachCurrentThread();
+}
 
 /*
  * (c) 2014 Renaud Lepage

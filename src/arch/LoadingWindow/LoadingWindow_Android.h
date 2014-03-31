@@ -1,13 +1,19 @@
 #ifndef LOADINGWINDOW_ANDROID_H
 #define LOADINGWINDOW_ANDROID_H
 
+#include "archutils/Android/Globals.h"
 #include "LoadingWindow.h"
 
 class LoadingWindow_Android: public LoadingWindow
 {
 public:
-	void SetText( RString str ) { }
-	void SetSplash( const RageSurface *pSplash ) { }
+    LoadingWindow_Android();
+    RString Init();
+    ~LoadingWindow_Android();
+	void SetText( RString str );
+	void SetProgress( const int progress );
+	void SetTotalWork( const int totalWork );
+	void SetIndeterminate( bool indeterminate );
 };
 #define USE_LOADING_WINDOW_ANDROID
 
