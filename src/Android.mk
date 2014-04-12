@@ -31,6 +31,7 @@ PLATFORM_SRC   := arch/InputHandler/InputHandler_Android_Gamepad.cpp \
                   arch/Sound/RageSoundDriver_Android.cpp
 
                   #archutils/Android/Framework/cpp/stepstart.cpp \
+
 # Shared, Non-Core Sources
 SHARED_ARCH_SRC:= arch/RageDriver.cpp \
                   arch/LoadingWindow/LoadingWindow.cpp \

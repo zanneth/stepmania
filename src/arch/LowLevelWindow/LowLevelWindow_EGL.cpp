@@ -91,8 +91,6 @@ LowLevelWindow_EGL::LowLevelWindow_EGL()
     if(EGLHelper::EGLSelectedConf == NULL)
         RageException::Throw( "%s", "For some reason, we didn't get a config/crash before here." );
 
-    // As this class is, originally, mostly/purely virtual, we call downstream.
-    eglProvider->PreContextSetup();
 
     EGLHelper::EGLSurfaceContext =
         eglCreateWindowSurface(EGLHelper::EGLDisplayContext,
@@ -100,6 +98,9 @@ LowLevelWindow_EGL::LowLevelWindow_EGL()
                                EGLHelper::EGLWindowContext,
 //                               AndroidGlobals::ANDROID_APP_INSTANCE->window,
                                EGLempty);
+
+    // As this class is, originally, mostly/purely virtual, we call downstream.
+    eglProvider->PreContextSetup();
 
     // in theory, for this execution path and context, the Display and Surface contexts are
     // as of yet completely unpopulated, as we're directly being called from the CTOR layer.
@@ -125,6 +126,22 @@ LowLevelWindow_EGL::LowLevelWindow_EGL()
                 EGLHelper::EGLWindowContext,
                 eglGetCurrentDisplay()
     );
+    int screen_width_;
+    int screen_height_;
+    eglQuerySurface( EGLHelper::EGLDisplayContext,
+                     EGLHelper::EGLSurfaceContext,
+                     EGL_WIDTH,
+                     &screen_width_ );
+    eglQuerySurface( EGLHelper::EGLDisplayContext,
+                     EGLHelper::EGLSurfaceContext,
+                     EGL_HEIGHT,
+                     &screen_height_ );
+    LOG->Trace("EGL CTOR WdthHeight :: EGLSC %d :: EGLDC %d :: w %d :: h %d ",
+                EGLHelper::EGLSurfaceContext,
+                EGLHelper::EGLDisplayContext,
+                screen_width_,
+                screen_height_
+    );
 }
 
 LowLevelWindow_EGL::~LowLevelWindow_EGL()
@@ -141,7 +158,13 @@ void LowLevelWindow_EGL::SwapBuffers()
         EGLHelper::EGLDisplayContext, EGLHelper::EGLSurfaceContext,
     );*/
 
-    eglSwapBuffers(EGLHelper::EGLDisplayContext, EGLHelper::EGLSurfaceContext);
+    if(!eglSwapBuffers(EGLHelper::EGLDisplayContext, EGLHelper::EGLSurfaceContext)) {
+        LOG->Trace("EGL:SwapBuf :: Could not swap buffers :: DC :: %d :: SC :: %d :: ERR :: %d",
+            EGLHelper::EGLDisplayContext,
+            EGLHelper::EGLSurfaceContext,
+            eglGetError()
+        );
+    }
 }
 
 void *LowLevelWindow_EGL::GetProcAddress( RString s )
@@ -341,6 +364,7 @@ void RenderTarget_EGL::Create( const RenderTargetParam &param, int &iTextureWidt
 
 void RenderTarget_EGL::StartRenderingTo()
 {
+    LOG->Trace("Target :: Rendering");
 	m_pOldContext = eglGetCurrentContext();
 	m_pOldSurface = eglGetCurrentSurface(EGL_DRAW);
 	eglMakeCurrent( EGLHelper::EGLDisplayContext, m_iPbuffer, m_iPbuffer, m_pPbufferContext );

@@ -50,7 +50,7 @@ void EGLProvider_Android::PreContextSetup()
                        &format);
 
     //PrintDebug();
-    LOG->Trace("Format :: %d :: EGLWC :: %d :: EGLDC :: %d",
+    LOG->Trace("ProviderFormat :: %d :: EGLWC :: %d :: EGLDC :: %d",
         format, EGLHelper::EGLWindowContext, EGLHelper::EGLDisplayContext
     );
     ANativeWindow_setBuffersGeometry(
