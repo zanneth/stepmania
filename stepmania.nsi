@@ -18,9 +18,6 @@
 ;-------------------------------------------------------------------------------
 ;General
 
-	!system "echo Compressing executables. This may take a moment ..." ignore
-	!system "utils\upx Program\*.exe" ignore
-
 	Name "${PRODUCT_DISPLAY}"
 	OutFile "${PRODUCT_DISPLAY}.exe"
 
@@ -42,7 +39,7 @@
 
 	; don't forget to change this before releasing a new version.
 	; wish this could be automated, but it requires "X.Y.Z.a" format. -aj
-	VIProductVersion "5.0.0.5"
+	VIProductVersion "5.1.0.0"
 	VIAddVersionKey "ProductName" "${PRODUCT_ID}"
 	VIAddVersionKey "FileVersion" "${PRODUCT_VER}"
 	VIAddVersionKey "FileDescription" "${PRODUCT_ID} Installer"
@@ -98,7 +95,7 @@
 		# These indented statements modify settings for MUI_PAGE_FINISH
 		!define MUI_FINISHPAGE_NOAUTOCLOSE
 
-		!define MUI_FINISHPAGE_RUN "$INSTDIR\Program\StepMania-SSE2.exe"
+		!define MUI_FINISHPAGE_RUN "$INSTDIR\Program\StepMania.exe"
 		!define MUI_FINISHPAGE_RUN_NOTCHECKED
 		!define MUI_FINISHPAGE_RUN_TEXT "$(TEXT_IO_LAUNCH_THE_GAME)"
 
@@ -186,6 +183,7 @@ Function RefreshShellIcons
   System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v \
   (${SHCNE_ASSOCCHANGED}, ${SHCNF_IDLIST}, 0, 0)'
 FunctionEnd
+
 Function un.RefreshShellIcons
   ; By jerome tremblay - april 2003
   System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v \
@@ -212,8 +210,8 @@ Section "Main Section" SecMain
 	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "DisplayVersion" "$(PRODUCT_VER)"
 	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "Comments" "StepMania 5 is a rhythm game simulator."
 	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "Publisher" "StepMania Team"
-	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "URLInfoAbout" "http://www.stepmania.com/"
-	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "URLUpdateInfo" "http://code.google.com/p/stepmania/"
+	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "URLInfoAbout" "https://clubfantastic.dance/"
+	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "URLUpdateInfo" "https://clubfantastic.dance/"
 	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "UninstallString" '"$INSTDIR\uninstall.exe"'
 !endif
 
@@ -229,18 +227,20 @@ Section "Main Section" SecMain
 	do_no_error_pck:
 !endif
 
+; Use our own "cfzip" association to prevent trampling on existing SM installs
 !ifdef ASSOCIATE_SMZIP
-	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\smzipfile" "" "$(TEXT_IO_SMZIP_PACKAGE)"
-	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\smzipfile\DefaultIcon" "" "$INSTDIR\Program\StepMania.exe,1"
-	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\smzipfile\shell\open\command" "" '"$INSTDIR\Program\StepMania.exe" "%1"'
-	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\.smzip" "" "smzipfile"
+	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\cfzipfile" "" "$(TEXT_IO_SMZIP_PACKAGE)"
+	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\cfzipfile\DefaultIcon" "" "$INSTDIR\Program\StepMania.exe,1"
+	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\cfzipfile\shell\open\command" "" '"$INSTDIR\Program\StepMania.exe" "%1"'
+	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\.cfzip" "" "cfzipfile"
 !endif
 
+; Use our own "clubfantastic" association to prevent trampling on existing SM installs
 !ifdef ASSOCIATE_SMURL
-	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\stepmania" "" "StepMania protocol handler"
-	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\stepmania" "URL Protocol" ""
-	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\stepmania\DefaultIcon" "" "$INSTDIR\Program\StepMania.exe"
-	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\stepmania\shell\open\command" "" '"$INSTDIR\Program\StepMania.exe" "%1"'
+	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\clubfantastic" "" "Club Fantastic protocol handler"
+	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\clubfantastic" "URL Protocol" ""
+	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\clubfantastic\DefaultIcon" "" "$INSTDIR\Program\StepMania.exe"
+	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\clubfantastic\shell\open\command" "" '"$INSTDIR\Program\StepMania.exe" "%1"'
 !endif
 
 !ifdef INSTALL_NON_PCK_FILES
@@ -429,13 +429,6 @@ Section "Main Section" SecMain
 	; normal exec
 	File "Program\StepMania.exe"
 	File "Program\StepMania.vdi"
-	; sse2 exec
-	File "Program\StepMania-SSE2.exe"
-	File "Program\StepMania-SSE2.vdi"
-	; other programs
-	File "Program\Texture Font Generator.exe"
-	; AJ can never get this built properly:
-	;File "Program\tools.exe" ; to be replaced eventually
 !endif
 !ifdef ASSOCIATE_SMZIP
 	Call RefreshShellIcons
@@ -444,25 +437,13 @@ Section "Main Section" SecMain
 	Call RefreshShellIcons
 !endif
 !ifdef INSTALL_PROGRAM_LIBRARIES
-	; microsoft!
-	; xxx: how many of these do we really need?
-	File "Program\msvcp100.dll"
-	File "Program\msvcr100.dll"
-	File "Program\msvcp110.dll"
-	File "Program\msvcr110.dll"
-	File "Program\vccorlib110.dll"
 	; FFmpeg and related
-	File "Program\avcodec-53.dll"
-	;File "Program\avdevice-52.dll"
-	File "Program\avformat-53.dll"
-	File "Program\avutil-51.dll"
+	File "Program\avcodec-55.dll"
+	File "Program\avformat-55.dll"
+	File "Program\avutil-52.dll"
 	File "Program\swscale-2.dll"
-	; parallel lights
+	File "Program\xinput1_3.dll"
 	File "Program\parallel_lights_io.dll"
-	; others
-	File "Program\dbghelp.dll"
-	File "Program\jpeg.dll"
-	File "Program\zlib1.dll"
 
 	; documentation
 	CreateDirectory "$INSTDIR\Docs"
@@ -489,11 +470,10 @@ Section "Main Section" SecMain
 	CreateDirectory "$SMPROGRAMS\${PRODUCT_ID}\"
 	; todo: make desktop shortcut an option
 	!ifdef MAKE_DESKTOP_SHORTCUT
-		CreateShortCut "$DESKTOP\$(TEXT_IO_RUN).lnk" "$INSTDIR\Program\StepMania-SSE2.exe"
+		CreateShortCut "$DESKTOP\$(TEXT_IO_RUN).lnk" "$INSTDIR\Program\StepMania.exe"
 	!endif
 
-	CreateShortCut "$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_RUN).lnk" "$INSTDIR\Program\StepMania-SSE2.exe"
-	CreateShortCut "$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_RUN_WITHOUT_SSE2).lnk" "$INSTDIR\Program\StepMania.exe"
+	CreateShortCut "$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_RUN).lnk" "$INSTDIR\Program\StepMania.exe"
 
 	!ifdef MAKE_OPEN_PROGRAM_FOLDER_SHORTCUT
 		CreateShortCut "$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_OPEN_PROGRAM_FOLDER).lnk" "$WINDIR\explorer.exe" "$INSTDIR\"
@@ -502,17 +482,13 @@ Section "Main Section" SecMain
 		CreateShortCut "$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_OPEN_SETTINGS_FOLDER).lnk" "$WINDIR\explorer.exe" "$APPDATA\${PRODUCT_ID}"
 	!endif
 
-	;CreateShortCut "$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_VIEW_STATISTICS).lnk" "$INSTDIR\Program\tools.exe" "--machine-profile-stats"
-	;CreateShortCut "$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_TOOLS).lnk" "$INSTDIR\Program\tools.exe"
 	CreateShortCut "$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_MANUAL).lnk" "$INSTDIR\Manual\index.html"
 	CreateShortCut "$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_UNINSTALL).lnk" "$INSTDIR\uninstall.exe"
 	CreateShortCut "$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_WEB_SITE).lnk" "${PRODUCT_URL}"
-	CreateShortCut "$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_TEXTURE_FONT_GENERATOR).lnk" "$INSTDIR\Program\Texture Font Generator.exe"
 	!ifdef MAKE_UPDATES_SHORTCUT
 		CreateShortCut "$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_CHECK_FOR_UPDATES).lnk" "${UPDATES_URL}"
 	!endif
-	CreateShortCut "$INSTDIR\${PRODUCT_ID}.lnk" "$INSTDIR\Program\StepMania-SSE2.exe"
-	CreateShortCut "$INSTDIR\${PRODUCT_ID} (non-SSE2).lnk" "$INSTDIR\Program\StepMania.exe"
+	CreateShortCut "$INSTDIR\${PRODUCT_ID}.lnk" "$INSTDIR\Program\StepMania.exe"
 !endif
 
 	IfErrors do_error do_no_error
@@ -530,7 +506,6 @@ SectionEnd
 Var hwnd ; Window handle of the custom page
 
 Function ShowAutorun
-
 	!insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
 
 	InstallOptions::initDialog /NOUNLOAD "$PLUGINSDIR\custom.ini"
@@ -587,7 +562,7 @@ Function LeaveAutorun
 	GoTo proceed
 
 	play:
-	Exec "$INSTDIR\Program\StepMania-SSE2.exe"
+	Exec "$INSTDIR\Program\StepMania.exe"
 	IfErrors play_error
 	quit
 
@@ -736,12 +711,12 @@ Section "Uninstall"
 !endif
 
 !ifdef ASSOCIATE_SMZIP
-	DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Classes\smzipfile"
-	DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Classes\.smzip"
+	DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Classes\cfzipfile"
+	DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Classes\.cfzip"
 !endif
 
 !ifdef ASSOCIATE_SMURL
-	DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Classes\stepmania"
+	DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Classes\clubfantastic"
 !endif
 
 !ifdef INSTALL_NON_PCK_FILES
@@ -836,10 +811,6 @@ Section "Uninstall"
 !ifdef INSTALL_EXECUTABLES
 	Delete "$INSTDIR\Program\StepMania.exe"
 	Delete "$INSTDIR\Program\StepMania.vdi"
-	Delete "$INSTDIR\Program\StepMania-SSE2.exe"
-	Delete "$INSTDIR\Program\StepMania-SSE2.vdi"
-	Delete "$INSTDIR\Program\tools.exe"
-	Delete "$INSTDIR\Program\Texture Font Generator.exe"
 !endif
 !ifdef ASSOCIATE_SMZIP
 	Call un.RefreshShellIcons
@@ -848,13 +819,6 @@ Section "Uninstall"
 	Call un.RefreshShellIcons
 !endif
 !ifdef INSTALL_PROGRAM_LIBRARIES
-	Delete "$INSTDIR\Program\mfc71.dll"
-	Delete "$INSTDIR\Program\msvcr71.dll"
-	Delete "$INSTDIR\Program\msvcp71.dll"
-	Delete "$INSTDIR\Program\msvcr80.dll"
-	Delete "$INSTDIR\Program\msvcp80.dll"
-	Delete "$INSTDIR\Program\msvcr90.dll"
-	Delete "$INSTDIR\Program\msvcp90.dll"
 	; FFmpeg and related
 	Delete "$INSTDIR\Program\avcodec-53.dll"
 	Delete "$INSTDIR\Program\avcodec-52.dll"
@@ -879,7 +843,7 @@ Section "Uninstall"
 	Delete "$INSTDIR\info.txt"
 	Delete "$INSTDIR\crashinfo.txt"
 	Delete "$INSTDIR\${PRODUCT_ID}.lnk"
-	Delete "$INSTDIR\${PRODUCT_ID} (non-SSE2).lnk"
+
 
 	RMDir "$INSTDIR"	; will delete only if empty
 
@@ -894,7 +858,6 @@ Section "Uninstall"
 	!endif
 
 	Delete '"$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_RUN).lnk"'
-	Delete '"$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_RUN_WITHOUT_SSE2).lnk"'
 
 	!ifdef MAKE_OPEN_PROGRAM_FOLDER_SHORTCUT
 		Delete '"$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_OPEN_PROGRAM_FOLDER).lnk"'
@@ -913,7 +876,6 @@ Section "Uninstall"
 		Delete '"$SMPROGRAMS\${PRODUCT_ID}\$(TEXT_IO_CHECK_FOR_UPDATES).lnk"'
 	!endif
 	Delete '"$INSTDIR\${PRODUCT_ID}.lnk"'
-	Delete '"$INSTDIR\${PRODUCT_ID} (non-SSE2).lnk"'
 
 	; I'm being paranoid here:
 	Delete '"$SMPROGRAMS\${PRODUCT_ID}\*.*"'

@@ -914,6 +914,7 @@ static void MountTreeOfZips( const RString &dir )
 		vector<RString> zips;
 		GetDirListing( path + "/*.zip", zips, false, true );
 		GetDirListing( path + "/*.smzip", zips, false, true );
+		GetDirListing(path + "/*.cfzip", zips, false, true);
 
 		for( unsigned i = 0; i < zips.size(); ++i )
 		{

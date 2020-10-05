@@ -285,7 +285,10 @@ static bool IsStepManiaProtocol(const RString &arg)
 static bool IsPackageFile(const RString &arg)
 {
 	RString ext = GetExtension(arg);
-	return ext.EqualsNoCase("smzip") || ext.EqualsNoCase("zip");
+
+	// CF: Support ".cfzip" here. We don't want to add a file association for
+	// .smzip that would conflict with other installations of StepMania
+	return ext.EqualsNoCase("cfzip") || ext.EqualsNoCase("smzip") || ext.EqualsNoCase("zip");
 }
 
 PlayAfterLaunchInfo DoInstalls( CommandLineActions::CommandLineArgs args )
