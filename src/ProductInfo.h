@@ -8,7 +8,7 @@
  *
  * As an example, use "StepMania" here, not "StepMania4".
  */
-#define PRODUCT_FAMILY_BARE Club Fantastic
+#define PRODUCT_FAMILY_BARE Club Fantastic StepMania
 
 /**
  * @brief A unique name for each application that you might want installed side-by-side with other applications.
@@ -27,7 +27,7 @@
 
 #define VIDEO_TROUBLESHOOTING_URL "http://old.stepmania.com/stepmaniawiki.php?title=Video_Driver_Troubleshooting"
 /** @brief The URL to report bugs on the program. */
-#define REPORT_BUG_URL "https://github.com/sfevolved/stepmania/issues"
+#define REPORT_BUG_URL "https://twitter.com/SF_EVOLVED"
 #define SM_DOWNLOAD_URL "https://clubfantastic.com/"
 
 #define CAN_INSTALL_PACKAGES true

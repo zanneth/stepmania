@@ -6,11 +6,11 @@
 
 ; PRODUCT_ID must NOT be "StepMania" unless you want people to uninstall 3.9
 ; when they install StepMania 5. (not recommended)
-!define PRODUCT_ID "Club Fantastic"
+!define PRODUCT_ID "Club Fantastic (StepMania)"
 
 ; TODO: This needs to be updated with the git rev hash
-!define PRODUCT_VER "5.1-cfs1"
-!define PRODUCT_DISPLAY "Club Fantastic Season 1"
+!define PRODUCT_VER "5.1"
+!define PRODUCT_DISPLAY "Club Fantastic (StepMania)"
 !define PRODUCT_BITMAP "sm5"
 
 !define PRODUCT_URL "https://clubfantastic.dance/"

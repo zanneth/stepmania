@@ -208,8 +208,8 @@ Section "Main Section" SecMain
 	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\${PRODUCT_ID}" "" "$INSTDIR"
 	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "DisplayName" "$(TEXT_IO_REMOVE_ONLY)"
 	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "DisplayVersion" "$(PRODUCT_VER)"
-	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "Comments" "StepMania 5 is a rhythm game simulator."
-	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "Publisher" "StepMania Team"
+	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "Comments" "Club Fantastic (StepMania 5) is a dance rhythm game."
+	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "Publisher" "Club Fantastic & StepMania Teams"
 	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "URLInfoAbout" "https://clubfantastic.dance/"
 	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "URLUpdateInfo" "https://clubfantastic.dance/"
 	WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_ID}" "UninstallString" '"$INSTDIR\uninstall.exe"'
@@ -237,7 +237,7 @@ Section "Main Section" SecMain
 
 ; Use our own "clubfantastic" association to prevent trampling on existing SM installs
 !ifdef ASSOCIATE_SMURL
-	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\clubfantastic" "" "Club Fantastic protocol handler"
+	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\clubfantastic" "" "Club Fantastic StepMania protocol handler"
 	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\clubfantastic" "URL Protocol" ""
 	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\clubfantastic\DefaultIcon" "" "$INSTDIR\Program\StepMania.exe"
 	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Classes\clubfantastic\shell\open\command" "" '"$INSTDIR\Program\StepMania.exe" "%1"'
@@ -283,6 +283,9 @@ Section "Main Section" SecMain
 	File /r /x CVS /x .svn "Courses\Default"
 
 	CreateDirectory "$INSTDIR\Packages"
+	SetOutPath "$INSTDIR\Packages"
+	File "D:\dropbox\shared\cfbuild\output\club_fantastic_season1.smzip";
+
 	;File "Packages\Instructions.txt"
 
 	; remove old noteskins
@@ -442,7 +445,7 @@ Section "Main Section" SecMain
 	File "Program\avformat-55.dll"
 	File "Program\avutil-52.dll"
 	File "Program\swscale-2.dll"
-	File "Program\xinput1_3.dll"
+	; File "Program\xinput1_3.dll"
 	File "Program\parallel_lights_io.dll"
 
 	; documentation
@@ -737,6 +740,7 @@ Section "Uninstall"
 	RMDir /r "$INSTDIR\Cache"
 
 	Delete "$INSTDIR\Packages\instructions.txt"
+	Delete "$INSTDIR\Packages\club_fantastic_season1.smzip"
 	RMDir "$INSTDIR\Packages"
 
 	Delete "$INSTDIR\Courses\instructions.txt"
