@@ -244,6 +244,9 @@ Section "Main Section" SecMain
 !endif
 
 !ifdef INSTALL_NON_PCK_FILES
+	SetOutPath "$INSTDIR"
+	File "D:\dropbox\shared\clubfantastic\smroot\READMECF.txt"
+
 	CreateDirectory "$INSTDIR\Announcers"
 	SetOutPath "$INSTDIR\Announcers"
 	File "Announcers\instructions.txt"
@@ -674,7 +677,7 @@ Function .onInit
 	; determine root drive where Windows was installed, and suggest a
 	; reasonable directory for installation.
 	StrCpy $0 "$WINDIR" 2
-	StrCpy $INSTDIR "$0\Games\${PRODUCT_ID}"
+	StrCpy $INSTDIR "$0\ClubFantastic"
 
 !ifdef SHOW_AUTORUN
 	;
