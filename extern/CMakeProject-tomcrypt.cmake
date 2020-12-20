@@ -848,6 +848,7 @@ else()
   sm_add_compile_definition("tomcrypt" LTC_NO_PK)
   sm_add_compile_definition("tomcrypt" LTC_MRSA)
   sm_add_compile_definition("tomcrypt" LTC_NO_PROTOTYPES)
+  sm_add_compile_definition("tomcrypt" LTC_NO_HKDF)
 
   if(WITH_PORTABLE_TOMCRYPT)
     sm_add_compile_definition("tomcrypt" LTC_NO_ASM)
