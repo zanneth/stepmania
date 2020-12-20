@@ -121,7 +121,8 @@ static void SetSampleRate( AudioUnit au, Float64 desiredRate )
 
 RString RageSoundDriver_AU::Init()
 {
-	ComponentDescription desc;
+	AudioComponent comp;
+	AudioComponentDescription desc = {0};
 	
 	desc.componentType = kAudioUnitType_Output;
 	desc.componentSubType = kAudioUnitSubType_DefaultOutput;
@@ -129,12 +130,12 @@ RString RageSoundDriver_AU::Init()
 	desc.componentFlags = 0;
 	desc.componentFlagsMask = 0;
 	
-	Component comp = FindNextComponent( NULL, &desc );
+	comp = AudioComponentFindNext( NULL, &desc );
 	
 	if( comp == nullptr ) 
 		return "Failed to find the default output unit.";
 	
-	OSStatus error = OpenAComponent( comp, &m_OutputUnit );
+	OSStatus error = AudioComponentInstanceNew( comp, &m_OutputUnit );
 	
 	if( error != noErr || m_OutputUnit == nullptr )
 		return ERROR( "Could not open the default output unit", error );
@@ -214,7 +215,7 @@ RageSoundDriver_AU::~RageSoundDriver_AU()
 		m_Semaphore.Wait();
 	}
 	AudioUnitUninitialize( m_OutputUnit );
-	CloseComponent( m_OutputUnit );
+	AudioComponentInstanceDispose( m_OutputUnit );
 	delete m_pIOThread;
 	delete m_pNotificationThread;
 }
