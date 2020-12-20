@@ -205,6 +205,5 @@ void InputHandler_NSEvent::HandleEvent( NSEvent *e )
 
 void InputHandler_NSEvent::GetDevicesAndDescriptions( vector<InputDeviceInfo>& vDevicesOut )
 {
-    NSLog(@"zanneth: InputHandler_NSEvent::GetDevicesAndDescriptions");
     vDevicesOut.push_back( InputDeviceInfo( DEVICE_KEYBOARD, "NSEventKeyboard" ) );
 }
