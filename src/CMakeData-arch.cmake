@@ -288,8 +288,10 @@ if(WIN32)
   endif()
 elseif(APPLE)
   list(APPEND SMDATA_ARCH_INPUT_SRC
+              "arch/InputHandler/InputHandler_NSEvent.mm"
               "arch/InputHandler/InputHandler_MacOSX_HID.cpp")
   list(APPEND SMDATA_ARCH_INPUT_HPP
+              "arch/InputHandler/InputHandler_NSEvent.hpp"
               "arch/InputHandler/InputHandler_MacOSX_HID.h")
 else() # Unix/Linux
   if(LINUX)
