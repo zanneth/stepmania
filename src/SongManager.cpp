@@ -115,6 +115,9 @@ static LocalizedString SANITY_CHECKING_GROUPS("SongManager", "Sanity checking gr
 
 void SongManager::Reload( bool bAllowFastLoad, LoadingWindow *ld )
 {
+	LOG->Trace("Reloading all songs and courses. Deleting cache...");
+	SONGINDEX->DeleteCache();
+	
 	FILEMAN->FlushDirCache( SpecialFiles::SONGS_DIR );
 	FILEMAN->FlushDirCache( ADDITIONAL_SONGS_DIR );
 	FILEMAN->FlushDirCache( SpecialFiles::COURSES_DIR );
