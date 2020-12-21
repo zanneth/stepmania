@@ -246,6 +246,8 @@ Section "Main Section" SecMain
 !ifdef INSTALL_NON_PCK_FILES
 	SetOutPath "$INSTDIR"
 	File "D:\dropbox\shared\clubfantastic\smroot\READMECF.txt"
+	File "D:\dropbox\shared\clubfantastic\smroot\SYNC.txt"
+	File "Portable.ini"
 
 	CreateDirectory "$INSTDIR\Announcers"
 	SetOutPath "$INSTDIR\Announcers"
