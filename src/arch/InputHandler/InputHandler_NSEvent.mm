@@ -26,11 +26,13 @@ InputHandler_NSEvent::InputHandler_NSEvent()
     InitKeyCodeMap();
     
     auto &dispatcher = CocoaEventDispatcher::sharedDispatcher;
-    dispatcher.AddResponder( bind(&InputHandler_NSEvent::HandleEvent, this, placeholders::_1) );
+    m_ResponderID = dispatcher.AddResponder( bind(&InputHandler_NSEvent::HandleEvent, this, placeholders::_1) );
 }
 
 InputHandler_NSEvent::~InputHandler_NSEvent()
 {
+    auto &dispatcher = CocoaEventDispatcher::sharedDispatcher;
+    dispatcher.RemoveResponder( m_ResponderID );
 }
 
 void InputHandler_NSEvent::InitKeyCodeMap()

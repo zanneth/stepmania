@@ -353,7 +353,6 @@ static NSURL* SecurityScopedUserFilesystemURL( void )
 		}
 	}
 	
-	NSLog(@"zanneth: SecurityScopedUserFilesystemURL = %@", g_UFURLCached);
 	return g_UFURLCached;
 }
 

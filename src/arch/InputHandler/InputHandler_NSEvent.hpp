@@ -33,6 +33,7 @@ protected:
         
 private:
     DeviceButton m_NSKeyCodeMap[0x100];
+    unsigned     m_ResponderID;
 };
 
 #endif /* InputHandler_NSEvent_hpp */

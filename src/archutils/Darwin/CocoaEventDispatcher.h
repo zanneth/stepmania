@@ -21,12 +21,19 @@ public:
     CocoaEventDispatcher( const CocoaEventDispatcher& ) = delete;
     CocoaEventDispatcher( CocoaEventDispatcher&& ) = delete;
     
-    void AddResponder( const function<void(EVENT_TYPE)> &resp );
+    unsigned AddResponder( const function<void(EVENT_TYPE)> &resp );
+    void RemoveResponder( unsigned respID );
     void DispatchEvent( EVENT_TYPE e );
     
 private:
+    struct Responder {
+        unsigned ID;
+        function<void(EVENT_TYPE)> Function;
+    };
+    
     RageMutex m_Mutex;
-    vector<function<void(EVENT_TYPE)>> m_Responders;
+    vector<Responder> m_Responders;
+    unsigned m_NextResponderID;
 };
 
 #endif // COCOA_EVENT_DISPATCHER_H

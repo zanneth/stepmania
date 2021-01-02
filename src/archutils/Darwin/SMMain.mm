@@ -33,8 +33,10 @@
 
 - (void)sendEvent:(NSEvent *)event
 {
-	auto &dispatcher = CocoaEventDispatcher::sharedDispatcher;
-	dispatcher.DispatchEvent( event );
+	if( INPUTMAN ) {
+		auto &dispatcher = CocoaEventDispatcher::sharedDispatcher;
+		dispatcher.DispatchEvent( event );
+	}
 	
 	if( [event type] == NSKeyDown )
 		[[self mainMenu] performKeyEquivalent:event];
