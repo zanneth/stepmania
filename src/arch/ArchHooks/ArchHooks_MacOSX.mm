@@ -304,14 +304,16 @@ int64_t ArchHooks::GetMicrosecondsSinceStart( bool bAccurate )
 
 #include "RageFileManager.h"
 
-static void PathForFolderType( char dir[PATH_MAX], OSType folderType )
+static void PathForFolderType( char dir[PATH_MAX], NSSearchPathDirectory folderType )
 {
-	FSRef fs;
-
-	if( FSFindFolder(kUserDomain, folderType, kDontCreateFolder, &fs) )
-		FAIL_M( ssprintf("FSFindFolder(%lu) failed.", folderType) );
-	if( FSRefMakePath(&fs, (UInt8 *)dir, PATH_MAX) )
-		FAIL_M( "FSRefMakePath() failed." );
+	NSFileManager* fileManager = [NSFileManager defaultManager];
+	NSArray<NSURL*>* urls = [fileManager URLsForDirectory:folderType inDomains:NSUserDomainMask];
+	NSURL* url = [urls lastObject];
+	
+	if( !url )
+		FAIL_M( ssprintf("-[NSFileManager URLsForDirectory:inDomains] failed for folder type %lu", folderType) );
+	
+	strncpy( dir, [url fileSystemRepresentation], PATH_MAX );
 }
 
 void ArchHooks::MountInitialFilesystems( const RString &sDirOfExecutable )
@@ -357,11 +359,11 @@ void ArchHooks::MountUserFilesystems( const RString &sDirOfExecutable )
 	char dir[PATH_MAX];
 
 	// /Save -> ~/Library/Preferences/PRODUCT_ID
-	PathForFolderType( dir, kPreferencesFolderType );
-	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID, dir), "/Save" );
+	PathForFolderType( dir, NSLibraryDirectory );
+	FILEMAN->Mount( "dir", ssprintf("%s/Preferences/" PRODUCT_ID, dir), "/Save" );
 
-	// Other stuff -> ~/Library/Application Support/PRODUCT_ID/*
-	PathForFolderType( dir, kApplicationSupportFolderType );
+	// Other stuff -> ~/Documents/PRODUCT_ID/*
+	PathForFolderType( dir, NSDocumentDirectory );
 	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID "/Announcers", dir), "/Announcers" );
 	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID "/BGAnimations", dir), "/BGAnimations" );
 	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID "/BackgroundEffects", dir), "/BackgroundEffects" );
@@ -376,15 +378,15 @@ void ArchHooks::MountUserFilesystems( const RString &sDirOfExecutable )
 	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID "/Themes", dir), "/Themes" );
 
 	// /Screenshots -> ~/Pictures/PRODUCT_ID Screenshots
-	PathForFolderType( dir, kPictureDocumentsFolderType );
+	PathForFolderType( dir, NSPicturesDirectory );
 	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID " Screenshots", dir), "/Screenshots" );
 
 	// /Cache -> ~/Library/Caches/PRODUCT_ID
-	PathForFolderType( dir, kCachedDataFolderType );
+	PathForFolderType( dir, NSCachesDirectory );
 	FILEMAN->Mount( "dir", ssprintf("%s/" PRODUCT_ID, dir), "/Cache" );
 
 	// /Logs -> ~/Library/Logs/PRODUCT_ID
-	PathForFolderType( dir, kDomainLibraryFolderType );
+	PathForFolderType( dir, NSLibraryDirectory );
 	FILEMAN->Mount( "dir", ssprintf("%s/Logs/" PRODUCT_ID, dir), "/Logs" );
 
 	// /Desktop -> /Users/<user>/Desktop/PRODUCT_ID
