@@ -546,7 +546,8 @@ elseif(APPLE)
               ${MAC_FRAME_AUDIOUNIT}
               ${MAC_FRAME_COREAUDIO}
               ${MAC_FRAME_CORESERVICES}
-              ${MAC_FRAME_SYSTEM})
+              ${MAC_FRAME_SYSTEM}
+              ${MAC_FRAME_SECURITY})
   list(APPEND SMDATA_LINK_LIB
               "${BZIP2_LIBRARY_RELEASE}"
               "${ICONV_LIBRARIES}")
