@@ -127,12 +127,16 @@
     * associated assembler code, pass --enable-arm-neon=no to configure
     * or put -DPNG_ARM_NEON_OPT=0 in CPPFLAGS.
     */
-#  if (defined(__ARM_NEON__) || defined(__ARM_NEON)) && \
-   defined(PNG_ALIGNED_MEMORY_SUPPORTED)
-#     define PNG_ARM_NEON_OPT 2
-#  else
+#  if (defined(__APPLE__) && defined(__aarch64__))
 #     define PNG_ARM_NEON_OPT 0
-#  endif
+#else
+#    if (defined(__ARM_NEON__) || defined(__ARM_NEON)) && \
+     defined(PNG_ALIGNED_MEMORY_SUPPORTED)
+#       define PNG_ARM_NEON_OPT 2
+#    else
+#       define PNG_ARM_NEON_OPT 0
+#    endif
+#endif
 #endif
 
 #if PNG_ARM_NEON_OPT > 0
