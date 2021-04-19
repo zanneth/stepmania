@@ -155,7 +155,7 @@ void InputHandler_NSEvent::HandleEvent( NSEvent *e )
         return;
     }
     
-    if( [e isARepeat] ) {
+    if( type != NSEventTypeFlagsChanged &&g [e isARepeat] ) {
         return;
     }
     
