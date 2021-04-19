@@ -40,6 +40,13 @@ if(MACOSX)
   find_program(FFMPEG_YASM_EXECUTABLE yasm
                PATHS /usr/bin /usr/local/bin /opt/local/bin)
   list(APPEND FFMPEG_CONFIGURE "--yasmexe=${FFMPEG_YASM_EXECUTABLE}")
+  
+  # Uncomment below to build for Apple Silicon
+  # list(APPEND FFMPEG_CONFIGURE "--arch=arm64")
+  # list(APPEND FFMPEG_CONFIGURE "--enable-cross-compile")
+  # list(APPEND FFMPEG_CONFIGURE "--target-os=darwin")
+  # list(APPEND FFMPEG_CONFIGURE "--extra-cflags=-arch arm64 -w")
+  # list(APPEND FFMPEG_CONFIGURE "--extra-ldflags=-arch arm64")
 endif()
 
 if(WITH_GPL_LIBS)
@@ -51,6 +58,7 @@ if(WITH_CRYSTALHD_DISABLED)
 endif()
 
 if(NOT WITH_EXTERNAL_WARNINGS)
+  # Comment out the below line if building for Apple Silicon
   list(APPEND FFMPEG_CONFIGURE "--extra-cflags=-w")
 endif()
 
