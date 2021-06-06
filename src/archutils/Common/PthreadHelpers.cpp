@@ -247,6 +247,9 @@ bool GetThreadBacktraceContext( uint64_t ThreadID, BacktraceContext *ctx )
 #elif defined(CPU_AARCH64)
 	// NYI
 	return false;
+#elif defined(CPU_ARM32)
+	// TODO
+	return false;
 #else
 #error GetThreadBacktraceContext: which arch?
 #endif
